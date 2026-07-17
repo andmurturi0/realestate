@@ -1,0 +1,27 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\ContactMessage;
+use App\Models\LeadNote;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<LeadNote>
+ */
+class LeadNoteFactory extends Factory
+{
+    /**
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'notable_type' => ContactMessage::class,
+            'notable_id' => ContactMessage::factory(),
+            'user_id' => User::factory(),
+            'body' => fake()->sentence(10),
+        ];
+    }
+}

@@ -3,15 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Translatable\HasTranslations;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasTranslations, Notifiable;
+
+    /** @var list<string> */
+    public array $translatable = ['bio'];
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +28,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'phone',
+        'whatsapp',
+        'avatar_path',
+        'bio',
+        'is_active',
     ];
 
     /**
@@ -44,6 +56,24 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
+            'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * @return HasMany<Property, $this>
+     */
+    public function properties(): HasMany
+    {
+        return $this->hasMany(Property::class, 'agent_id');
+    }
+
+    /**
+     * @return HasMany<LeadNote, $this>
+     */
+    public function leadNotes(): HasMany
+    {
+        return $this->hasMany(LeadNote::class);
     }
 }

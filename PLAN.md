@@ -36,7 +36,8 @@ is_active (bool), timestamps
 id, key (unique), value (json), timestamps
 ```
 Çelësat: `agency_name`, `logo_path`, `logo_dark_path`, `favicon_path`, `primary_color`,
-`phone`, `email`, `address`, `office_lat`, `office_lng`,
+`phone`, `whatsapp` (WhatsApp i agjencisë — i ndarë nga `users.whatsapp` që është numri
+personal i agjentit), `email`, `address`, `office_lat`, `office_lng`,
 `facebook`, `instagram`, `tiktok`, `linkedin`, `youtube`,
 `about_content` (json sq/en/de), `terms_content`, `privacy_content`, `faq_content`,
 `app_store_url`, `play_store_url`, `watermark_enabled`.
@@ -124,7 +125,10 @@ ip_address, timestamps
 ```
 id, first_name, last_name, phone,
 request_type (enum: buying|renting), category, location_id,
-budget_max (bigint cent), surface_min, surface_max, surface_unit (m2|are|ha),
+budget_max (bigint cent),
+surface_min_m2, surface_max_m2 (të normalizuara në m²; konvertimi bëhet në FormRequest,
+jo në query: 1 ari = 100 m², 1 ha = 10000 m²),
+surface_unit (enum: m2|ari|ha — vetëm për shfaqje, ruan njësinë që zgjodhi përdoruesi),
 details (text, nullable),
 status (enum: new|contacted|in_progress|closed),
 assigned_to (nullable FK users), ip_address, timestamps
