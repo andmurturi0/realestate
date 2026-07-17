@@ -50,7 +50,9 @@ id, parent_id (nullable, self-referencing), name (json: sq/en/de),
 slug, lat, lng, type (enum: municipality|neighborhood), timestamps
 ```
 Seed: komunat e Kosovës + lagjet e Prishtinës (Dardania, Ulpiana, Mati 1, Bregu i Diellit,
-Kodra e Diellit, Sunny Hill, Arbëria, Lakrishte, Qafa, Veternik, Fushë Kosovë...).
+Kodra e Diellit, Sunny Hill, Arbëria, Lakrishte, Qafa, Veternik, Kalabria, Velania,
+Taslixhe, Kodra e Trimave). **Kujdes:** Fushë Kosova është komunë më vete (jo lagje e
+Prishtinës) dhe Çagllavica i takon komunës së Graçanicës — seed-ohet si lagje e saj.
 
 ### `properties`
 ```
@@ -350,3 +352,13 @@ Feature tests for the conversion flow and the auto-assignment.
 4. **Prompti "propose, don't implement"** para çdo faze të madhe.
 5. **Dizajni në fund**, si kalim i veçantë me drejtim të qartë.
 6. **Commit pas çdo faze.** Branch për fazat e mëdha.
+
+---
+
+## 10. Devijimet nga PLAN.md (të miratuara)
+
+| Devijimi | Arsyeja |
+|---|---|
+| `property_price_histories.changed_by` është nullable | Ndryshimet nga seeder/console nuk kanë përdorues të autentikuar. |
+| `features` nuk ka timestamps | Lista e kolonave në §2 nuk i përmban; tabela është statike (seed-only). |
+| Lagjet e Prishtinës u zgjeruan me Velania, Taslixhe, Kodra e Trimave | Pas heqjes së Fushë Kosovës dhe Çagllavicës nga lista, duhen ≥12 lagje reale për checklist-in e Fazës 1. |
