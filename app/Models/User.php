@@ -61,6 +61,16 @@ class User extends Authenticatable
         ];
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    public function isAgent(): bool
+    {
+        return $this->role === UserRole::Agent;
+    }
+
     /**
      * @return HasMany<Property, $this>
      */
