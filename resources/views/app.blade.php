@@ -4,7 +4,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        @php($branding = \App\Models\Setting::allAsArray())
+        <title inertia>{{ $branding['agency_name'] ?? '' }}</title>
+        @if (! empty($branding['favicon_path']))
+            <link rel="icon" href="{{ \Illuminate\Support\Facades\Storage::disk('supabase')->url($branding['favicon_path']) }}">
+        @endif
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

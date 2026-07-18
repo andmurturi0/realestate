@@ -3,7 +3,10 @@ import AppContent from '@/components/AppContent.vue';
 import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
+import { useBrandColor } from '@/composables/useBrandColor';
 import type { BreadcrumbItemType } from '@/types';
+
+useBrandColor();
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
