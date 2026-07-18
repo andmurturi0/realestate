@@ -352,6 +352,10 @@ Feature tests for the conversion flow and the auto-assignment.
 4. **Prompti "propose, don't implement"** para çdo faze të madhe.
 5. **Dizajni në fund**, si kalim i veçantë me drejtim të qartë.
 6. **Commit pas çdo faze.** Branch për fazat e mëdha.
+7. * **Dark/Light mode:**
+    * Shto `dark/light` mode toggle në header, i disponueshëm për të gjithë (vizitorë, agjentë, admin).
+    * Ruhet përmes klasës `dark` në `<html>` + cookie.
+    * Të gjitha tokenat e ngjyrave duhet të kenë variantin `dark` që në krijim të design system-it.
 
 ---
 
