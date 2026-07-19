@@ -366,3 +366,4 @@ Feature tests for the conversion flow and the auto-assignment.
 | `property_price_histories.changed_by` është nullable | Ndryshimet nga seeder/console nuk kanë përdorues të autentikuar. |
 | `features` nuk ka timestamps | Lista e kolonave në §2 nuk i përmban; tabela është statike (seed-only). |
 | Lagjet e Prishtinës u zgjeruan me Velania, Taslixhe, Kodra e Trimave | Pas heqjes së Fushë Kosovës dhe Çagllavicës nga lista, duhen ≥12 lagje reale për checklist-in e Fazës 1. |
+

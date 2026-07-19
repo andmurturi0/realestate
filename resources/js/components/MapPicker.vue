@@ -35,8 +35,7 @@ function emitPosition(position: L.LatLng) {
 }
 
 onMounted(() => {
-    const start: [number, number] =
-        props.lat != null && props.lng != null ? [Number(props.lat), Number(props.lng)] : FALLBACK_CENTRE;
+    const start: [number, number] = props.lat != null && props.lng != null ? [Number(props.lat), Number(props.lng)] : FALLBACK_CENTRE;
 
     map = L.map(mapElement.value as HTMLDivElement).setView(start, 14);
 

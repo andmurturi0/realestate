@@ -32,19 +32,16 @@ const activeLocale = ref<Locale>('sq');
                     :key="locale.code"
                     type="button"
                     class="rounded-md px-2 py-1 text-xs font-medium"
-                    :class="activeLocale === locale.code ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'"
+                    :class="
+                        activeLocale === locale.code ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'
+                    "
                     @click="activeLocale = locale.code"
                 >
                     {{ locale.label }}
                 </button>
             </div>
         </div>
-        <RichTextEditor
-            v-for="locale in locales"
-            v-show="activeLocale === locale.code"
-            :key="locale.code"
-            v-model="model[locale.code]"
-        />
+        <RichTextEditor v-for="locale in locales" v-show="activeLocale === locale.code" :key="locale.code" v-model="model[locale.code]" />
         <InputError :message="error" />
     </div>
 </template>

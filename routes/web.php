@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\PropertyController;
 use App\Http\Controllers\Dashboard\SettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -12,9 +13,20 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Placeholder shells — the real pages arrive in later phases (FAZAT.md).
-    Route::inertia('/properties', 'dashboard/Placeholder', ['title' => 'Pronat'])
+    Route::get('/properties', [PropertyController::class, 'index'])
         ->name('dashboard.properties.index');
+    Route::get('/properties/create', [PropertyController::class, 'create'])
+        ->name('dashboard.properties.create');
+    Route::post('/properties', [PropertyController::class, 'store'])
+        ->name('dashboard.properties.store');
+    Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])
+        ->name('dashboard.properties.edit');
+    Route::put('/properties/{property}', [PropertyController::class, 'update'])
+        ->name('dashboard.properties.update');
+    Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])
+        ->name('dashboard.properties.destroy');
+
+    // Placeholder shells — the real pages arrive in later phases (FAZAT.md).
     Route::inertia('/inbox/messages', 'dashboard/Placeholder', ['title' => 'Mesazhet'])
         ->name('dashboard.inbox.messages');
     Route::inertia('/inbox/offers', 'dashboard/Placeholder', ['title' => 'Ofertat'])

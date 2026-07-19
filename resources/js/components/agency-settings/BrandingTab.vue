@@ -62,12 +62,7 @@ const submit = () => {
             :current-url="sharedSettings.logo_dark_url"
             :error="form.errors.logo_dark"
         />
-        <ImageUploadField
-            v-model="form.favicon"
-            label="Favicon"
-            :current-url="sharedSettings.favicon_url"
-            :error="form.errors.favicon"
-        />
+        <ImageUploadField v-model="form.favicon" label="Favicon" :current-url="sharedSettings.favicon_url" :error="form.errors.favicon" />
 
         <label class="flex items-center gap-2 text-sm">
             <input v-model="form.watermark_enabled" type="checkbox" class="size-4 rounded border-input" />

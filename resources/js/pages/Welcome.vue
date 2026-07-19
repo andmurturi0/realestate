@@ -27,23 +27,14 @@ const socialLinks = computed(() =>
         <header class="border-b">
             <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
                 <Link href="/" class="flex items-center gap-2">
-                    <img
-                        v-if="settings.logo_url"
-                        :src="settings.logo_url"
-                        :alt="settings.agency_name ?? ''"
-                        class="h-9 w-auto object-contain"
-                    />
+                    <img v-if="settings.logo_url" :src="settings.logo_url" :alt="settings.agency_name ?? ''" class="h-9 w-auto object-contain" />
                     <span class="text-lg font-semibold">{{ settings.agency_name }}</span>
                 </Link>
                 <div class="flex items-center gap-4 text-sm text-muted-foreground">
                     <a v-if="settings.phone" :href="`tel:${settings.phone}`" class="hover:text-foreground">
                         {{ settings.phone }}
                     </a>
-                    <Link
-                        v-if="$page.props.auth.user"
-                        :href="route('dashboard')"
-                        class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground"
-                    >
+                    <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">
                         Dashboard
                     </Link>
                     <Link v-else :href="route('login')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">Kyçu</Link>

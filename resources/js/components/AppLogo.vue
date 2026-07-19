@@ -8,12 +8,7 @@ const settings = computed(() => usePage<SharedData>().props.settings);
 </script>
 
 <template>
-    <img
-        v-if="settings.logo_url"
-        :src="settings.logo_url"
-        :alt="settings.agency_name ?? ''"
-        class="aspect-square size-8 rounded-md object-contain"
-    />
+    <img v-if="settings.logo_url" :src="settings.logo_url" :alt="settings.agency_name ?? ''" class="aspect-square size-8 rounded-md object-contain" />
     <div v-else class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
         <Building2 class="size-5" />
     </div>

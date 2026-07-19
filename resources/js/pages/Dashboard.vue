@@ -85,9 +85,7 @@ const formatDate = (value: string | null) =>
                     <CardTitle class="text-base">Leads e fundit</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p v-if="recentLeads.length === 0" class="py-6 text-center text-sm text-muted-foreground">
-                        Ende nuk ka leads.
-                    </p>
+                    <p v-if="recentLeads.length === 0" class="py-6 text-center text-sm text-muted-foreground">Ende nuk ka leads.</p>
                     <ul v-else class="divide-y">
                         <li
                             v-for="lead in recentLeads"

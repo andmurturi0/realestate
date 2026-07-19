@@ -22,10 +22,7 @@ const fields = [
 type SocialKey = (typeof fields)[number]['key'];
 
 const form = useForm(
-    Object.fromEntries(fields.map((field) => [field.key, (props.settings[field.key] as string | null) ?? ''])) as Record<
-        SocialKey,
-        string
-    >,
+    Object.fromEntries(fields.map((field) => [field.key, (props.settings[field.key] as string | null) ?? ''])) as Record<SocialKey, string>,
 );
 
 const submit = () => {

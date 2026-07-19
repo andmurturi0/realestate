@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import MapPicker from '@/components/MapPicker.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
-import OfficeMapPicker from './OfficeMapPicker.vue';
 
 const props = defineProps<{
     settings: Record<string, unknown>;
@@ -58,7 +58,7 @@ const submit = () => {
 
         <div class="grid gap-2">
             <Label>Lokacioni i zyrës (kliko ose zvarrit pinin)</Label>
-            <OfficeMapPicker :lat="form.office_lat" :lng="form.office_lng" @update="updateCoordinates" />
+            <MapPicker :lat="form.office_lat" :lng="form.office_lng" @update="updateCoordinates" />
             <div class="flex gap-4 text-xs text-muted-foreground">
                 <span>Lat: {{ form.office_lat ?? '—' }}</span>
                 <span>Lng: {{ form.office_lng ?? '—' }}</span>

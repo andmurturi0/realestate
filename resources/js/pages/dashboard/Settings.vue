@@ -52,9 +52,7 @@ const flashSuccess = computed(() => usePage<SharedData>().props.flash.success);
                     type="button"
                     class="-mb-px border-b-2 px-4 py-2 text-sm font-medium"
                     :class="
-                        activeTab === tab.key
-                            ? 'border-primary text-foreground'
-                            : 'border-transparent text-muted-foreground hover:text-foreground'
+                        activeTab === tab.key ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                     "
                     @click="activeTab = tab.key"
                 >

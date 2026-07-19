@@ -23,9 +23,7 @@ const page = usePage<SharedData>();
 
 const can = computed(() => page.props.can);
 const badges = computed(() => page.props.badges);
-const totalNewLeads = computed(() =>
-    badges.value ? badges.value.messages + badges.value.offers + badges.value.requests : 0,
-);
+const totalNewLeads = computed(() => (badges.value ? badges.value.messages + badges.value.offers + badges.value.requests : 0));
 
 const inboxItems = computed(() => [
     { title: 'Mesazhe', href: '/dashboard/inbox/messages', icon: MessageSquare, count: badges.value?.messages ?? 0 },
