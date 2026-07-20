@@ -27,7 +27,7 @@ const submit = (form: { post: (url: string) => void }) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4">
             <div>
-                <h1 class="text-xl font-semibold">Krijo pronë nga oferta e {{ offer.name }}</h1>
+                <h1 class="text-xl font-medium">Krijo pronë nga oferta e {{ offer.name }}</h1>
                 <p class="mt-1 text-sm text-muted-foreground">
                     Titulli dhe çmimi janë parambushur nga oferta — mund t'i ndryshoni lirisht para se të ruani. Fotot shtohen pas ruajtjes.
                 </p>

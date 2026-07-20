@@ -12,8 +12,8 @@ const { t } = useTranslations();
 
 <template>
     <div v-if="properties.length">
-        <h2 class="mb-4 text-lg font-semibold">{{ t('Prona të ngjashme') }}</h2>
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <h2 class="mb-4 text-lg font-medium">{{ t('Prona të ngjashme') }}</h2>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <PropertyCard v-for="property in properties" :key="property.id" :property="property" />
         </div>
     </div>

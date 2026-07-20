@@ -56,7 +56,7 @@ function submitNote() {
     <div class="flex flex-col gap-4 rounded-lg border bg-card p-4">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-                <h2 class="text-lg font-semibold">{{ title }}</h2>
+                <h2 class="text-lg font-medium">{{ title }}</h2>
                 <p class="text-sm text-muted-foreground">{{ phone }}</p>
             </div>
 
@@ -98,7 +98,7 @@ function submitNote() {
         </div>
 
         <div class="border-t pt-3">
-            <h3 class="mb-2 text-sm font-semibold">Shënime</h3>
+            <h3 class="mb-2 text-sm font-medium">Shënime</h3>
 
             <div class="mb-3 flex flex-col gap-2">
                 <p v-if="notes.length === 0" class="text-sm text-muted-foreground">Ende pa shënime.</p>

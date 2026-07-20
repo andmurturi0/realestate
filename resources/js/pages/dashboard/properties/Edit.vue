@@ -32,7 +32,7 @@ const submit = (form: { put: (url: string, options?: { preserveScroll: boolean }
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4">
             <div>
-                <h1 class="text-xl font-semibold">Edito pronën {{ property.reference_code }}</h1>
+                <h1 class="text-xl font-medium">Edito pronën {{ property.reference_code }}</h1>
                 <p class="mt-1 text-sm text-muted-foreground">{{ property.title.sq }}</p>
             </div>
 

@@ -99,7 +99,7 @@ const whatsappHref = computed(() =>
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div>
-                <h1 class="text-xl font-semibold">Mesazhet</h1>
+                <h1 class="text-xl font-medium">Mesazhet</h1>
                 <p class="mt-1 text-sm text-muted-foreground">{{ messages.total }} mesazhe gjithsej</p>
             </div>
 

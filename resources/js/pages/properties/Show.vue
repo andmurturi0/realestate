@@ -44,6 +44,8 @@ const publishedLabel = computed(() =>
           )
         : null,
 );
+
+const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale' ? t('për shitje') : t('me qira')));
 </script>
 
 <template>
@@ -54,7 +56,7 @@ const publishedLabel = computed(() =>
     <Head :title="property.title" />
 
     <PublicLayout>
-        <div class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+        <div class="mx-auto w-full max-w-screen-2xl flex-1 px-4 py-6">
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div class="space-y-8 lg:col-span-2">
                     <PropertyGallery :images="property.images" />
@@ -62,20 +64,37 @@ const publishedLabel = computed(() =>
                     <div>
                         <div class="flex flex-wrap items-start justify-between gap-2">
                             <div>
-                                <h1 class="text-2xl font-semibold">{{ property.title }}</h1>
+                                <div class="mb-2 flex items-center gap-1.5">
+                                    <span v-if="property.is_exclusive" class="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-medium text-white">
+                                        {{ t('Ekskluzive') }}
+                                    </span>
+                                    <span
+                                        class="rounded-full px-2.5 py-1 text-xs font-medium text-white"
+                                        :class="property.listing_type === 'sale' ? 'bg-green-600' : 'bg-blue-600'"
+                                    >
+                                        {{ property.listing_type === 'sale' ? t('Në shitje') : t('Me qira') }}
+                                    </span>
+                                </div>
+                                <h1 class="text-2xl font-medium">{{ property.title }}</h1>
                                 <p v-if="locationLabel" class="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
                                     <MapPin class="size-4" />
                                     {{ locationLabel }}
                                 </p>
                             </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-semibold">
-                                    {{ formatPriceCents(property.price, locale) }}
-                                    <span v-if="property.listing_type === 'rent'" class="text-base font-normal text-muted-foreground">{{
+                            <div class="flex flex-wrap items-baseline justify-end gap-x-2 gap-y-1">
+                                <span class="text-2xl font-medium">
+                                    {{ formatPriceCents(property.price, locale)
+                                    }}<span v-if="property.listing_type === 'rent'" class="text-sm font-normal text-muted-foreground">{{
                                         t('/muaj')
                                     }}</span>
-                                </p>
-                                <span v-if="property.price_negotiable" class="text-xs text-muted-foreground">{{ t('I negociueshëm') }}</span>
+                                </span>
+                                <span class="text-sm font-normal text-muted-foreground">{{ listingTypeSuffix }}</span>
+                                <span
+                                    v-if="property.price_negotiable"
+                                    class="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-normal text-muted-foreground"
+                                >
+                                    {{ t('I negociueshëm') }}
+                                </span>
                             </div>
                         </div>
 
@@ -102,7 +121,7 @@ const publishedLabel = computed(() =>
                     />
 
                     <div v-if="property.description">
-                        <h2 class="mb-2 text-lg font-semibold">{{ t('Përshkrimi') }}</h2>
+                        <h2 class="mb-2 text-lg font-medium">{{ t('Përshkrimi') }}</h2>
                         <p class="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{{ property.description }}</p>
                     </div>
 
@@ -115,7 +134,7 @@ const publishedLabel = computed(() =>
                     <PropertyPriceHistoryChart v-if="property.price_history.length >= 2" :history="property.price_history" />
 
                     <div v-if="property.location">
-                        <h2 class="mb-4 text-lg font-semibold">{{ t('Lokacioni') }}</h2>
+                        <h2 class="mb-4 text-lg font-medium">{{ t('Lokacioni') }}</h2>
                         <PropertyLocationMap :lat="property.location.lat" :lng="property.location.lng" />
                     </div>
                 </div>

@@ -75,7 +75,7 @@ const formatDate = (value: string | null) =>
                         <component :is="card.icon" class="size-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-semibold">{{ card.value }}</div>
+                        <div class="text-2xl font-medium">{{ card.value }}</div>
                     </CardContent>
                 </Card>
             </div>

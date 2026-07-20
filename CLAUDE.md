@@ -84,6 +84,11 @@ In tests, always `Storage::fake('supabase')`.
 - Pest v3. Run with `php artisan test --compact`, filter with `--filter=`.
 - Feature tests over unit tests; use model factories and their custom states.
 - `RefreshDatabase` is applied to everything in `tests/Feature` via `tests/Pest.php`.
+- Never run automated browser tests (Playwright, Puppeteer, headless Chrome, or any other
+  browser automation) for visual or interactive verification. They hang and waste the
+  session. Pest feature tests cover backend logic; the user verifies all visual and
+  interactive behaviour manually in the browser. When a check genuinely needs a real
+  browser, hand it to the user with clear steps instead of automating it.
 
 ## Workflow
 

@@ -232,7 +232,7 @@ const rangeInputClass =
 </script>
 
 <template>
-    <div class="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm">
+    <div class="flex flex-col gap-3 rounded-xl border bg-card p-4">
         <!-- Row 1: listing type + exclusive -->
         <div class="flex flex-wrap items-center gap-2">
             <div class="inline-flex rounded-lg border bg-muted/40 p-1">

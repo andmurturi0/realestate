@@ -47,7 +47,7 @@ onMounted(async () => {
 
     <PublicLayout>
         <div class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-            <h1 class="mb-4 text-2xl font-semibold">{{ t('Të preferuarat') }}</h1>
+            <h1 class="mb-4 text-2xl font-medium">{{ t('Të preferuarat') }}</h1>
 
             <div v-if="loading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <PropertyCardSkeleton v-for="index in Math.min(favourites.ids.value.length || 3, 6)" :key="index" />

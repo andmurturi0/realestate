@@ -36,7 +36,7 @@ const hasAnything = computed(
 
 <template>
     <div v-if="hasAnything">
-        <h2 class="mb-4 text-lg font-semibold">{{ t('Karakteristikat dhe informacione për pronën') }}</h2>
+        <h2 class="mb-4 text-lg font-medium">{{ t('Karakteristikat dhe informacione për pronën') }}</h2>
 
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div v-for="(items, group) in features" :key="group">

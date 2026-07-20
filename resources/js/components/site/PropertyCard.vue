@@ -30,10 +30,14 @@ const locationLabel = computed(() => {
 const surfaceLabel = computed(() =>
     props.property.surface_m2 == null ? null : `${new Intl.NumberFormat(intlLocales[locale.value]).format(props.property.surface_m2)} m²`,
 );
+
+const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale' ? t('për shitje') : t('me qira')));
 </script>
 
 <template>
-    <article class="group overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
+    <article
+        class="group overflow-hidden rounded-xl border bg-card transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-hover"
+    >
         <Link :href="publicRoute('properties.show', property.slug)" class="relative block aspect-[4/3] overflow-hidden bg-muted">
             <img
                 v-if="imageSrc"
@@ -46,24 +50,23 @@ const surfaceLabel = computed(() =>
                 <ImageOff class="size-8" />
             </div>
 
-            <span
-                v-if="property.is_exclusive"
-                class="absolute left-3 top-3 rounded-md bg-amber-500 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-white"
-            >
-                {{ t('Ekskluzive') }}
-            </span>
-            <span
-                class="absolute right-3 top-3 rounded-md px-2 py-0.5 text-xs font-semibold text-white"
-                :class="property.listing_type === 'sale' ? 'bg-primary' : 'bg-sky-600'"
-            >
-                {{ property.listing_type === 'sale' ? t('Në shitje') : t('Me qira') }}
-            </span>
+            <div class="absolute left-3 top-3 flex items-center gap-1.5">
+                <span v-if="property.is_exclusive" class="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-medium text-white">
+                    {{ t('Ekskluzive') }}
+                </span>
+                <span
+                    class="rounded-full px-2.5 py-1 text-xs font-medium text-white"
+                    :class="property.listing_type === 'sale' ? 'bg-green-600' : 'bg-blue-600'"
+                >
+                    {{ property.listing_type === 'sale' ? t('Në shitje') : t('Me qira') }}
+                </span>
+            </div>
 
             <button
                 type="button"
                 :aria-label="isFavourite ? t('Hiq nga të preferuarat') : t('Shto te të preferuarat')"
                 :aria-pressed="isFavourite"
-                class="absolute bottom-3 right-3 rounded-full bg-white/90 p-2 shadow-sm transition-colors dark:bg-gray-900/80"
+                class="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow-sm transition-colors dark:bg-gray-900/80"
                 :class="isFavourite ? 'text-red-500' : 'text-gray-700 hover:text-red-500 dark:text-gray-200'"
                 @click.stop.prevent="favourites.toggle(property.id)"
             >
@@ -72,15 +75,21 @@ const surfaceLabel = computed(() =>
         </Link>
 
         <div class="flex flex-col gap-1.5 p-4">
-            <div class="flex items-baseline justify-between gap-2">
-                <p class="text-lg font-semibold">
-                    {{ formatPriceCents(property.price, locale) }}
-                    <span v-if="property.listing_type === 'rent'" class="text-sm font-normal text-muted-foreground">{{ t('/muaj') }}</span>
-                </p>
-                <span v-if="property.price_negotiable" class="shrink-0 text-xs text-muted-foreground">{{ t('I negociueshëm') }}</span>
+            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <span class="text-xl font-medium">
+                    {{ formatPriceCents(property.price, locale)
+                    }}<span v-if="property.listing_type === 'rent'" class="text-sm font-normal text-muted-foreground">{{ t('/muaj') }}</span>
+                </span>
+                <span class="text-sm font-normal text-muted-foreground">{{ listingTypeSuffix }}</span>
+                <span
+                    v-if="property.price_negotiable"
+                    class="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-normal text-muted-foreground"
+                >
+                    {{ t('I negociueshëm') }}
+                </span>
             </div>
 
-            <h3 class="line-clamp-2 font-medium leading-snug">
+            <h3 class="line-clamp-2 font-normal leading-snug text-foreground">
                 <Link :href="publicRoute('properties.show', property.slug)" class="hover:underline">{{ property.title }}</Link>
             </h3>
 
@@ -89,7 +98,7 @@ const surfaceLabel = computed(() =>
                 {{ locationLabel }}
             </p>
 
-            <div class="mt-2 flex items-center justify-between gap-2 border-t pt-3 text-sm text-muted-foreground">
+            <div class="mt-1.5 flex items-center justify-between gap-2 border-t pt-2.5 text-sm text-muted-foreground">
                 <div class="flex items-center gap-3">
                     <span v-if="property.bedrooms != null" class="flex items-center gap-1" :title="t('Dhoma gjumi')">
                         <BedDouble class="size-4" />

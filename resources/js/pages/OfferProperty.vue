@@ -38,14 +38,14 @@ const steps = computed(() => [
     <PublicLayout>
         <div class="mx-auto w-full max-w-2xl px-4 py-10">
             <div class="mb-6 text-center">
-                <h1 class="text-2xl font-semibold">{{ t('Ofertoni Pronën Tuaj') }}</h1>
+                <h1 class="text-2xl font-medium">{{ t('Ofertoni Pronën Tuaj') }}</h1>
                 <p class="mt-2 text-muted-foreground">{{ t("Plotësoni formularin më poshtë dhe një agjent do t'ju kontaktojë së shpejti.") }}</p>
             </div>
 
             <OfferForm :municipalities="municipalities" />
 
             <div class="mt-8 rounded-xl border bg-card p-6">
-                <h2 class="mb-4 font-semibold">{{ t('Çfarë ndodh pas dërgimit të formularit?') }}</h2>
+                <h2 class="mb-4 font-medium">{{ t('Çfarë ndodh pas dërgimit të formularit?') }}</h2>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div v-for="step in steps" :key="step.title" class="flex flex-col items-start gap-2">
                         <div class="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">

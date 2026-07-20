@@ -74,6 +74,12 @@ const intlLocales: Record<Locale, string> = {
     de: 'de-DE',
 };
 
+/**
+ * Kosovo/European convention puts the currency sign after the amount
+ * ("890 €", not "€890") — Intl's `style: 'currency'` gets this right for
+ * sq-AL/de-DE but puts the symbol first for en-IE, so the amount is formatted
+ * as a plain decimal (locale-correct grouping) and " €" appended manually.
+ */
 export function formatPriceCents(cents: number | null | undefined, locale: Locale = 'sq'): string {
     if (cents == null) {
         return '—';
@@ -81,10 +87,10 @@ export function formatPriceCents(cents: number | null | undefined, locale: Local
 
     const euros = cents / 100;
 
-    return new Intl.NumberFormat(intlLocales[locale], {
-        style: 'currency',
-        currency: 'EUR',
+    const amount = new Intl.NumberFormat(intlLocales[locale], {
         minimumFractionDigits: 0,
         maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
     }).format(euros);
+
+    return `${amount} €`;
 }

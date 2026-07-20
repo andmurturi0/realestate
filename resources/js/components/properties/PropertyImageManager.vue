@@ -198,7 +198,7 @@ const destroy = (image: PropertyImageItem) => {
 
                         <span
                             v-if="element.is_primary"
-                            class="absolute left-1.5 top-1.5 rounded bg-amber-400/95 px-1.5 py-0.5 text-[10px] font-semibold text-amber-950"
+                            class="absolute left-1.5 top-1.5 rounded-full bg-amber-400/95 px-2 py-0.5 text-[10px] font-medium text-amber-950"
                         >
                             Kryesore
                         </span>

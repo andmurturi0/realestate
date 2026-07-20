@@ -114,7 +114,7 @@ async function submit() {
         </div>
 
         <form v-else class="space-y-4" @submit.prevent="submit">
-            <h2 class="text-lg font-semibold">{{ t('Krijoni kërkesën tuaj') }}</h2>
+            <h2 class="text-lg font-medium">{{ t('Krijoni kërkesën tuaj') }}</h2>
 
             <!-- Honeypot: off-screen, never display:none (some bots skip that check). -->
             <div class="absolute -left-[9999px]" aria-hidden="true">

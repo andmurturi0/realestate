@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
 import LanguageSwitcher from '@/components/site/LanguageSwitcher.vue';
 import { useBrandColor } from '@/composables/useBrandColor';
 import { useFavourites } from '@/composables/useFavourites';
@@ -52,11 +53,11 @@ const socialLinks = computed(() =>
 <template>
     <div class="flex min-h-screen flex-col bg-background text-foreground">
         <header class="border-b">
-            <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+            <div class="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
                 <div class="flex items-center gap-8">
                     <Link href="/" class="flex items-center gap-2">
                         <img v-if="settings.logo_url" :src="settings.logo_url" :alt="settings.agency_name ?? ''" class="h-9 w-auto object-contain" />
-                        <span class="text-lg font-semibold">{{ settings.agency_name }}</span>
+                        <span class="text-lg font-medium">{{ settings.agency_name }}</span>
                     </Link>
                     <nav class="hidden items-center gap-6 text-sm sm:flex">
                         <Link
@@ -75,6 +76,7 @@ const socialLinks = computed(() =>
                         {{ settings.phone }}
                     </a>
                     <LanguageSwitcher />
+                    <AppearanceToggle :labels="{ light: t('E çelët'), dark: t('E errët'), system: t('Sistemi'), toggle: t('Ndrysho pamjen') }" />
                     <Link
                         :href="publicRoute('favorites.index')"
                         class="relative flex items-center hover:text-foreground"
@@ -83,13 +85,13 @@ const socialLinks = computed(() =>
                         <Heart class="size-5" />
                         <span
                             v-if="favourites.count.value > 0"
-                            class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground"
+                            class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground"
                         >
                             {{ favourites.count.value }}
                         </span>
                     </Link>
                     <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">
-                        Paneli
+                        {{ t('Paneli') }}
                     </Link>
                     <Link v-else :href="route('login')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">{{ t('Kyçu') }}</Link>
                 </div>
@@ -101,7 +103,9 @@ const socialLinks = computed(() =>
         </main>
 
         <footer class="border-t">
-            <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row">
+            <div
+                class="mx-auto flex max-w-screen-2xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row"
+            >
                 <span>© {{ new Date().getFullYear() }} {{ settings.agency_name }}</span>
                 <div v-if="socialLinks.length" class="flex gap-4">
                     <a

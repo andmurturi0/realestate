@@ -13,6 +13,6 @@ const settings = computed(() => usePage<SharedData>().props.settings);
         <Building2 class="size-5" />
     </div>
     <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="mb-0.5 truncate font-semibold leading-none">{{ settings.agency_name }}</span>
+        <span class="mb-0.5 truncate font-medium leading-none">{{ settings.agency_name }}</span>
     </div>
 </template>

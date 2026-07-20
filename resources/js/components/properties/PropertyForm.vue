@@ -412,7 +412,7 @@ defineExpose({ form });
             </CardHeader>
             <CardContent class="grid gap-6 sm:grid-cols-2">
                 <div v-for="(groupFeatures, group) in features" :key="group" class="grid content-start gap-3">
-                    <h3 class="text-sm font-semibold">{{ featureGroupLabels[group] ?? group }}</h3>
+                    <h3 class="text-sm font-medium">{{ featureGroupLabels[group] ?? group }}</h3>
                     <label v-for="feature in groupFeatures" :key="feature.id" class="flex items-center gap-2 text-sm">
                         <Checkbox :checked="form.features.includes(feature.id)" @update:checked="(value) => toggleFeature(feature.id, value)" />
                         {{ feature.name }}

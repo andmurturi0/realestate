@@ -24,6 +24,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
             'setlocale' => SetLocale::class,
         ]);
+
+        // The appearance cookie is written directly by useAppearance.ts (plain
+        // document.cookie, same convention as the locale switcher) so app.blade.php
+        // can read it server-side on first paint and apply the `dark` class before
+        // Vue mounts. EncryptCookies can't decrypt a value JS wrote in plain text —
+        // it would silently null it out — so this cookie must be excluded.
+        $middleware->encryptCookies(except: ['appearance']);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

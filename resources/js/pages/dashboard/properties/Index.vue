@@ -146,7 +146,7 @@ const selectClass =
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl font-semibold">Pronat</h1>
+                    <h1 class="text-xl font-medium">Pronat</h1>
                     <p class="mt-1 text-sm text-muted-foreground">{{ properties.total }} prona gjithsej</p>
                 </div>
                 <Button as-child>

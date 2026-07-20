@@ -96,7 +96,7 @@ function formatPercent(value: number): string {
 
 <template>
     <div class="rounded-xl border bg-card p-4">
-        <h2 class="font-semibold">{{ t('Kalkulatori i Financimit') }}</h2>
+        <h2 class="font-medium">{{ t('Kalkulatori i Financimit') }}</h2>
 
         <div class="mt-4 space-y-4">
             <NumberStepper
@@ -148,7 +148,7 @@ function formatPercent(value: number): string {
             </div>
             <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">{{ t('Kësti mujor') }}</span>
-                <span class="text-base font-semibold">
+                <span class="text-base font-medium">
                     {{ formatEuro(monthlyInstalment) }}<span class="text-xs font-normal text-muted-foreground">{{ t('/muaj') }}</span>
                 </span>
             </div>

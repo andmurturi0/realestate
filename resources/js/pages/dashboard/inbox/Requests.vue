@@ -111,7 +111,7 @@ const surfaceUnitLabel: Record<'m2' | 'ari' | 'ha', string> = { m2: 'm²', ari: 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div>
-                <h1 class="text-xl font-semibold">Kërkesat</h1>
+                <h1 class="text-xl font-medium">Kërkesat</h1>
                 <p class="mt-1 text-sm text-muted-foreground">{{ requests.total }} kërkesa gjithsej</p>
             </div>
 
@@ -163,7 +163,7 @@ const surfaceUnitLabel: Record<'m2' | 'ari' | 'ha', string> = { m2: 'm²', ari: 
                                 </div>
                             </div>
 
-                            <h3 class="mb-2 text-sm font-semibold">Prona përputhëse</h3>
+                            <h3 class="mb-2 text-sm font-medium">Prona përputhëse</h3>
 
                             <div
                                 v-if="selected.matches.length === 0"

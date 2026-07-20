@@ -91,8 +91,8 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
     <Head :title="t('Pronat')" />
 
     <PublicLayout>
-        <div class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-            <h1 class="mb-4 text-2xl font-semibold">{{ t('Pronat') }}</h1>
+        <div class="mx-auto w-full max-w-screen-2xl flex-1 px-4 py-8 md:py-12">
+            <h1 class="mb-6 text-display-lg font-medium">{{ t('Pronat') }}</h1>
 
             <FilterBar
                 v-model:filters="filters"
@@ -103,7 +103,7 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
                 @clear="clearFilters"
             />
 
-            <div class="mt-4 flex items-center justify-between gap-3">
+            <div class="mt-6 flex items-center justify-between gap-3">
                 <p class="text-sm text-muted-foreground" aria-live="polite">{{ resultCountLabel }}</p>
                 <label class="flex items-center gap-2 text-sm text-muted-foreground">
                     {{ t('Rendit:') }}
@@ -118,16 +118,16 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
             </div>
 
             <!-- Loading: skeleton cards, never a spinner -->
-            <div v-if="loading" class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-if="loading" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4">
                 <PropertyCardSkeleton v-for="index in skeletonCount" :key="index" />
             </div>
 
-            <div v-else-if="properties.data.length" class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-else-if="properties.data.length" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4">
                 <PropertyCard v-for="property in properties.data" :key="property.id" :property="property" />
             </div>
 
             <!-- Empty state -->
-            <div v-else class="mt-4 flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-20 text-center">
+            <div v-else class="mt-6 flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-24 text-center">
                 <div class="rounded-full bg-muted p-4">
                     <SearchX class="size-8 text-muted-foreground" />
                 </div>
@@ -145,7 +145,7 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
                 </button>
             </div>
 
-            <div class="mt-8">
+            <div class="mt-10">
                 <PaginationLinks :links="properties.links" @navigate="goToPage" />
             </div>
         </div>

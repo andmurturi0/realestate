@@ -17,7 +17,7 @@ const breadcrumbs = [{ title: props.title, href: '#' }];
         <div class="flex flex-1 items-center justify-center p-8">
             <div class="text-center">
                 <Construction class="mx-auto size-10 text-muted-foreground" />
-                <h1 class="mt-4 text-xl font-semibold">{{ title }}</h1>
+                <h1 class="mt-4 text-xl font-medium">{{ title }}</h1>
                 <p class="mt-2 text-sm text-muted-foreground">Kjo faqe ndërtohet në një fazë të mëvonshme.</p>
             </div>
         </div>

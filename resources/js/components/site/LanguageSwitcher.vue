@@ -54,7 +54,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
             :aria-expanded="open"
             @click="open = !open"
         >
-            <span class="font-semibold tracking-wide">{{ localeMeta[page.props.locale].code }}</span>
+            <span class="font-medium tracking-wide">{{ localeMeta[page.props.locale].code }}</span>
             <span class="hidden sm:inline">{{ localeMeta[page.props.locale].name }}</span>
             <ChevronDown class="size-3.5" />
         </button>
@@ -67,7 +67,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
                 :class="locale === page.props.locale ? 'font-medium text-foreground' : 'text-muted-foreground'"
                 @click="switchLocale(locale)"
             >
-                <span class="w-6 font-semibold tracking-wide">{{ localeMeta[locale].code }}</span>
+                <span class="w-6 font-medium tracking-wide">{{ localeMeta[locale].code }}</span>
                 <span>{{ localeMeta[locale].name }}</span>
             </button>
         </div>

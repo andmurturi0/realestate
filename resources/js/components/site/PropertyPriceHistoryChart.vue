@@ -32,7 +32,7 @@ const options = computed(() => ({
 
 <template>
     <div v-if="history.length >= 2">
-        <h2 class="mb-4 text-lg font-semibold">{{ t('Historiku i çmimit') }}</h2>
+        <h2 class="mb-4 text-lg font-medium">{{ t('Historiku i çmimit') }}</h2>
         <VueApexCharts type="area" height="240" :options="options" :series="series" />
     </div>
 </template>

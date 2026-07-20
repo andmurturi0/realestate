@@ -10,9 +10,34 @@ export default {
         './resources/js/**/*.{vue,js,ts,jsx,tsx}',
     ],
     theme: {
+        // Faza 9: two weights only, site-wide. This is a top-level `fontWeight`
+        // key (not under `extend`) so it REPLACES Tailwind's default scale
+        // instead of merging with it — font-bold/font-semibold/etc. no longer
+        // generate any CSS. Every page was migrated to font-normal/font-medium
+        // before this was locked in; an arbitrary font-[700] still works where
+        // a one-off exception is deliberate (see RichTextEditor.vue's Bold button).
+        fontWeight: {
+            normal: '400',
+            medium: '500',
+        },
         extend: {
             fontFamily: {
                 sans: ['Instrument Sans', ...defaultTheme.fontFamily.sans],
+            },
+            // Faza 9 direction: price as the hero element. Named sizes so every
+            // page reaches for the same hero-price treatment instead of picking
+            // one-off text-3xl/text-4xl values per component.
+            fontSize: {
+                display: ['1.75rem', { lineHeight: '1.15', letterSpacing: '-0.01em' }],
+                'display-lg': ['2.5rem', { lineHeight: '1.1', letterSpacing: '-0.015em' }],
+            },
+            // Restrained, non-blurry shadows — the default Tailwind shadow-md/lg/xl
+            // are too heavy for "minimal decoration". Use these instead of the
+            // built-in shadow-* scale everywhere in Faza 9 page work.
+            boxShadow: {
+                hairline: '0 0 0 1px hsl(var(--border))',
+                card: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 0 0 1px hsl(var(--border))',
+                hover: '0 4px 12px -2px rgb(0 0 0 / 0.08), 0 0 0 1px hsl(var(--border))',
             },
             borderRadius: {
                 lg: 'var(--radius)',

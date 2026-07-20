@@ -34,7 +34,7 @@ const flashSuccess = computed(() => usePage<SharedData>().props.flash.success);
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-6 p-4">
             <div>
-                <h1 class="text-xl font-semibold">Cilësimet e agjencisë</h1>
+                <h1 class="text-xl font-medium">Cilësimet e agjencisë</h1>
                 <p class="mt-1 text-sm text-muted-foreground">Brendi, kontakti dhe përmbajtja e faqes publike.</p>
             </div>
 
