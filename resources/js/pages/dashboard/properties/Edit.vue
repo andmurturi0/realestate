@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PropertyForm, { type FeatureOption, type MunicipalityOption, type PropertyFormPayload } from '@/components/properties/PropertyForm.vue';
+import PropertyImageManager, { type PropertyImageItem } from '@/components/properties/PropertyImageManager.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
@@ -10,6 +11,7 @@ const props = defineProps<{
     municipalities: MunicipalityOption[];
     features: Record<string, FeatureOption[]>;
     agents: { id: number; name: string }[] | null;
+    images: PropertyImageItem[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -40,6 +42,8 @@ const submit = (form: { put: (url: string, options?: { preserveScroll: boolean }
             >
                 {{ flashSuccess }}
             </div>
+
+            <PropertyImageManager :property-id="property.id" :images="images" />
 
             <PropertyForm :municipalities="municipalities" :features="features" :agents="agents" :property="property" @submit="submit">
                 <template #submit-label>Ruaj ndryshimet</template>

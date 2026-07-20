@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\PendingImageController;
 use App\Http\Controllers\Dashboard\PropertyController;
+use App\Http\Controllers\Dashboard\PropertyImageController;
 use App\Http\Controllers\Dashboard\SettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,6 +27,23 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
         ->name('dashboard.properties.update');
     Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])
         ->name('dashboard.properties.destroy');
+
+    Route::post('/properties/{property}/images', [PropertyImageController::class, 'store'])
+        ->name('dashboard.properties.images.store');
+    Route::put('/properties/{property}/images/order', [PropertyImageController::class, 'reorder'])
+        ->name('dashboard.properties.images.reorder');
+    Route::put('/properties/{property}/images/{image}/primary', [PropertyImageController::class, 'makePrimary'])
+        ->scopeBindings()
+        ->name('dashboard.properties.images.primary');
+    Route::delete('/properties/{property}/images/{image}', [PropertyImageController::class, 'destroy'])
+        ->scopeBindings()
+        ->name('dashboard.properties.images.destroy');
+
+    // Create-form uploads: the property does not exist yet (FAZAT.md 4B).
+    Route::post('/pending-images', [PendingImageController::class, 'store'])
+        ->name('dashboard.pending-images.store');
+    Route::delete('/pending-images/{id}', [PendingImageController::class, 'destroy'])
+        ->name('dashboard.pending-images.destroy');
 
     // Placeholder shells — the real pages arrive in later phases (FAZAT.md).
     Route::inertia('/inbox/messages', 'dashboard/Placeholder', ['title' => 'Mesazhet'])

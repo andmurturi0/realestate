@@ -13,6 +13,8 @@ class PropertyService
     /** @var list<string> */
     private const SORTABLE_COLUMNS = ['reference_code', 'price', 'views_count', 'status', 'created_at'];
 
+    public function __construct(private readonly ImageService $imageService) {}
+
     /**
      * @param  array<string, mixed>  $data
      * @param  list<int>  $featureIds
@@ -30,6 +32,9 @@ class PropertyService
         return DB::transaction(function () use ($data, $featureIds): Property {
             $property = Property::create($data);
             $property->features()->sync($featureIds);
+
+            // Images uploaded on the create form, before the property existed.
+            $this->imageService->attachPending($property);
 
             return $property;
         });

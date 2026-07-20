@@ -11,12 +11,11 @@ use App\Models\Location;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\User;
+use App\Services\ImageService;
 use App\Services\PropertyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -46,7 +45,7 @@ class PropertyController extends Controller
                 'agent' => $property->agent?->name,
                 'status' => $property->status->value,
                 'views_count' => $property->views_count,
-                'thumbnail_url' => $this->thumbnailUrl($property->primaryImage),
+                'thumbnail_url' => $property->primaryImage?->thumbnail_url,
                 'can' => [
                     'update' => $user->can('update', $property),
                     'delete' => $user->can('delete', $property),
@@ -65,6 +64,13 @@ class PropertyController extends Controller
         Gate::authorize('create', Property::class);
 
         return Inertia::render('dashboard/properties/Create', [
+            'pendingImages' => collect($request->session()->get(ImageService::PENDING_SESSION_KEY, []))
+                ->map(fn (array $entry): array => [
+                    'id' => $entry['id'],
+                    'url' => PropertyImage::publicUrl($entry['path']),
+                    'thumbnail_url' => PropertyImage::publicUrl($entry['thumbnail_path']),
+                ])
+                ->values(),
             ...$this->formOptions($request->user()),
         ]);
     }
@@ -85,7 +91,7 @@ class PropertyController extends Controller
     {
         Gate::authorize('update', $property);
 
-        $property->load(['features:id', 'location']);
+        $property->load(['features:id', 'location', 'images']);
 
         return Inertia::render('dashboard/properties/Edit', [
             'property' => [
@@ -121,6 +127,12 @@ class PropertyController extends Controller
                 'meta_description' => $property->getTranslations('meta_description'),
                 'features' => $property->features->pluck('id'),
             ],
+            'images' => $property->images->map(fn (PropertyImage $image): array => [
+                'id' => $image->id,
+                'url' => $image->url,
+                'thumbnail_url' => $image->thumbnail_url,
+                'is_primary' => $image->is_primary,
+            ])->values(),
             ...$this->formOptions($request->user()),
         ]);
     }
@@ -206,18 +218,5 @@ class PropertyController extends Controller
             ->get(['id', 'name'])
             ->map(fn (User $agent): array => ['id' => $agent->id, 'name' => $agent->name])
             ->all();
-    }
-
-    private function thumbnailUrl(?PropertyImage $image): ?string
-    {
-        $path = $image?->thumbnail_path ?? $image?->path;
-
-        if ($path === null) {
-            return null;
-        }
-
-        return Str::startsWith($path, ['http://', 'https://'])
-            ? $path
-            : Storage::disk('supabase')->url($path);
     }
 }
