@@ -7,6 +7,8 @@ use App\Enums\DocumentType;
 use App\Enums\ListingType;
 use App\Enums\PropertyCategory;
 use App\Enums\PropertyStatus;
+use Database\Factories\PropertyFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +21,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Property extends Model
 {
-    /** @use HasFactory<\Database\Factories\PropertyFactory> */
+    /** @use HasFactory<PropertyFactory> */
     use HasFactory, HasTranslations, SoftDeletes;
 
     /** @var list<string> */
@@ -127,6 +129,17 @@ class Property extends Model
         }
 
         return $slug;
+    }
+
+    /**
+     * The only properties the public site may ever see (CLAUDE.md rule).
+     *
+     * @param  Builder<Property>  $query
+     * @return Builder<Property>
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', PropertyStatus::Published);
     }
 
     /**
