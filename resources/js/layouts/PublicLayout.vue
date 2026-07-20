@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { useBrandColor } from '@/composables/useBrandColor';
+import { useFavourites } from '@/composables/useFavourites';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { Heart } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const page = usePage<SharedData>();
 const settings = computed(() => page.props.settings);
 
 useBrandColor();
+const favourites = useFavourites();
 
 const navLinks = computed(() => [
     { label: 'Ballina', href: route('home'), active: page.url === '/' },
@@ -50,6 +53,15 @@ const socialLinks = computed(() =>
                     <a v-if="settings.phone" :href="`tel:${settings.phone}`" class="hidden hover:text-foreground sm:inline">
                         {{ settings.phone }}
                     </a>
+                    <Link :href="route('favorites.index')" class="relative flex items-center hover:text-foreground" aria-label="Të preferuarat">
+                        <Heart class="size-5" />
+                        <span
+                            v-if="favourites.count.value > 0"
+                            class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground"
+                        >
+                            {{ favourites.count.value }}
+                        </span>
+                    </Link>
                     <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">
                         Dashboard
                     </Link>

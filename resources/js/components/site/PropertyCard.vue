@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFavourites } from '@/composables/useFavourites';
 import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
 import { Bath, BedDouble, Heart, ImageOff, MapPin, Ruler } from 'lucide-vue-next';
@@ -7,6 +8,9 @@ import { computed } from 'vue';
 const props = defineProps<{
     property: PropertyCardData;
 }>();
+
+const favourites = useFavourites();
+const isFavourite = computed(() => favourites.has(props.property.id));
 
 const imageSrc = computed(() => props.property.thumbnail_url ?? props.property.image_url);
 
@@ -49,13 +53,15 @@ const surfaceLabel = computed(() =>
                 {{ property.listing_type === 'sale' ? 'Në shitje' : 'Me qira' }}
             </span>
 
-            <!-- Favourite heart: non-functional placeholder — favourites land in Faza 5, pjesa 2. -->
             <button
                 type="button"
-                aria-label="Shto te të preferuarat"
-                class="absolute bottom-3 right-3 rounded-full bg-white/90 p-2 text-gray-700 shadow-sm transition-colors hover:text-red-500 dark:bg-gray-900/80 dark:text-gray-200"
+                :aria-label="isFavourite ? 'Hiq nga të preferuarat' : 'Shto te të preferuarat'"
+                :aria-pressed="isFavourite"
+                class="absolute bottom-3 right-3 rounded-full bg-white/90 p-2 shadow-sm transition-colors dark:bg-gray-900/80"
+                :class="isFavourite ? 'text-red-500' : 'text-gray-700 hover:text-red-500 dark:text-gray-200'"
+                @click.stop.prevent="favourites.toggle(property.id)"
             >
-                <Heart class="size-4" />
+                <Heart class="size-4" :class="{ 'fill-current': isFavourite }" />
             </button>
         </div>
 

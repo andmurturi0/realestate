@@ -6,6 +6,7 @@ use App\Enums\FeatureGroup;
 use App\Enums\LocationType;
 use App\Filters\PropertyFilter;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PropertyCardResource;
 use App\Models\Feature;
 use App\Models\Location;
 use App\Models\Property;
@@ -38,7 +39,7 @@ class PropertyController extends Controller
             )
             ->paginate(12)
             ->withQueryString()
-            ->through(fn (Property $property): array => $this->card($property));
+            ->through(fn (Property $property): array => (new PropertyCardResource($property))->resolve());
 
         return Inertia::render('properties/Index', [
             'properties' => $properties,
@@ -49,31 +50,6 @@ class PropertyController extends Controller
             'locations' => fn (): array => $this->locationOptions(),
             'furnishingOptions' => fn (): array => $this->furnishingOptions(),
         ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function card(Property $property): array
-    {
-        return [
-            'id' => $property->id,
-            'slug' => $property->slug,
-            'reference_code' => $property->reference_code,
-            'title' => $property->getTranslation('title', 'sq'),
-            'listing_type' => $property->listing_type->value,
-            'category' => $property->category->value,
-            'is_exclusive' => $property->is_exclusive,
-            'price' => $property->price,
-            'price_negotiable' => $property->price_negotiable,
-            'surface_m2' => $property->surface_m2,
-            'bedrooms' => $property->bedrooms,
-            'bathrooms' => $property->bathrooms,
-            'location' => $property->location?->getTranslation('name', 'sq'),
-            'municipality' => $property->location?->parent?->getTranslation('name', 'sq'),
-            'image_url' => $property->primaryImage?->url,
-            'thumbnail_url' => $property->primaryImage?->thumbnail_url,
-        ];
     }
 
     /**

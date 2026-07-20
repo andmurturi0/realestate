@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\PendingImageController;
 use App\Http\Controllers\Dashboard\PropertyController;
 use App\Http\Controllers\Dashboard\PropertyImageController;
 use App\Http\Controllers\Dashboard\SettingsController;
+use App\Http\Controllers\Site\FavoriteController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,6 +15,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/properties', [SitePropertyController::class, 'index'])->name('properties.index');
+
+Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+Route::get('/favorites/properties', [FavoriteController::class, 'properties'])->name('favorites.properties');
 
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
