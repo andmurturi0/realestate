@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { categoryDetailFields, type DetailField, type PropertyCategory } from '@/lib/property';
+import { useTranslations } from '@/lib/trans';
 import { Bath, BedDouble, Building2, Calendar, Car, Layers, Ruler, Trees } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -15,6 +16,10 @@ const props = defineProps<{
     parkingSpaces: number | null;
 }>();
 
+const { t, locale } = useTranslations();
+
+const intlLocales = { sq: 'sq-AL', en: 'en-IE', de: 'de-DE' } as const;
+
 interface Spec {
     icon: typeof Ruler;
     label: string;
@@ -22,13 +27,17 @@ interface Spec {
 }
 
 const fieldMeta: Record<DetailField, { icon: typeof Ruler; label: string; format: (v: number) => string }> = {
-    land_surface_m2: { icon: Trees, label: 'Sipërfaqja e tokës', format: (v) => `${new Intl.NumberFormat('sq-AL').format(v)} m²` },
-    bedrooms: { icon: BedDouble, label: 'Dhoma gjumi', format: (v) => String(v) },
-    bathrooms: { icon: Bath, label: 'Banjo', format: (v) => String(v) },
-    floor: { icon: Layers, label: 'Kati', format: (v) => String(v) },
-    total_floors: { icon: Building2, label: 'Katet gjithsej', format: (v) => String(v) },
-    year_built: { icon: Calendar, label: 'Viti i ndërtimit', format: (v) => String(v) },
-    parking_spaces: { icon: Car, label: 'Vende parkimi', format: (v) => String(v) },
+    land_surface_m2: {
+        icon: Trees,
+        label: t('Sipërfaqja e tokës'),
+        format: (v) => `${new Intl.NumberFormat(intlLocales[locale]).format(v)} m²`,
+    },
+    bedrooms: { icon: BedDouble, label: t('Dhoma gjumi'), format: (v) => String(v) },
+    bathrooms: { icon: Bath, label: t('Banjo'), format: (v) => String(v) },
+    floor: { icon: Layers, label: t('Kati'), format: (v) => String(v) },
+    total_floors: { icon: Building2, label: t('Katet gjithsej'), format: (v) => String(v) },
+    year_built: { icon: Calendar, label: t('Viti i ndërtimit'), format: (v) => String(v) },
+    parking_spaces: { icon: Car, label: t('Vende parkimi'), format: (v) => String(v) },
 };
 
 const valuesByField: Record<DetailField, number | null> = {
@@ -59,8 +68,8 @@ const specs = computed<Spec[]>(() => {
     if (props.surfaceM2 != null) {
         result.push({
             icon: Ruler,
-            label: 'Sipërfaqja',
-            value: `${new Intl.NumberFormat('sq-AL').format(props.surfaceM2)} m²`,
+            label: t('Sipërfaqja'),
+            value: `${new Intl.NumberFormat(intlLocales[locale]).format(props.surfaceM2)} m²`,
         });
     }
 

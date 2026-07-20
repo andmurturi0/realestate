@@ -13,31 +13,50 @@ use App\Http\Controllers\Site\FavoriteController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
 use App\Http\Controllers\Site\PropertyOfferController;
 use App\Http\Controllers\Site\PropertyRequestController;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+// The public "pages" — every one of these is mirrored below under /en and
+// /de. sq stays unprefixed (FAZAT.md Faza 8), so this closure is registered
+// twice: once as-is for sq, once inside a {locale} prefix + "locale." name
+// prefix for en/de. Keep this closure to GET page routes only — form/action
+// routes (contact, offer, request) don't need a locale-prefixed URL.
+$publicPages = function () {
+    Route::get('/', function () {
+        return Inertia::render('Welcome');
+    })->name('home');
 
-Route::get('/properties', [SitePropertyController::class, 'index'])->name('properties.index');
-Route::get('/properties/{property:slug}', [SitePropertyController::class, 'show'])->name('properties.show');
-Route::post('/properties/{property:slug}/contact', [ContactMessageController::class, 'store'])
-    ->middleware('throttle:contact')
-    ->name('properties.contact');
+    Route::get('/properties', [SitePropertyController::class, 'index'])->name('properties.index');
+    Route::get('/properties/{property:slug}', [SitePropertyController::class, 'show'])->name('properties.show');
+    Route::get('/offer-property', [PropertyOfferController::class, 'create'])->name('offer-property.create');
+    Route::get('/create-request', [PropertyRequestController::class, 'create'])->name('create-request.create');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+};
 
-Route::get('/offer-property', [PropertyOfferController::class, 'create'])->name('offer-property.create');
-Route::post('/offer-property', [PropertyOfferController::class, 'store'])
-    ->middleware('throttle:offer')
-    ->name('offer-property.store');
+Route::middleware(SetLocale::class)->group(function () use ($publicPages) {
+    $publicPages();
 
-Route::get('/create-request', [PropertyRequestController::class, 'create'])->name('create-request.create');
-Route::post('/create-request', [PropertyRequestController::class, 'store'])
-    ->middleware('throttle:request')
-    ->name('create-request.store');
+    Route::post('/properties/{property:slug}/contact', [ContactMessageController::class, 'store'])
+        ->middleware('throttle:contact')
+        ->name('properties.contact');
 
-Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
-Route::get('/favorites/properties', [FavoriteController::class, 'properties'])->name('favorites.properties');
+    Route::post('/offer-property', [PropertyOfferController::class, 'store'])
+        ->middleware('throttle:offer')
+        ->name('offer-property.store');
+
+    Route::post('/create-request', [PropertyRequestController::class, 'store'])
+        ->middleware('throttle:request')
+        ->name('create-request.store');
+
+    Route::get('/favorites/properties', [FavoriteController::class, 'properties'])->name('favorites.properties');
+});
+
+Route::prefix('{locale}')
+    ->where(['locale' => 'en|de'])
+    ->middleware(SetLocale::class)
+    ->name('locale.')
+    ->group($publicPages);
 
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

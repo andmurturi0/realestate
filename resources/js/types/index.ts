@@ -66,6 +66,8 @@ export interface SharedData {
     flash: {
         success: string | null;
     };
+    locale: 'sq' | 'en' | 'de';
+    locales: ('sq' | 'en' | 'de')[];
     ziggy: {
         location: string;
         url: string;

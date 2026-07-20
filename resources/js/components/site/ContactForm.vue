@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useTranslations } from '@/lib/trans';
 import { CheckCircle2 } from 'lucide-vue-next';
 import { reactive, ref } from 'vue';
 
 const props = defineProps<{
     propertySlug: string;
 }>();
+
+const { t } = useTranslations();
 
 const form = reactive({
     full_name: '',
@@ -67,12 +70,12 @@ async function submit() {
     <div class="rounded-xl border bg-card p-4">
         <div v-if="success" class="flex flex-col items-center gap-2 py-6 text-center">
             <CheckCircle2 class="size-10 text-green-600" />
-            <p class="font-medium">Mesazhi juaj u dërgua!</p>
-            <p class="text-sm text-muted-foreground">Agjenti do t'ju kontaktojë së shpejti.</p>
+            <p class="font-medium">{{ t('Mesazhi juaj u dërgua!') }}</p>
+            <p class="text-sm text-muted-foreground">{{ t("Agjenti do t'ju kontaktojë së shpejti.") }}</p>
         </div>
 
         <form v-else class="space-y-3" @submit.prevent="submit">
-            <h2 class="font-semibold">Dërgo mesazh</h2>
+            <h2 class="font-semibold">{{ t('Dërgo mesazh') }}</h2>
 
             <!-- Honeypot: off-screen, never display:none (some bots skip that check). -->
             <div class="absolute -left-[9999px]" aria-hidden="true">
@@ -81,7 +84,7 @@ async function submit() {
             </div>
 
             <div>
-                <label for="full_name" class="mb-1 block text-sm font-medium">Emri i plotë</label>
+                <label for="full_name" class="mb-1 block text-sm font-medium">{{ t('Emri i plotë') }}</label>
                 <input
                     id="full_name"
                     v-model="form.full_name"
@@ -93,7 +96,7 @@ async function submit() {
             </div>
 
             <div>
-                <label for="phone" class="mb-1 block text-sm font-medium">Telefoni</label>
+                <label for="phone" class="mb-1 block text-sm font-medium">{{ t('Telefoni') }}</label>
                 <input
                     id="phone"
                     v-model="form.phone"
@@ -106,7 +109,7 @@ async function submit() {
             </div>
 
             <div>
-                <label for="message" class="mb-1 block text-sm font-medium">Mesazhi</label>
+                <label for="message" class="mb-1 block text-sm font-medium">{{ t('Mesazhi') }}</label>
                 <textarea
                     id="message"
                     v-model="form.message"
@@ -117,14 +120,16 @@ async function submit() {
                 <p v-if="errors.message" class="mt-1 text-xs text-destructive">{{ errors.message[0] }}</p>
             </div>
 
-            <p v-if="rateLimited" class="text-sm text-destructive">Keni arritur numrin maksimal të mesazheve. Ju lutemi provoni sërish më vonë.</p>
+            <p v-if="rateLimited" class="text-sm text-destructive">
+                {{ t('Keni arritur numrin maksimal të mesazheve. Ju lutemi provoni sërish më vonë.') }}
+            </p>
 
             <button
                 type="submit"
                 :disabled="submitting"
                 class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-                {{ submitting ? 'Duke dërguar…' : 'Dërgo mesazhin' }}
+                {{ submitting ? t('Duke dërguar…') : t('Dërgo mesazhin') }}
             </button>
         </form>
     </div>

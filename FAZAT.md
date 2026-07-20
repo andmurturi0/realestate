@@ -707,6 +707,12 @@ Audit and then fix:
 10. sitemap.xml (all locales), robots.txt, 404 and 500 pages.
 11. Ensure APP_DEBUG=false, HTTPS-only cookies, and secure session config in production.
 12. Database: verify every index in PLAN.md exists. EXPLAIN the listing query.
+13. CI: run the Pest feature suite against a real Postgres database, not just SQLite.
+    SQLite silently tolerates bogus double-quoted identifiers in a SELECT list (it falls
+    back to treating them as string literals instead of erroring) — a column-vs-relation
+    typo like `'property:id,slug,primaryImage'` (primaryImage is a hasOne, not a column)
+    passes every SQLite test and only breaks on Postgres in production. Wire a Postgres
+    service into CI and point the test run at it so this class of bug is caught pre-merge.
 
 Target: Lighthouse Performance ≥ 90 on the listing page.
 ```
@@ -720,6 +726,7 @@ Target: Lighthouse Performance ≥ 90 on the listing page.
 - [ ] Header-at e sigurisë duken në Network tab
 - [ ] `APP_DEBUG=false` në prod, faqja 500 e dizajnuar
 - [ ] `php artisan test` → gjithçka jeshile
+- [ ] CI e ekzekuton test suite-in kundër Postgres (jo vetëm SQLite)
 - [ ] Deploy i suksesshëm, migrimet kaluan, cilësimet u mbushën
 
 **Commit:** `chore: security hardening, performance, deploy config`

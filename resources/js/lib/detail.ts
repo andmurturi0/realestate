@@ -1,5 +1,4 @@
 // Types + helpers for the public property detail page (FAZAT.md Faza 6A).
-// UI strings are Albanian for now — Faza 8 moves them to lang files.
 
 export interface PropertyImageData {
     id: number;
@@ -69,8 +68,6 @@ function digitsOnly(phone: string): string {
     return phone.replace(/[^0-9]/g, '');
 }
 
-export function whatsAppLink(phone: string, referenceCode: string, title: string): string {
-    const message = `Përshëndetje, më intereson prona ${referenceCode} - ${title}`;
-
+export function whatsAppLink(phone: string, message: string): string {
     return `https://wa.me/${digitsOnly(phone)}?text=${encodeURIComponent(message)}`;
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type LocationOption } from '@/lib/listing';
+import { useTranslations } from '@/lib/trans';
 import { onClickOutside } from '@vueuse/core';
 import { Check, ChevronDown, MapPin, X } from 'lucide-vue-next';
 import { computed, ref, useTemplateRef } from 'vue';
@@ -8,6 +9,8 @@ const props = defineProps<{
     modelValue: number | null;
     locations: LocationOption[];
 }>();
+
+const { t } = useTranslations();
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
@@ -69,12 +72,12 @@ function select(id: number | null) {
         >
             <MapPin class="size-4 shrink-0 text-muted-foreground" />
             <span class="flex-1 truncate text-left" :class="selectedLabel ? '' : 'text-muted-foreground'">
-                {{ selectedLabel ?? 'Lokacioni' }}
+                {{ selectedLabel ?? t('Lokacioni') }}
             </span>
             <X
                 v-if="modelValue != null"
                 class="size-4 shrink-0 text-muted-foreground hover:text-foreground"
-                aria-label="Hiq lokacionin"
+                :aria-label="t('Hiq lokacionin')"
                 @click.stop="select(null)"
             />
             <ChevronDown v-else class="size-4 shrink-0 text-muted-foreground" />
@@ -88,7 +91,7 @@ function select(id: number | null) {
                 <input
                     v-model="search"
                     type="text"
-                    placeholder="Kërko komunë ose lagje…"
+                    :placeholder="t('Kërko komunë ose lagje…')"
                     class="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
             </div>
@@ -98,7 +101,7 @@ function select(id: number | null) {
                     class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
                     @click="select(null)"
                 >
-                    Të gjitha lokacionet
+                    {{ t('Të gjitha lokacionet') }}
                     <Check v-if="modelValue == null" class="ml-auto size-4" />
                 </button>
 
@@ -123,7 +126,9 @@ function select(id: number | null) {
                     </button>
                 </template>
 
-                <p v-if="filteredLocations.length === 0" class="px-2 py-4 text-center text-sm text-muted-foreground">Asnjë lokacion nuk u gjet.</p>
+                <p v-if="filteredLocations.length === 0" class="px-2 py-4 text-center text-sm text-muted-foreground">
+                    {{ t('Asnjë lokacion nuk u gjet.') }}
+                </p>
             </div>
         </div>
     </div>

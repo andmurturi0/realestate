@@ -57,6 +57,18 @@
             </script>
         @endif
 
+        {{-- Same inline-@php constraint as the block above: no @php/@endphp pairs in this file. --}}
+        @php($currentRoute = request()->route())
+        @php($bareRouteName = $currentRoute?->getName() ? preg_replace('/^locale\./', '', $currentRoute->getName()) : null)
+        @php($hreflangRoutes = ['home', 'properties.index', 'properties.show', 'offer-property.create', 'create-request.create', 'favorites.index'])
+        @if ($bareRouteName && in_array($bareRouteName, $hreflangRoutes, true))
+            @php($hreflangParams = \Illuminate\Support\Arr::except($currentRoute->parameters(), 'locale'))
+            <link rel="alternate" hreflang="sq" href="{{ route($bareRouteName, $hreflangParams) }}">
+            <link rel="alternate" hreflang="en" href="{{ route('locale.'.$bareRouteName, ['locale' => 'en'] + $hreflangParams) }}">
+            <link rel="alternate" hreflang="de" href="{{ route('locale.'.$bareRouteName, ['locale' => 'de'] + $hreflangParams) }}">
+            <link rel="alternate" hreflang="x-default" href="{{ route($bareRouteName, $hreflangParams) }}">
+        @endif
+
         @routes
         @vite(['resources/js/app.ts'])
         @inertiaHead

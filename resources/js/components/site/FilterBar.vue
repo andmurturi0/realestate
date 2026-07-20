@@ -2,6 +2,7 @@
 import LocationSelect from '@/components/site/LocationSelect.vue';
 import { type FurnishingOption, type ListingFilters, type LocationOption } from '@/lib/listing';
 import { categoryLabels, type PropertyCategory } from '@/lib/property';
+import { useTranslations } from '@/lib/trans';
 import {
     Briefcase,
     Building,
@@ -21,6 +22,8 @@ const props = defineProps<{
     locations: LocationOption[];
     furnishingOptions: FurnishingOption[];
 }>();
+
+const { t } = useTranslations();
 
 // The page's filter state — mutated in place here, applied by the parent.
 const filters = defineModel<ListingFilters>('filters', { required: true });
@@ -126,19 +129,19 @@ const activeChips = computed<ActiveChip[]>(() => {
     if (state.type) {
         chips.push({
             id: 'type',
-            label: state.type === 'sale' ? 'Për shitje' : 'Me qira',
+            label: state.type === 'sale' ? t('Për shitje') : t('Me qira'),
             remove: clearFields(() => (state.type = '')),
         });
     }
 
     if (state.exclusive) {
-        chips.push({ id: 'exclusive', label: 'Ekskluzive', remove: clearFields(() => (state.exclusive = false)) });
+        chips.push({ id: 'exclusive', label: t('Ekskluzive'), remove: clearFields(() => (state.exclusive = false)) });
     }
 
     for (const category of state.category) {
         chips.push({
             id: `category-${category}`,
-            label: categoryLabels[category as PropertyCategory] ?? category,
+            label: t(categoryLabels[category as PropertyCategory] ?? category),
             remove: () => toggleCategory(category),
         });
     }
@@ -146,7 +149,7 @@ const activeChips = computed<ActiveChip[]>(() => {
     if (state.price_min !== '' || state.price_max !== '') {
         chips.push({
             id: 'price',
-            label: `Çmimi: ${state.price_min || '0'} € – ${state.price_max || '∞'} €`,
+            label: t('Çmimi: {min} € – {max} €', { min: state.price_min || '0', max: state.price_max || '∞' }),
             remove: clearFields(() => {
                 state.price_min = '';
                 state.price_max = '';
@@ -157,7 +160,7 @@ const activeChips = computed<ActiveChip[]>(() => {
     if (state.surface_min !== '' || state.surface_max !== '') {
         chips.push({
             id: 'surface',
-            label: `Sipërfaqja: ${state.surface_min || '0'} – ${state.surface_max || '∞'} m²`,
+            label: t('Sipërfaqja: {min} – {max} m²', { min: state.surface_min || '0', max: state.surface_max || '∞' }),
             remove: clearFields(() => {
                 state.surface_min = '';
                 state.surface_max = '';
@@ -172,7 +175,7 @@ const activeChips = computed<ActiveChip[]>(() => {
     if (state.bedrooms != null) {
         chips.push({
             id: 'bedrooms',
-            label: state.bedrooms >= 5 ? '5+ dhoma' : `${state.bedrooms} dhoma`,
+            label: state.bedrooms >= 5 ? t('5+ dhoma') : t('{count} dhoma', { count: state.bedrooms }),
             remove: () => setBedrooms(null),
         });
     }
@@ -180,7 +183,7 @@ const activeChips = computed<ActiveChip[]>(() => {
     if (state.possession) {
         chips.push({
             id: 'possession',
-            label: state.possession === 'with' ? 'Me fletë poseduese' : 'Pa fletë poseduese',
+            label: state.possession === 'with' ? t('Me fletë poseduese') : t('Pa fletë poseduese'),
             remove: () => setPossession(''),
         });
     }
@@ -188,7 +191,7 @@ const activeChips = computed<ActiveChip[]>(() => {
     if (state.documents) {
         chips.push({
             id: 'documents',
-            label: state.documents === 'notary' ? 'Dokumentet: Noter' : 'Dokumentet: Avokat',
+            label: state.documents === 'notary' ? t('Dokumentet: Noter') : t('Dokumentet: Avokat'),
             remove: () => setDocuments(''),
         });
     }
@@ -212,7 +215,7 @@ function locationName(id: number): string {
         if (neighborhood) return neighborhood.name;
     }
 
-    return 'Lokacioni';
+    return t('Lokacioni');
 }
 
 // ---- Shared classes ------------------------------------------------------
@@ -239,7 +242,7 @@ const rangeInputClass =
                     :class="segmentClass(filters.type === 'sale')"
                     @click="toggleType('sale')"
                 >
-                    Për shitje
+                    {{ t('Për shitje') }}
                 </button>
                 <button
                     type="button"
@@ -247,7 +250,7 @@ const rangeInputClass =
                     :class="segmentClass(filters.type === 'rent')"
                     @click="toggleType('rent')"
                 >
-                    Me qira
+                    {{ t('Me qira') }}
                 </button>
             </div>
             <button
@@ -257,7 +260,7 @@ const rangeInputClass =
                 :aria-pressed="filters.exclusive"
                 @click="toggleExclusive"
             >
-                Ekskluzive
+                {{ t('Ekskluzive') }}
             </button>
         </div>
 
@@ -273,7 +276,7 @@ const rangeInputClass =
                 @click="toggleCategory(category)"
             >
                 <component :is="categoryIcons[category]" class="size-4" />
-                {{ label }}
+                {{ t(label) }}
             </button>
         </div>
 
@@ -285,7 +288,7 @@ const rangeInputClass =
                     type="number"
                     min="0"
                     inputmode="numeric"
-                    placeholder="Çmimi min €"
+                    :placeholder="t('Çmimi min €')"
                     :class="rangeInputClass"
                     @input="emit('apply-debounced')"
                 />
@@ -295,7 +298,7 @@ const rangeInputClass =
                     type="number"
                     min="0"
                     inputmode="numeric"
-                    placeholder="Çmimi max €"
+                    :placeholder="t('Çmimi max €')"
                     :class="rangeInputClass"
                     @input="emit('apply-debounced')"
                 />
@@ -307,7 +310,7 @@ const rangeInputClass =
                     type="number"
                     min="0"
                     inputmode="numeric"
-                    placeholder="Sipërfaqja min m²"
+                    :placeholder="t('Sipërfaqja min m²')"
                     :class="rangeInputClass"
                     @input="emit('apply-debounced')"
                 />
@@ -317,7 +320,7 @@ const rangeInputClass =
                     type="number"
                     min="0"
                     inputmode="numeric"
-                    placeholder="Sipërfaqja max m²"
+                    :placeholder="t('Sipërfaqja max m²')"
                     :class="rangeInputClass"
                     @input="emit('apply-debounced')"
                 />
@@ -333,7 +336,7 @@ const rangeInputClass =
                 @click="showMore = !showMore"
             >
                 <SlidersHorizontal class="size-4" />
-                Më shumë
+                {{ t('Më shumë') }}
                 <span
                     v-if="advancedCount"
                     class="rounded-full px-1.5 text-xs"
@@ -348,7 +351,7 @@ const rangeInputClass =
         <!-- "Më shumë" panel -->
         <div v-show="showMore" class="grid grid-cols-1 gap-4 border-t pt-4 md:grid-cols-2 lg:grid-cols-4">
             <div class="flex flex-col gap-1.5">
-                <span class="text-xs font-medium uppercase text-muted-foreground">Fleta poseduese</span>
+                <span class="text-xs font-medium uppercase text-muted-foreground">{{ t('Fleta poseduese') }}</span>
                 <div class="inline-flex w-fit rounded-lg border bg-muted/40 p-1">
                     <button
                         v-for="option in [
@@ -362,13 +365,13 @@ const rangeInputClass =
                         :class="segmentClass(filters.possession === option.value)"
                         @click="setPossession(option.value)"
                     >
-                        {{ option.label }}
+                        {{ t(option.label) }}
                     </button>
                 </div>
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <span class="text-xs font-medium uppercase text-muted-foreground">Dokumentet</span>
+                <span class="text-xs font-medium uppercase text-muted-foreground">{{ t('Dokumentet') }}</span>
                 <div class="inline-flex w-fit rounded-lg border bg-muted/40 p-1">
                     <button
                         v-for="option in [
@@ -382,13 +385,13 @@ const rangeInputClass =
                         :class="segmentClass(filters.documents === option.value)"
                         @click="setDocuments(option.value)"
                     >
-                        {{ option.label }}
+                        {{ t(option.label) }}
                     </button>
                 </div>
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <span class="text-xs font-medium uppercase text-muted-foreground">Dhomat</span>
+                <span class="text-xs font-medium uppercase text-muted-foreground">{{ t('Dhomat') }}</span>
                 <div class="inline-flex w-fit rounded-lg border bg-muted/40 p-1">
                     <button
                         type="button"
@@ -396,7 +399,7 @@ const rangeInputClass =
                         :class="segmentClass(filters.bedrooms == null)"
                         @click="setBedrooms(null)"
                     >
-                        Të gjitha
+                        {{ t('Të gjitha') }}
                     </button>
                     <button
                         v-for="count in bedroomOptions"
@@ -412,7 +415,7 @@ const rangeInputClass =
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <span class="text-xs font-medium uppercase text-muted-foreground">Mobilimi</span>
+                <span class="text-xs font-medium uppercase text-muted-foreground">{{ t('Mobilimi') }}</span>
                 <div class="flex flex-wrap gap-1.5">
                     <button
                         v-for="option in furnishingOptions"
@@ -436,14 +439,14 @@ const rangeInputClass =
                 :key="chip.id"
                 type="button"
                 class="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs text-secondary-foreground transition-colors hover:bg-secondary/70"
-                :aria-label="`Hiq filtrin: ${chip.label}`"
+                :aria-label="t('Hiq filtrin: {label}', { label: chip.label })"
                 @click="chip.remove"
             >
                 {{ chip.label }}
                 <X class="size-3" />
             </button>
             <button type="button" class="ml-1 text-xs font-medium text-muted-foreground underline hover:text-foreground" @click="emit('clear')">
-                Pastro të gjitha
+                {{ t('Pastro të gjitha') }}
             </button>
         </div>
     </div>

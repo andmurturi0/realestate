@@ -4,10 +4,13 @@ import PropertyCardSkeleton from '@/components/site/PropertyCardSkeleton.vue';
 import { useFavourites } from '@/composables/useFavourites';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { type PropertyCardData } from '@/lib/listing';
+import { publicRoute } from '@/lib/route';
+import { useTranslations } from '@/lib/trans';
 import { Head, Link } from '@inertiajs/vue3';
 import { HeartOff } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
+const { t } = useTranslations();
 const favourites = useFavourites();
 const properties = ref<PropertyCardData[]>([]);
 const loading = ref(true);
@@ -40,11 +43,11 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Head title="Të preferuarat" />
+    <Head :title="t('Të preferuarat')" />
 
     <PublicLayout>
         <div class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-            <h1 class="mb-4 text-2xl font-semibold">Të preferuarat</h1>
+            <h1 class="mb-4 text-2xl font-semibold">{{ t('Të preferuarat') }}</h1>
 
             <div v-if="loading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <PropertyCardSkeleton v-for="index in Math.min(favourites.ids.value.length || 3, 6)" :key="index" />
@@ -58,15 +61,15 @@ onMounted(async () => {
                 <div class="rounded-full bg-muted p-4">
                     <HeartOff class="size-8 text-muted-foreground" />
                 </div>
-                <h2 class="text-lg font-medium">Ende nuk keni prona të preferuara</h2>
+                <h2 class="text-lg font-medium">{{ t('Ende nuk keni prona të preferuara') }}</h2>
                 <p class="max-w-sm text-sm text-muted-foreground">
-                    Shtyp ikonën e zemrës te një pronë për ta ruajtur këtu. Të preferuarat ruhen vetëm në këtë shfletues.
+                    {{ t('Shtyp ikonën e zemrës te një pronë për ta ruajtur këtu. Të preferuarat ruhen vetëm në këtë shfletues.') }}
                 </p>
                 <Link
-                    :href="route('properties.index')"
+                    :href="publicRoute('properties.index')"
                     class="mt-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                 >
-                    Shfleto pronat
+                    {{ t('Shfleto pronat') }}
                 </Link>
             </div>
         </div>

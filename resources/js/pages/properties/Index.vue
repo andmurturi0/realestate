@@ -14,9 +14,13 @@ import {
     type Paginated,
     type PropertyCardData,
 } from '@/lib/listing';
+import { publicRoute } from '@/lib/route';
+import { useTranslations } from '@/lib/trans';
 import { Head, router } from '@inertiajs/vue3';
 import { SearchX } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+
+const { t } = useTranslations();
 
 const props = defineProps<{
     properties: Paginated<PropertyCardData>;
@@ -39,7 +43,7 @@ const visitOptions = {
 
 /** Filter changes always restart from page 1 — the page param is simply not sent. */
 function applyFilters() {
-    router.get(route('properties.index'), filtersToQuery(filters.value), {
+    router.get(publicRoute('properties.index'), filtersToQuery(filters.value), {
         ...visitOptions,
         preserveScroll: true,
     });
@@ -76,7 +80,7 @@ watch(
     },
 );
 
-const resultCountLabel = computed(() => (props.properties.total === 1 ? '1 pronë' : `${props.properties.total} prona`));
+const resultCountLabel = computed(() => (props.properties.total === 1 ? t('1 pronë') : t('{count} prona', { count: props.properties.total })));
 
 const hasActiveFilters = computed(() => Object.keys(filtersToQuery(filters.value)).length > 0);
 
@@ -84,11 +88,11 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
 </script>
 
 <template>
-    <Head title="Pronat" />
+    <Head :title="t('Pronat')" />
 
     <PublicLayout>
         <div class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-            <h1 class="mb-4 text-2xl font-semibold">Pronat</h1>
+            <h1 class="mb-4 text-2xl font-semibold">{{ t('Pronat') }}</h1>
 
             <FilterBar
                 v-model:filters="filters"
@@ -102,13 +106,13 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
             <div class="mt-4 flex items-center justify-between gap-3">
                 <p class="text-sm text-muted-foreground" aria-live="polite">{{ resultCountLabel }}</p>
                 <label class="flex items-center gap-2 text-sm text-muted-foreground">
-                    Rendit:
+                    {{ t('Rendit:') }}
                     <select
                         v-model="filters.sort"
                         class="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         @change="applyFilters"
                     >
-                        <option v-for="(label, value) in sortLabels" :key="value" :value="value">{{ label }}</option>
+                        <option v-for="(label, value) in sortLabels" :key="value" :value="value">{{ t(label) }}</option>
                     </select>
                 </label>
             </div>
@@ -127,9 +131,9 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
                 <div class="rounded-full bg-muted p-4">
                     <SearchX class="size-8 text-muted-foreground" />
                 </div>
-                <h2 class="text-lg font-medium">Asnjë pronë nuk u gjet</h2>
+                <h2 class="text-lg font-medium">{{ t('Asnjë pronë nuk u gjet') }}</h2>
                 <p class="max-w-sm text-sm text-muted-foreground">
-                    Nuk ka prona që përputhen me filtrat e zgjedhur. Provoni t'i zgjeroni kriteret e kërkimit.
+                    {{ t("Nuk ka prona që përputhen me filtrat e zgjedhur. Provoni t'i zgjeroni kriteret e kërkimit.") }}
                 </p>
                 <button
                     v-if="hasActiveFilters"
@@ -137,7 +141,7 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
                     class="mt-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                     @click="clearFilters"
                 >
-                    Pastro filtrat
+                    {{ t('Pastro filtrat') }}
                 </button>
             </div>
 

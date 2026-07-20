@@ -1,5 +1,5 @@
 // Shared types + helpers for the public listing page (PLAN.md §5).
-// UI strings are Albanian for now — Faza 8 moves them to lang files.
+// Labels below are Albanian source text used as t() translation keys by callers.
 
 export type SortOption = 'newest' | 'price_asc' | 'price_desc' | 'surface_desc';
 

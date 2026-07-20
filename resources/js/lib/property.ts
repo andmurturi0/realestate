@@ -1,4 +1,8 @@
-// Dashboard labels are Albanian-only by design (see CLAUDE.md).
+// These labels are Albanian source text used both as dashboard display
+// strings (unwrapped, Albanian-only by design — see CLAUDE.md) and as
+// translation keys on the public site (wrapped in t() there, Faza 8).
+
+import { type Locale } from '@/lib/trans';
 
 export type PropertyCategory = 'house' | 'apartment' | 'office' | 'store' | 'land' | 'warehouse' | 'object';
 export type ListingType = 'sale' | 'rent';
@@ -64,14 +68,20 @@ export const detailFieldLabels: Record<DetailField, string> = {
     parking_spaces: 'Vende parkimi',
 };
 
-export function formatPriceCents(cents: number | null | undefined): string {
+const intlLocales: Record<Locale, string> = {
+    sq: 'sq-AL',
+    en: 'en-IE',
+    de: 'de-DE',
+};
+
+export function formatPriceCents(cents: number | null | undefined, locale: Locale = 'sq'): string {
     if (cents == null) {
         return '—';
     }
 
     const euros = cents / 100;
 
-    return new Intl.NumberFormat('sq-AL', {
+    return new Intl.NumberFormat(intlLocales[locale], {
         style: 'currency',
         currency: 'EUR',
         minimumFractionDigits: 0,

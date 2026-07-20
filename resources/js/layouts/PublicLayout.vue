@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import LanguageSwitcher from '@/components/site/LanguageSwitcher.vue';
 import { useBrandColor } from '@/composables/useBrandColor';
 import { useFavourites } from '@/composables/useFavourites';
+import { publicRoute } from '@/lib/route';
+import { useTranslations } from '@/lib/trans';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Heart } from 'lucide-vue-next';
@@ -8,15 +11,20 @@ import { computed } from 'vue';
 
 const page = usePage<SharedData>();
 const settings = computed(() => page.props.settings);
+const { t } = useTranslations();
 
 useBrandColor();
 const favourites = useFavourites();
 
+// Strip the locale prefix before matching against page.url, so the "active"
+// nav state works the same under /en and /de as it does unprefixed.
+const currentPath = computed(() => page.url.replace(/^\/(en|de)(?=\/|$)/, '') || '/');
+
 const navLinks = computed(() => [
-    { label: 'Ballina', href: route('home'), active: page.url === '/' },
-    { label: 'Pronat', href: route('properties.index'), active: page.url.startsWith('/properties') },
-    { label: 'Ofro Pronën', href: route('offer-property.create'), active: page.url.startsWith('/offer-property') },
-    { label: 'Bëj Kërkesë', href: route('create-request.create'), active: page.url.startsWith('/create-request') },
+    { label: t('Ballina'), href: publicRoute('home'), active: currentPath.value === '/' },
+    { label: t('Pronat'), href: publicRoute('properties.index'), active: currentPath.value.startsWith('/properties') },
+    { label: t('Ofro Pronën'), href: publicRoute('offer-property.create'), active: currentPath.value.startsWith('/offer-property') },
+    { label: t('Bëj Kërkesë'), href: publicRoute('create-request.create'), active: currentPath.value.startsWith('/create-request') },
 ]);
 
 const socialLinks = computed(() =>
@@ -55,7 +63,12 @@ const socialLinks = computed(() =>
                     <a v-if="settings.phone" :href="`tel:${settings.phone}`" class="hidden hover:text-foreground sm:inline">
                         {{ settings.phone }}
                     </a>
-                    <Link :href="route('favorites.index')" class="relative flex items-center hover:text-foreground" aria-label="Të preferuarat">
+                    <LanguageSwitcher />
+                    <Link
+                        :href="publicRoute('favorites.index')"
+                        class="relative flex items-center hover:text-foreground"
+                        :aria-label="t('Të preferuarat')"
+                    >
                         <Heart class="size-5" />
                         <span
                             v-if="favourites.count.value > 0"
@@ -65,9 +78,9 @@ const socialLinks = computed(() =>
                         </span>
                     </Link>
                     <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">
-                        Dashboard
+                        Paneli
                     </Link>
-                    <Link v-else :href="route('login')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">Kyçu</Link>
+                    <Link v-else :href="route('login')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">{{ t('Kyçu') }}</Link>
                 </div>
             </div>
         </header>

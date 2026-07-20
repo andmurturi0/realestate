@@ -41,10 +41,10 @@ class PropertyOfferController extends Controller
             ->get()
             ->map(fn (Location $municipality): array => [
                 'id' => $municipality->id,
-                'name' => $municipality->getTranslation('name', 'sq'),
+                'name' => $municipality->getTranslation('name', app()->getLocale()),
                 'neighborhoods' => $municipality->children->map(fn (Location $neighborhood): array => [
                     'id' => $neighborhood->id,
-                    'name' => $neighborhood->getTranslation('name', 'sq'),
+                    'name' => $neighborhood->getTranslation('name', app()->getLocale()),
                 ])->all(),
             ])
             ->all();

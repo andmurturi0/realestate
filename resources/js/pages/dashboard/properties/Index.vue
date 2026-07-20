@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { paginationLabel } from '@/lib/pagination';
 import {
     categoryLabels,
     formatPriceCents,
@@ -313,9 +314,11 @@ const selectClass =
                             class="rounded-md border px-3 py-1.5 text-sm"
                             :class="link.active ? 'border-primary bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'"
                         >
-                            <span v-html="link.label" />
+                            <span>{{ paginationLabel(link.label, 'Prapa', 'Para') }}</span>
                         </Link>
-                        <span v-else class="rounded-md border border-transparent px-3 py-1.5 text-sm text-muted-foreground/50" v-html="link.label" />
+                        <span v-else class="rounded-md border border-transparent px-3 py-1.5 text-sm text-muted-foreground/50">
+                            {{ paginationLabel(link.label, 'Prapa', 'Para') }}
+                        </span>
                     </template>
                 </nav>
             </div>

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
@@ -66,6 +67,12 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
             ],
+            // Deferred: HandleInertiaRequests is global 'web' group middleware and
+            // therefore runs before route-scoped SetLocale, so App::getLocale() must
+            // be read lazily — at response-build time, after the full pipeline (SetLocale
+            // included) has already run — not eagerly here in share().
+            'locale' => fn () => App::getLocale(),
+            'locales' => SetLocale::LOCALES,
         ];
     }
 

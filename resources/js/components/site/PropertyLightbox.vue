@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type PropertyImageData } from '@/lib/detail';
+import { useTranslations } from '@/lib/trans';
 import { useSwipe } from '@vueuse/core';
 import { ChevronLeft, ChevronRight, X } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -8,6 +9,8 @@ const props = defineProps<{
     images: PropertyImageData[];
     modelValue: boolean;
 }>();
+
+const { t } = useTranslations();
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void;
@@ -83,12 +86,12 @@ onBeforeUnmount(() => {
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
             role="dialog"
             aria-modal="true"
-            aria-label="Galeria e fotove"
+            :aria-label="t('Galeria e fotove')"
         >
             <button
                 type="button"
                 class="absolute right-4 top-4 rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white"
-                aria-label="Mbyll"
+                :aria-label="t('Mbyll')"
                 @click="close"
             >
                 <X class="size-6" />
@@ -98,7 +101,7 @@ onBeforeUnmount(() => {
                 v-if="images.length > 1"
                 type="button"
                 class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white sm:left-4"
-                aria-label="Foto e mëparshme"
+                :aria-label="t('Foto e mëparshme')"
                 @click="prev"
             >
                 <ChevronLeft class="size-8" />
@@ -115,7 +118,7 @@ onBeforeUnmount(() => {
                 v-if="images.length > 1"
                 type="button"
                 class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white sm:right-4"
-                aria-label="Foto tjetër"
+                :aria-label="t('Foto tjetër')"
                 @click="next"
             >
                 <ChevronRight class="size-8" />

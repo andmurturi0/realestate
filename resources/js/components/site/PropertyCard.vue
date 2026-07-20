@@ -2,6 +2,8 @@
 import { useFavourites } from '@/composables/useFavourites';
 import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
+import { publicRoute } from '@/lib/route';
+import { useTranslations } from '@/lib/trans';
 import { Link } from '@inertiajs/vue3';
 import { Bath, BedDouble, Heart, ImageOff, MapPin, Ruler } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -9,6 +11,10 @@ import { computed } from 'vue';
 const props = defineProps<{
     property: PropertyCardData;
 }>();
+
+const { t, locale } = useTranslations();
+
+const intlLocales = { sq: 'sq-AL', en: 'en-IE', de: 'de-DE' } as const;
 
 const favourites = useFavourites();
 const isFavourite = computed(() => favourites.has(props.property.id));
@@ -22,13 +28,13 @@ const locationLabel = computed(() => {
 });
 
 const surfaceLabel = computed(() =>
-    props.property.surface_m2 == null ? null : `${new Intl.NumberFormat('sq-AL').format(props.property.surface_m2)} m²`,
+    props.property.surface_m2 == null ? null : `${new Intl.NumberFormat(intlLocales[locale]).format(props.property.surface_m2)} m²`,
 );
 </script>
 
 <template>
     <article class="group overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
-        <Link :href="route('properties.show', property.slug)" class="relative block aspect-[4/3] overflow-hidden bg-muted">
+        <Link :href="publicRoute('properties.show', property.slug)" class="relative block aspect-[4/3] overflow-hidden bg-muted">
             <img
                 v-if="imageSrc"
                 :src="imageSrc"
@@ -44,18 +50,18 @@ const surfaceLabel = computed(() =>
                 v-if="property.is_exclusive"
                 class="absolute left-3 top-3 rounded-md bg-amber-500 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-white"
             >
-                Ekskluzive
+                {{ t('Ekskluzive') }}
             </span>
             <span
                 class="absolute right-3 top-3 rounded-md px-2 py-0.5 text-xs font-semibold text-white"
                 :class="property.listing_type === 'sale' ? 'bg-primary' : 'bg-sky-600'"
             >
-                {{ property.listing_type === 'sale' ? 'Në shitje' : 'Me qira' }}
+                {{ property.listing_type === 'sale' ? t('Në shitje') : t('Me qira') }}
             </span>
 
             <button
                 type="button"
-                :aria-label="isFavourite ? 'Hiq nga të preferuarat' : 'Shto te të preferuarat'"
+                :aria-label="isFavourite ? t('Hiq nga të preferuarat') : t('Shto te të preferuarat')"
                 :aria-pressed="isFavourite"
                 class="absolute bottom-3 right-3 rounded-full bg-white/90 p-2 shadow-sm transition-colors dark:bg-gray-900/80"
                 :class="isFavourite ? 'text-red-500' : 'text-gray-700 hover:text-red-500 dark:text-gray-200'"
@@ -68,14 +74,14 @@ const surfaceLabel = computed(() =>
         <div class="flex flex-col gap-1.5 p-4">
             <div class="flex items-baseline justify-between gap-2">
                 <p class="text-lg font-semibold">
-                    {{ formatPriceCents(property.price) }}
-                    <span v-if="property.listing_type === 'rent'" class="text-sm font-normal text-muted-foreground">/muaj</span>
+                    {{ formatPriceCents(property.price, locale) }}
+                    <span v-if="property.listing_type === 'rent'" class="text-sm font-normal text-muted-foreground">{{ t('/muaj') }}</span>
                 </p>
-                <span v-if="property.price_negotiable" class="shrink-0 text-xs text-muted-foreground">I negociueshëm</span>
+                <span v-if="property.price_negotiable" class="shrink-0 text-xs text-muted-foreground">{{ t('I negociueshëm') }}</span>
             </div>
 
             <h3 class="line-clamp-2 font-medium leading-snug">
-                <Link :href="route('properties.show', property.slug)" class="hover:underline">{{ property.title }}</Link>
+                <Link :href="publicRoute('properties.show', property.slug)" class="hover:underline">{{ property.title }}</Link>
             </h3>
 
             <p v-if="locationLabel" class="flex items-center gap-1 text-sm text-muted-foreground">
@@ -85,15 +91,15 @@ const surfaceLabel = computed(() =>
 
             <div class="mt-2 flex items-center justify-between gap-2 border-t pt-3 text-sm text-muted-foreground">
                 <div class="flex items-center gap-3">
-                    <span v-if="property.bedrooms != null" class="flex items-center gap-1" title="Dhoma gjumi">
+                    <span v-if="property.bedrooms != null" class="flex items-center gap-1" :title="t('Dhoma gjumi')">
                         <BedDouble class="size-4" />
                         {{ property.bedrooms }}
                     </span>
-                    <span v-if="property.bathrooms != null" class="flex items-center gap-1" title="Banjo">
+                    <span v-if="property.bathrooms != null" class="flex items-center gap-1" :title="t('Banjo')">
                         <Bath class="size-4" />
                         {{ property.bathrooms }}
                     </span>
-                    <span v-if="surfaceLabel" class="flex items-center gap-1" title="Sipërfaqja">
+                    <span v-if="surfaceLabel" class="flex items-center gap-1" :title="t('Sipërfaqja')">
                         <Ruler class="size-4" />
                         {{ surfaceLabel }}
                     </span>

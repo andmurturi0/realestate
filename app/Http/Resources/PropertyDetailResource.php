@@ -21,12 +21,14 @@ class PropertyDetailResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $locale = app()->getLocale();
+
         return [
             'id' => $this->id,
             'slug' => $this->slug,
             'reference_code' => $this->reference_code,
-            'title' => $this->getTranslation('title', 'sq'),
-            'description' => $this->getTranslation('description', 'sq'),
+            'title' => $this->getTranslation('title', $locale),
+            'description' => $this->getTranslation('description', $locale),
             'listing_type' => $this->listing_type->value,
             'category' => $this->category->value,
             'is_exclusive' => $this->is_exclusive,
@@ -45,9 +47,9 @@ class PropertyDetailResource extends JsonResource
             'published_at' => $this->published_at?->toIso8601String(),
             'views_count' => $this->views_count,
             'location' => $this->location === null ? null : [
-                'name' => $this->location->getTranslation('name', 'sq'),
-                'municipality' => $this->location->parent?->getTranslation('name', 'sq')
-                    ?? $this->location->getTranslation('name', 'sq'),
+                'name' => $this->location->getTranslation('name', $locale),
+                'municipality' => $this->location->parent?->getTranslation('name', $locale)
+                    ?? $this->location->getTranslation('name', $locale),
                 'lat' => $this->lat,
                 'lng' => $this->lng,
             ],
@@ -61,7 +63,7 @@ class PropertyDetailResource extends JsonResource
                 'id' => $image->id,
                 'url' => $image->url,
                 'thumbnail_url' => $image->thumbnail_url,
-                'alt' => $image->getTranslation('alt_text', 'sq'),
+                'alt' => $image->getTranslation('alt_text', $locale),
                 'is_primary' => $image->is_primary,
             ])->values(),
             'features' => $this->features
@@ -70,7 +72,7 @@ class PropertyDetailResource extends JsonResource
                     ->sortBy('sort_order')
                     ->map(fn (Feature $feature): array => [
                         'key' => $feature->key,
-                        'name' => $feature->getTranslation('name', 'sq'),
+                        'name' => $feature->getTranslation('name', $locale),
                         'icon' => $feature->icon,
                     ])
                     ->values()),

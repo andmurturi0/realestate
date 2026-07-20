@@ -2,12 +2,15 @@
 import LocationSelect from '@/components/site/LocationSelect.vue';
 import { type LocationOption } from '@/lib/listing';
 import { categoryLabels, type PropertyCategory } from '@/lib/property';
+import { useTranslations } from '@/lib/trans';
 import { Briefcase, Building, Building2, CheckCircle2, Home, LandPlot, Store, Warehouse, type LucideIcon } from 'lucide-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 const props = defineProps<{
     municipalities: LocationOption[];
 }>();
+
+const { t } = useTranslations();
 
 const categoryIcons: Record<PropertyCategory, LucideIcon> = {
     house: Home,
@@ -106,12 +109,12 @@ async function submit() {
     <div class="rounded-xl border bg-card p-6">
         <div v-if="success" class="flex flex-col items-center gap-2 py-10 text-center">
             <CheckCircle2 class="size-12 text-green-600" />
-            <p class="text-lg font-medium">Kërkesa juaj u dërgua!</p>
-            <p class="text-sm text-muted-foreground">Një agjent do t'ju kontaktojë sapo të gjejë prona përputhëse.</p>
+            <p class="text-lg font-medium">{{ t('Kërkesa juaj u dërgua!') }}</p>
+            <p class="text-sm text-muted-foreground">{{ t("Një agjent do t'ju kontaktojë sapo të gjejë prona përputhëse.") }}</p>
         </div>
 
         <form v-else class="space-y-4" @submit.prevent="submit">
-            <h2 class="text-lg font-semibold">Krijoni kërkesën tuaj</h2>
+            <h2 class="text-lg font-semibold">{{ t('Krijoni kërkesën tuaj') }}</h2>
 
             <!-- Honeypot: off-screen, never display:none (some bots skip that check). -->
             <div class="absolute -left-[9999px]" aria-hidden="true">
@@ -121,7 +124,7 @@ async function submit() {
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                    <label for="first_name" class="mb-1 block text-sm font-medium">Emri</label>
+                    <label for="first_name" class="mb-1 block text-sm font-medium">{{ t('Emri') }}</label>
                     <input
                         id="first_name"
                         v-model="form.first_name"
@@ -133,7 +136,7 @@ async function submit() {
                 </div>
 
                 <div>
-                    <label for="last_name" class="mb-1 block text-sm font-medium">Mbiemri</label>
+                    <label for="last_name" class="mb-1 block text-sm font-medium">{{ t('Mbiemri') }}</label>
                     <input
                         id="last_name"
                         v-model="form.last_name"
@@ -146,7 +149,7 @@ async function submit() {
             </div>
 
             <div>
-                <label for="phone" class="mb-1 block text-sm font-medium">Telefoni</label>
+                <label for="phone" class="mb-1 block text-sm font-medium">{{ t('Telefoni') }}</label>
                 <div class="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:ring-2 focus-within:ring-ring">
                     <span class="flex items-center gap-1 text-sm text-muted-foreground">🇽🇰 +383</span>
                     <input
@@ -162,7 +165,7 @@ async function submit() {
             </div>
 
             <div>
-                <span class="mb-1 block text-sm font-medium">Lloji</span>
+                <span class="mb-1 block text-sm font-medium">{{ t('Lloji') }}</span>
                 <div class="inline-flex rounded-lg border bg-muted/40 p-1">
                     <button
                         type="button"
@@ -170,7 +173,7 @@ async function submit() {
                         :class="segmentClass(form.request_type === 'buying')"
                         @click="form.request_type = 'buying'"
                     >
-                        Blerje
+                        {{ t('Blerje') }}
                     </button>
                     <button
                         type="button"
@@ -178,13 +181,13 @@ async function submit() {
                         :class="segmentClass(form.request_type === 'renting')"
                         @click="form.request_type = 'renting'"
                     >
-                        Qira
+                        {{ t('Qira') }}
                     </button>
                 </div>
             </div>
 
             <div>
-                <span class="mb-1 block text-sm font-medium">Kategoria</span>
+                <span class="mb-1 block text-sm font-medium">{{ t('Kategoria') }}</span>
                 <div class="flex flex-wrap gap-2">
                     <button
                         v-for="(label, category) in categoryLabels"
@@ -196,20 +199,20 @@ async function submit() {
                         @click="form.category = category"
                     >
                         <component :is="categoryIcons[category]" class="size-4" />
-                        {{ label }}
+                        {{ t(label) }}
                     </button>
                 </div>
                 <p v-if="errors.category" class="mt-1 text-xs text-destructive">{{ errors.category[0] }}</p>
             </div>
 
             <div>
-                <span class="mb-1 block text-sm font-medium">Lokacioni</span>
+                <span class="mb-1 block text-sm font-medium">{{ t('Lokacioni') }}</span>
                 <LocationSelect v-model="form.location_id" :locations="props.municipalities" />
                 <p v-if="errors.location_id" class="mt-1 text-xs text-destructive">{{ errors.location_id[0] }}</p>
             </div>
 
             <div>
-                <label for="budget" class="mb-1 block text-sm font-medium">Buxheti (€)</label>
+                <label for="budget" class="mb-1 block text-sm font-medium">{{ t('Buxheti (€)') }}</label>
                 <input
                     id="budget"
                     v-model="form.budget"
@@ -223,14 +226,14 @@ async function submit() {
             </div>
 
             <div>
-                <span class="mb-1 block text-sm font-medium">Sipërfaqja</span>
+                <span class="mb-1 block text-sm font-medium">{{ t('Sipërfaqja') }}</span>
                 <div class="grid grid-cols-[1fr_1fr_auto] gap-2">
                     <input
                         v-model="form.surface_min"
                         type="number"
                         min="0"
                         inputmode="numeric"
-                        placeholder="Min"
+                        :placeholder="t('Min')"
                         class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     <input
@@ -238,14 +241,14 @@ async function submit() {
                         type="number"
                         min="0"
                         inputmode="numeric"
-                        placeholder="Max"
+                        :placeholder="t('Max')"
                         class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     <select
                         v-model="form.surface_unit"
                         class="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                        <option v-for="(label, unit) in surfaceUnitLabels" :key="unit" :value="unit">{{ label }}</option>
+                        <option v-for="(label, unit) in surfaceUnitLabels" :key="unit" :value="unit">{{ t(label) }}</option>
                     </select>
                 </div>
                 <p v-if="errors.surface_min" class="mt-1 text-xs text-destructive">{{ errors.surface_min[0] }}</p>
@@ -253,7 +256,7 @@ async function submit() {
             </div>
 
             <div>
-                <label for="details" class="mb-1 block text-sm font-medium">Më shumë detaje</label>
+                <label for="details" class="mb-1 block text-sm font-medium">{{ t('Më shumë detaje') }}</label>
                 <textarea
                     id="details"
                     v-model="form.details"
@@ -263,14 +266,16 @@ async function submit() {
                 <p v-if="errors.details" class="mt-1 text-xs text-destructive">{{ errors.details[0] }}</p>
             </div>
 
-            <p v-if="rateLimited" class="text-sm text-destructive">Keni arritur numrin maksimal të kërkesave. Ju lutemi provoni sërish më vonë.</p>
+            <p v-if="rateLimited" class="text-sm text-destructive">
+                {{ t('Keni arritur numrin maksimal të kërkesave. Ju lutemi provoni sërish më vonë.') }}
+            </p>
 
             <button
                 type="submit"
                 :disabled="submitting"
                 class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-                {{ submitting ? 'Duke dërguar…' : 'Dërgo kërkesën' }}
+                {{ submitting ? t('Duke dërguar…') : t('Dërgo kërkesën') }}
             </button>
         </form>
     </div>

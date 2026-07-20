@@ -1,7 +1,7 @@
-// Minimal lookup over lang/{sq,en,de}.json for frontend-only components that
-// need translated labels ahead of Faza 8 (full SQ/EN/DE localisation with URL
-// prefixes and a locale switcher). Once that lands, `locale` should be driven
-// by the shared Inertia prop it introduces instead of the sq default below.
+// Lookup over lang/{sq,en,de}.json for the public site (Faza 8). Dashboard,
+// auth and settings pages stay hardcoded Albanian and never call this.
+import { type SharedData } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 import de from '../../../lang/de.json';
 import en from '../../../lang/en.json';
 import sq from '../../../lang/sq.json';
@@ -12,14 +12,26 @@ type Dictionary = Record<string, string>;
 
 const dictionaries: Record<Locale, Dictionary> = { sq, en, de };
 
-const DEFAULT_LOCALE: Locale = 'sq';
-
-export function useTranslations(locale: Locale = DEFAULT_LOCALE) {
+/**
+ * `t()` reads the current page's locale from the shared Inertia prop, so
+ * every public component gets the right dictionary without passing it down.
+ * `{name}` placeholders in the translated string are replaced from `params`.
+ */
+export function useTranslations() {
+    const locale = usePage<SharedData>().props.locale;
     const dictionary = dictionaries[locale];
 
-    function t(key: string): string {
-        return dictionary[key] ?? key;
+    function t(key: string, params?: Record<string, string | number>): string {
+        let text = dictionary[key] ?? key;
+
+        if (params) {
+            for (const [name, value] of Object.entries(params)) {
+                text = text.replaceAll(`{${name}}`, String(value));
+            }
+        }
+
+        return text;
     }
 
-    return { t };
+    return { t, locale };
 }

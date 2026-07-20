@@ -11,6 +11,7 @@ import PublicLayout from '@/layouts/PublicLayout.vue';
 import { type PropertyDetailData } from '@/lib/detail';
 import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
+import { useTranslations } from '@/lib/trans';
 import { Head } from '@inertiajs/vue3';
 import { Eye, MapPin } from 'lucide-vue-next';
 import { computed, defineAsyncComponent } from 'vue';
@@ -24,6 +25,10 @@ const props = defineProps<{
     similarProperties: PropertyCardData[];
 }>();
 
+const { t, locale } = useTranslations();
+
+const intlLocales = { sq: 'sq-AL', en: 'en-IE', de: 'de-DE' } as const;
+
 const locationLabel = computed(() => {
     if (!props.property.location) return null;
 
@@ -34,7 +39,9 @@ const locationLabel = computed(() => {
 
 const publishedLabel = computed(() =>
     props.property.published_at
-        ? new Intl.DateTimeFormat('sq-AL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(props.property.published_at))
+        ? new Intl.DateTimeFormat(intlLocales[locale], { day: 'numeric', month: 'long', year: 'numeric' }).format(
+              new Date(props.property.published_at),
+          )
         : null,
 );
 </script>
@@ -63,19 +70,21 @@ const publishedLabel = computed(() =>
                             </div>
                             <div class="text-right">
                                 <p class="text-2xl font-semibold">
-                                    {{ formatPriceCents(property.price) }}
-                                    <span v-if="property.listing_type === 'rent'" class="text-base font-normal text-muted-foreground">/muaj</span>
+                                    {{ formatPriceCents(property.price, locale) }}
+                                    <span v-if="property.listing_type === 'rent'" class="text-base font-normal text-muted-foreground">{{
+                                        t('/muaj')
+                                    }}</span>
                                 </p>
-                                <span v-if="property.price_negotiable" class="text-xs text-muted-foreground">I negociueshëm</span>
+                                <span v-if="property.price_negotiable" class="text-xs text-muted-foreground">{{ t('I negociueshëm') }}</span>
                             </div>
                         </div>
 
                         <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span>{{ property.reference_code }}</span>
-                            <span v-if="publishedLabel">Publikuar më {{ publishedLabel }}</span>
+                            <span v-if="publishedLabel">{{ t('Publikuar më {date}', { date: publishedLabel }) }}</span>
                             <span class="flex items-center gap-1">
                                 <Eye class="size-3.5" />
-                                {{ property.views_count }} shikime
+                                {{ t('{count} shikime', { count: property.views_count }) }}
                             </span>
                         </div>
                     </div>
@@ -93,7 +102,7 @@ const publishedLabel = computed(() =>
                     />
 
                     <div v-if="property.description">
-                        <h2 class="mb-2 text-lg font-semibold">Përshkrimi</h2>
+                        <h2 class="mb-2 text-lg font-semibold">{{ t('Përshkrimi') }}</h2>
                         <p class="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{{ property.description }}</p>
                     </div>
 
@@ -106,7 +115,7 @@ const publishedLabel = computed(() =>
                     <PropertyPriceHistoryChart v-if="property.price_history.length >= 2" :history="property.price_history" />
 
                     <div v-if="property.location">
-                        <h2 class="mb-4 text-lg font-semibold">Lokacioni</h2>
+                        <h2 class="mb-4 text-lg font-semibold">{{ t('Lokacioni') }}</h2>
                         <PropertyLocationMap :lat="property.location.lat" :lng="property.location.lng" />
                     </div>
                 </div>

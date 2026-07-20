@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { type PaginationLink } from '@/lib/listing';
+import { paginationLabel } from '@/lib/pagination';
+import { useTranslations } from '@/lib/trans';
 
 defineProps<{
     links: PaginationLink[];
@@ -9,15 +11,16 @@ const emit = defineEmits<{
     (e: 'navigate', url: string): void;
 }>();
 
-/** Laravel labels arrive as HTML entities (&laquo; / &raquo;) — decode the arrows, keep numbers as-is. */
+const { t } = useTranslations();
+
 function label(link: PaginationLink): string {
-    return link.label.replace('&laquo;', '«').replace('&raquo;', '»').replace('Previous', 'Prapa').replace('Next', 'Para');
+    return paginationLabel(link.label, t('Prapa'), t('Para'));
 }
 </script>
 
 <template>
     <!-- 3 links = prev + one page + next: nothing to paginate. -->
-    <nav v-if="links.length > 3" class="flex flex-wrap items-center justify-center gap-1" aria-label="Paginimi">
+    <nav v-if="links.length > 3" class="flex flex-wrap items-center justify-center gap-1" :aria-label="t('Paginimi')">
         <button
             v-for="(link, index) in links"
             :key="index"

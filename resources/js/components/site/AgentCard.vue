@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { whatsAppLink, type PropertyAgentData } from '@/lib/detail';
+import { useTranslations } from '@/lib/trans';
 import { MessageCircle, Phone, User } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -9,7 +10,13 @@ const props = defineProps<{
     title: string;
 }>();
 
-const whatsappHref = computed(() => (props.agent.whatsapp ? whatsAppLink(props.agent.whatsapp, props.referenceCode, props.title) : null));
+const { t } = useTranslations();
+
+const whatsappHref = computed(() =>
+    props.agent.whatsapp
+        ? whatsAppLink(props.agent.whatsapp, t('Përshëndetje, më intereson prona {ref} - {title}', { ref: props.referenceCode, title: props.title }))
+        : null,
+);
 </script>
 
 <template>
@@ -32,7 +39,7 @@ const whatsappHref = computed(() => (props.agent.whatsapp ? whatsAppLink(props.a
                 class="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
                 <Phone class="size-4" />
-                Telefono
+                {{ t('Telefono') }}
             </a>
             <a
                 v-if="whatsappHref"
