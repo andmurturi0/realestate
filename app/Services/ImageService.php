@@ -32,6 +32,15 @@ class ImageService
     private const PENDING_DIRECTORY = 'tmp/pending-uploads';
 
     /**
+     * S3 metadata for every stored image. Without an explicit ContentType
+     * Supabase serves the files as application/octet-stream and Chrome's
+     * ORB refuses to render them.
+     *
+     * @var array<string, string>
+     */
+    public const STORAGE_OPTIONS = ['ContentType' => 'image/webp', 'visibility' => 'public'];
+
+    /**
      * Process an upload and attach it to the property. The first image of
      * a property becomes primary automatically (model event).
      */
@@ -96,8 +105,11 @@ class ImageService
             $path = "{$directory}/".basename($entry['path']);
             $thumbnailPath = "{$directory}/".basename($entry['thumbnail_path']);
 
-            $this->disk()->move($entry['path'], $path);
-            $this->disk()->move($entry['thumbnail_path'], $thumbnailPath);
+            // Not move(): flysystem's S3 copy reads the source ACL first,
+            // which Supabase's S3 API does not support. A fresh put also
+            // re-stamps the ContentType metadata.
+            $this->moveByRewrite($entry['path'], $path);
+            $this->moveByRewrite($entry['thumbnail_path'], $thumbnailPath);
 
             $property->images()->create([
                 'path' => $path,
@@ -160,8 +172,8 @@ class ImageService
         $path = "{$directory}/{$uuid}.webp";
         $thumbnailPath = "{$directory}/{$uuid}_thumb.webp";
 
-        $this->disk()->put($path, (string) $large->toWebp(self::WEBP_QUALITY));
-        $this->disk()->put($thumbnailPath, (string) $thumbnail->toWebp(self::WEBP_QUALITY));
+        $this->disk()->put($path, (string) $large->toWebp(self::WEBP_QUALITY), self::STORAGE_OPTIONS);
+        $this->disk()->put($thumbnailPath, (string) $thumbnail->toWebp(self::WEBP_QUALITY), self::STORAGE_OPTIONS);
 
         return [$path, $thumbnailPath];
     }
@@ -186,6 +198,12 @@ class ImageService
             ->scaleDown(width: max(1, intdiv($image->width(), 4)));
 
         $image->place($logo, 'bottom-right', 24, 24, 40);
+    }
+
+    private function moveByRewrite(string $from, string $to): void
+    {
+        $this->disk()->put($to, $this->disk()->get($from), self::STORAGE_OPTIONS);
+        $this->disk()->delete($from);
     }
 
     private function disk(): Filesystem

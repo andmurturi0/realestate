@@ -346,6 +346,35 @@ test('pending uploads validate the real mime type too', function () {
     expect(session(ImageService::PENDING_SESSION_KEY, []))->toBeEmpty();
 });
 
+// Riparimi i ContentType-ve (ORB)
+
+test('the fix-image-content-types command re-puts stored files and skips the rest', function () {
+    Storage::fake('supabase');
+    $agent = User::factory()->agent()->create();
+    $property = Property::factory()->for($agent, 'agent')->create();
+
+    // Two real uploads → 4 webp files on disk.
+    $this->actingAs($agent)
+        ->post("/dashboard/properties/{$property->id}/images", ['image' => imageUpload('a.png')]);
+    $this->post("/dashboard/properties/{$property->id}/images", ['image' => imageUpload('b.png')]);
+
+    // Seeded picsum URLs are skipped; rows whose files vanished are reported.
+    PropertyImage::factory()->for($property)->create();
+    PropertyImage::factory()->for($property)->create([
+        'path' => 'properties/999/humbur.webp',
+        'thumbnail_path' => 'properties/999/humbur_thumb.webp',
+    ]);
+
+    $this->artisan('properties:fix-image-content-types')
+        ->expectsOutputToContain('Fixed: 4, skipped: 2, missing on disk: 2.')
+        ->assertSuccessful();
+
+    foreach ($property->images()->whereLike('path', 'properties/%')->where('path', 'not like', '%humbur%')->get() as $image) {
+        Storage::disk('supabase')->assertExists($image->path);
+        Storage::disk('supabase')->assertExists($image->thumbnail_path);
+    }
+});
+
 // Watermark
 
 test('the watermark lands on the large image but never on the thumbnail', function () {

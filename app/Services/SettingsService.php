@@ -29,7 +29,13 @@ class SettingsService
     {
         $previous = Setting::get($key);
 
-        $path = $file->store('branding', 'supabase');
+        // Explicit ContentType: without it Supabase serves the file as
+        // application/octet-stream and browsers (ORB) refuse to render it.
+        $path = $file->storeAs('branding', $file->hashName(), [
+            'disk' => 'supabase',
+            'ContentType' => $file->getMimeType(),
+            'visibility' => 'public',
+        ]);
 
         $this->update([$key => $path]);
 
