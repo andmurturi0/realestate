@@ -24,6 +24,16 @@ class PropertyPolicy
     }
 
     /**
+     * Determine whether the user may view a non-published property through
+     * the public site (used only for the /properties/{slug} 404 gate —
+     * unrelated to the dashboard's "any authenticated" view() above).
+     */
+    public function viewPublic(User $user, Property $property): bool
+    {
+        return $user->isAdmin() || $property->agent_id === $user->id;
+    }
+
+    /**
      * Determine whether the user can create properties.
      */
     public function create(User $user): bool

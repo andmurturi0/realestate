@@ -31,6 +31,29 @@ test('an agent can view another agent\'s property', function () {
     expect($agent->can('view', $property))->toBeTrue();
 });
 
+// Prona — shiko publikisht (draft): admin dhe agjenti pronar po, të tjerët jo
+
+test('an admin can view a draft property publicly', function () {
+    $admin = User::factory()->admin()->create();
+    $property = Property::factory()->draft()->create();
+
+    expect($admin->can('viewPublic', $property))->toBeTrue();
+});
+
+test('the owning agent can view their own draft property publicly', function () {
+    $agent = User::factory()->agent()->create();
+    $property = Property::factory()->draft()->for($agent, 'agent')->create();
+
+    expect($agent->can('viewPublic', $property))->toBeTrue();
+});
+
+test('a different agent cannot view another agent\'s draft property publicly', function () {
+    $agent = User::factory()->agent()->create();
+    $property = Property::factory()->draft()->create();
+
+    expect($agent->can('viewPublic', $property))->toBeFalse();
+});
+
 // Prona — krijo: të dy rolet
 
 test('an admin can create a property', function () {

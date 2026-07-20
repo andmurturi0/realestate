@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
+use App\Enums\LocationType;
 use App\Enums\PropertyStatus;
+use App\Models\Location;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PropertyService
@@ -101,6 +105,70 @@ class PropertyService
             ->orderBy('id', 'desc')
             ->paginate(20)
             ->withQueryString();
+    }
+
+    /**
+     * Increments views_count at most once per property per visitor session
+     * (FAZAT.md Faza 6A) — a refresh spam does not inflate the counter.
+     */
+    public function registerView(Property $property, Request $request): void
+    {
+        $viewed = $request->session()->get('viewed_properties', []);
+
+        if (in_array($property->id, $viewed, true)) {
+            return;
+        }
+
+        $property->increment('views_count');
+
+        $viewed[] = $property->id;
+        $request->session()->put('viewed_properties', $viewed);
+    }
+
+    /**
+     * Published properties, same category and municipality, priced within
+     * 25% of the given property. Relaxed to category-only when the strict
+     * match yields fewer than $limit results (FAZAT.md Faza 6A).
+     *
+     * @return Collection<int, Property>
+     */
+    public function similarTo(Property $property, int $limit = 3): Collection
+    {
+        $base = fn () => Property::query()
+            ->published()
+            ->whereKeyNot($property->id)
+            ->where('category', $property->category)
+            ->with([
+                'agent:id,name,phone,whatsapp,avatar_path',
+                'location:id,parent_id,name,type',
+                'location.parent:id,name',
+                'primaryImage',
+            ]);
+
+        $municipalityId = $property->location?->type === LocationType::Municipality
+            ? $property->location->id
+            : $property->location?->parent_id;
+
+        if ($municipalityId !== null) {
+            $locationIds = Location::query()
+                ->where(fn ($query) => $query->whereKey($municipalityId)->orWhere('parent_id', $municipalityId))
+                ->pluck('id');
+
+            $matches = $base()
+                ->whereIn('location_id', $locationIds)
+                ->whereBetween('price', [
+                    (int) round($property->price * 0.75),
+                    (int) round($property->price * 1.25),
+                ])
+                ->limit($limit)
+                ->get();
+
+            if ($matches->count() >= $limit) {
+                return $matches;
+            }
+        }
+
+        return $base()->limit($limit)->get();
     }
 
     /**

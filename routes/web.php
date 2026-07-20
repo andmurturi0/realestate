@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\PendingImageController;
 use App\Http\Controllers\Dashboard\PropertyController;
 use App\Http\Controllers\Dashboard\PropertyImageController;
 use App\Http\Controllers\Dashboard\SettingsController;
+use App\Http\Controllers\Site\ContactMessageController;
 use App\Http\Controllers\Site\FavoriteController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/properties', [SitePropertyController::class, 'index'])->name('properties.index');
+Route::get('/properties/{property:slug}', [SitePropertyController::class, 'show'])->name('properties.show');
+Route::post('/properties/{property:slug}/contact', [ContactMessageController::class, 'store'])
+    ->middleware('throttle:contact')
+    ->name('properties.contact');
 
 Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 Route::get('/favorites/properties', [FavoriteController::class, 'properties'])->name('favorites.properties');

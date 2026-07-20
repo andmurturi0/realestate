@@ -2,6 +2,7 @@
 import { useFavourites } from '@/composables/useFavourites';
 import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
+import { Link } from '@inertiajs/vue3';
 import { Bath, BedDouble, Heart, ImageOff, MapPin, Ruler } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -25,10 +26,9 @@ const surfaceLabel = computed(() =>
 );
 </script>
 
-<!-- The card links to the detail page starting with Faza 6 — until then it is display-only. -->
 <template>
     <article class="group overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
-        <div class="relative aspect-[4/3] overflow-hidden bg-muted">
+        <Link :href="route('properties.show', property.slug)" class="relative block aspect-[4/3] overflow-hidden bg-muted">
             <img
                 v-if="imageSrc"
                 :src="imageSrc"
@@ -63,7 +63,7 @@ const surfaceLabel = computed(() =>
             >
                 <Heart class="size-4" :class="{ 'fill-current': isFavourite }" />
             </button>
-        </div>
+        </Link>
 
         <div class="flex flex-col gap-1.5 p-4">
             <div class="flex items-baseline justify-between gap-2">
@@ -74,7 +74,9 @@ const surfaceLabel = computed(() =>
                 <span v-if="property.price_negotiable" class="shrink-0 text-xs text-muted-foreground">I negociueshëm</span>
             </div>
 
-            <h3 class="line-clamp-2 font-medium leading-snug">{{ property.title }}</h3>
+            <h3 class="line-clamp-2 font-medium leading-snug">
+                <Link :href="route('properties.show', property.slug)" class="hover:underline">{{ property.title }}</Link>
+            </h3>
 
             <p v-if="locationLabel" class="flex items-center gap-1 text-sm text-muted-foreground">
                 <MapPin class="size-3.5 shrink-0" />

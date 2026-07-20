@@ -1,0 +1,89 @@
+<script setup lang="ts">
+import { categoryDetailFields, type DetailField, type PropertyCategory } from '@/lib/property';
+import { Bath, BedDouble, Building2, Calendar, Car, Layers, Ruler, Trees } from 'lucide-vue-next';
+import { computed } from 'vue';
+
+const props = defineProps<{
+    category: string;
+    surfaceM2: number | null;
+    landSurfaceM2: number | null;
+    bedrooms: number | null;
+    bathrooms: number | null;
+    floor: number | null;
+    totalFloors: number | null;
+    yearBuilt: number | null;
+    parkingSpaces: number | null;
+}>();
+
+interface Spec {
+    icon: typeof Ruler;
+    label: string;
+    value: string;
+}
+
+const fieldMeta: Record<DetailField, { icon: typeof Ruler; label: string; format: (v: number) => string }> = {
+    land_surface_m2: { icon: Trees, label: 'Sipërfaqja e tokës', format: (v) => `${new Intl.NumberFormat('sq-AL').format(v)} m²` },
+    bedrooms: { icon: BedDouble, label: 'Dhoma gjumi', format: (v) => String(v) },
+    bathrooms: { icon: Bath, label: 'Banjo', format: (v) => String(v) },
+    floor: { icon: Layers, label: 'Kati', format: (v) => String(v) },
+    total_floors: { icon: Building2, label: 'Katet gjithsej', format: (v) => String(v) },
+    year_built: { icon: Calendar, label: 'Viti i ndërtimit', format: (v) => String(v) },
+    parking_spaces: { icon: Car, label: 'Vende parkimi', format: (v) => String(v) },
+};
+
+const valuesByField: Record<DetailField, number | null> = {
+    land_surface_m2: null,
+    bedrooms: null,
+    bathrooms: null,
+    floor: null,
+    total_floors: null,
+    year_built: null,
+    parking_spaces: null,
+};
+
+const specs = computed<Spec[]>(() => {
+    const allowed = categoryDetailFields[props.category as PropertyCategory] ?? [];
+    const source: Record<DetailField, number | null> = {
+        ...valuesByField,
+        land_surface_m2: props.landSurfaceM2,
+        bedrooms: props.bedrooms,
+        bathrooms: props.bathrooms,
+        floor: props.floor,
+        total_floors: props.totalFloors,
+        year_built: props.yearBuilt,
+        parking_spaces: props.parkingSpaces,
+    };
+
+    const result: Spec[] = [];
+
+    if (props.surfaceM2 != null) {
+        result.push({
+            icon: Ruler,
+            label: 'Sipërfaqja',
+            value: `${new Intl.NumberFormat('sq-AL').format(props.surfaceM2)} m²`,
+        });
+    }
+
+    for (const field of allowed) {
+        const value = source[field];
+
+        if (value != null) {
+            result.push({ icon: fieldMeta[field].icon, label: fieldMeta[field].label, value: fieldMeta[field].format(value) });
+        }
+    }
+
+    return result;
+});
+</script>
+
+<template>
+    <div v-if="specs.length" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div v-for="spec in specs" :key="spec.label" class="flex items-center gap-2 rounded-lg border p-3">
+            <component :is="spec.icon" class="size-5 shrink-0 text-muted-foreground" />
+            <div class="min-w-0">
+                <p class="truncate text-sm font-medium">{{ spec.value }}</p>
+                <p class="truncate text-xs text-muted-foreground">{{ spec.label }}</p>
+            </div>
+        </div>
+    </div>
+</template>
