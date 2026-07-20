@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AgentCard from '@/components/site/AgentCard.vue';
 import ContactForm from '@/components/site/ContactForm.vue';
+import FinancingCalculator from '@/components/site/FinancingCalculator.vue';
 import PropertyFeaturesList from '@/components/site/PropertyFeaturesList.vue';
 import PropertyGallery from '@/components/site/PropertyGallery.vue';
 import PropertyLocationMap from '@/components/site/PropertyLocationMap.vue';
@@ -112,6 +113,7 @@ const publishedLabel = computed(() =>
 
                 <div class="space-y-4 lg:sticky lg:top-6 lg:self-start">
                     <AgentCard v-if="property.agent" :agent="property.agent" :reference-code="property.reference_code" :title="property.title" />
+                    <FinancingCalculator v-if="property.listing_type === 'sale'" :price="property.price" />
                     <ContactForm :property-slug="property.slug" />
                 </div>
             </div>
