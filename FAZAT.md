@@ -648,35 +648,61 @@ report what you find before fixing.
 
 > Mos e bëj më herët. Dizajni gjatë ndërtimit del generic, gjithmonë.
 
-Përpara promptit, vendos vetë drejtimin. Shembull: *warm minimal, tipografi editoriale,
-hapësirë e bollshme, foto në plan të parë, çmimi si element hero*.
+**Drejtimi (i vendosur):** *modern & clean* — hapësirë e bollshme (generous whitespace),
+kufij hairline të hollë, fotografia prin (photography leads), çmimi si element hero,
+dekorim minimal, cilësi "international property-portal" (nivel Rightmove/Immoscout,
+jo template gjenerik). Vetëm dy pesha shkronjash (two font weights only). Sentence case
+kudo — pa Title Case, pa ALL CAPS për etiketa.
+
+**Dark/Light mode** është pjesë e këtij sistemi dizajni që nga fillimi, jo shtesë pas:
+toggle i disponueshëm kudo (publike + dashboard, të gjithë rolet), light si default,
+klasë `dark` në `<html>` + cookie, duke zgjeruar `useAppearance.ts` të starter-it. Çdo
+token ngjyre (jo vetëm `primary_color`) merr variant `dark` në të njëjtin hap kur
+krijohet — shih PLAN.md §9.7.
 
 ### Prompti
 
 ```
 Design pass only. Do NOT change any functionality, routes, or queries. Visual layer only.
 
-Direction: [SHKRUAJ DREJTIMIN TËND KËTU — jini specifik]
+Direction: modern & clean. Generous whitespace, thin hairline borders, photography leads,
+price as hero, minimal decoration, international property-portal quality (think
+Rightmove/Immoscout tier, not a generic template). Two font weights only. Sentence case
+everywhere — no Title Case, no all-caps labels.
 
-1. Establish a design system first: type scale, spacing scale, colour tokens driven by
-   settings.primary_color, radii, shadows, transitions. Put it in tailwind.config and CSS
-   variables. Show it to me before touching any page.
+Dark/light mode is part of this design system from the start, not bolted on after:
+- Toggle available everywhere — public site AND dashboard, for every role. Light is default.
+- Persist via a `dark` class on `<html>` + cookie, extending the starter's
+  useAppearance.ts — do not write a parallel implementation.
+- Every colour token gets its dark variant in the same pass it's defined, including
+  tokens driven by settings.primary_color.
+
+1. Establish a design system first: type scale (two weights only), spacing scale, colour
+   tokens (light + dark variant each) driven by settings.primary_color, radii, shadows,
+   transitions. Put it in tailwind.config and CSS variables. Show it to me before touching
+   any page.
 2. Then apply it page by page, in this order: property card → listing → detail → homepage
    → forms → dashboard.
 3. Mobile-first. Test at 375px before anything else.
 4. Micro-interactions: hover lifts on cards, smooth filter transitions, skeleton loaders.
    Subtle. If it draws attention to itself, it is wrong.
-5. Accessibility: focus rings, 4.5:1 contrast, alt text, aria labels on icon buttons.
+5. Accessibility: focus rings, 4.5:1 contrast (both light and dark), alt text, aria labels
+   on icon buttons.
 
-Stop after step 1 and show me the design system. Do not proceed until I approve.
+Stop after step 1 and show me the design system (both light and dark). Do not proceed
+until I approve.
 ```
 
 ### E kryer kur
 - [ ] Sistemi i dizajnit i miratuar prej teje para se të prekej ndonjë faqe
+- [ ] Sistemi i dizajnit i miratuar përfshin variantin dark për çdo token, jo vetëm light
+- [ ] Toggle dark/light dukshëm në header — funksionon në faqet publike DHE në dashboard
+- [ ] Light është gjendja e parazgjedhur (default) për vizitor të ri, pa cookie ekzistuese
+- [ ] Rifreskoj faqen në dark mode → mbetet dark (cookie + klasë `<html>`, jo flash i bardhë)
 - [ ] Në 375px gjithçka përdoret me një dorë
-- [ ] Ndërrimi i `primary_color` në cilësime → e gjithë faqja ndryshon
-- [ ] Lighthouse Accessibility ≥ 95
-- [ ] Tab nëpër faqe → focus gjithmonë i dukshëm
+- [ ] Ndërrimi i `primary_color` në cilësime → e gjithë faqja ndryshon, në të dyja temat
+- [ ] Lighthouse Accessibility ≥ 95 (kontrollo në të dyja temat)
+- [ ] Tab nëpër faqe → focus gjithmonë i dukshëm, në të dyja temat
 - [ ] Nuk duket si template
 
 **Commit:** `style: design system and visual pass`
