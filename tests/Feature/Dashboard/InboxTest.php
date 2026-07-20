@@ -1,10 +1,26 @@
 <?php
 
 use App\Models\ContactMessage;
+use App\Models\Property;
 use App\Models\PropertyOffer;
 use App\Models\PropertyRequest;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
+
+// Smoke test — a message attached to a property must not blow up the list
+// query. property_id being non-null is what triggers the eager-load of the
+// `property` relation at all (an empty foreign-key set gets optimized away
+// by Eloquent, which is why a message with no property never caught this).
+
+test('the message list loads successfully when a message is attached to a property', function () {
+    $admin = User::factory()->admin()->create();
+    $property = Property::factory()->published()->create();
+    ContactMessage::factory()->create(['property_id' => $property->id]);
+
+    $this->actingAs($admin)
+        ->get(route('dashboard.inbox.messages'))
+        ->assertSuccessful();
+});
 
 // Scoping — the query itself must never even enumerate another agent's leads.
 

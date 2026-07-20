@@ -32,7 +32,9 @@ class MessageController extends Controller
             ['full_name']
         );
 
-        $messages = $query->with(['assignedTo:id,name', 'property:id,slug,reference_code,price,primaryImage'])
+        // The list row only needs property_id (a native column, see 'has_property'
+        // below) — the property itself is only loaded for the detail panel.
+        $messages = $query->with(['assignedTo:id,name'])
             ->latest()
             ->paginate(20)
             ->withQueryString()
