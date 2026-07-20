@@ -28,7 +28,7 @@ const locationLabel = computed(() => {
 });
 
 const surfaceLabel = computed(() =>
-    props.property.surface_m2 == null ? null : `${new Intl.NumberFormat(intlLocales[locale]).format(props.property.surface_m2)} m²`,
+    props.property.surface_m2 == null ? null : `${new Intl.NumberFormat(intlLocales[locale.value]).format(props.property.surface_m2)} m²`,
 );
 </script>
 

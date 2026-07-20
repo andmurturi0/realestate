@@ -39,7 +39,7 @@ const locationLabel = computed(() => {
 
 const publishedLabel = computed(() =>
     props.property.published_at
-        ? new Intl.DateTimeFormat(intlLocales[locale], { day: 'numeric', month: 'long', year: 'numeric' }).format(
+        ? new Intl.DateTimeFormat(intlLocales[locale.value], { day: 'numeric', month: 'long', year: 'numeric' }).format(
               new Date(props.property.published_at),
           )
         : null,

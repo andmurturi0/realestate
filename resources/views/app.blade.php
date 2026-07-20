@@ -57,7 +57,11 @@
             </script>
         @endif
 
-        {{-- Same inline-@php constraint as the block above: no @php/@endphp pairs in this file. --}}
+        {{-- Same constraint as the comment above: no block-style @php open/close pair
+        anywhere in this file — Blade's storePhpBlocks() scans the RAW template text
+        for that literal closing token (even inside comments, before comments are
+        stripped) and swallows everything between the first @php and it as one
+        unprocessed raw block. Stay with the inline single-statement @php(...) form. --}}
         @php($currentRoute = request()->route())
         @php($bareRouteName = $currentRoute?->getName() ? preg_replace('/^locale\./', '', $currentRoute->getName()) : null)
         @php($hreflangRoutes = ['home', 'properties.index', 'properties.show', 'offer-property.create', 'create-request.create', 'favorites.index'])

@@ -84,3 +84,33 @@ test('hreflang tags are absent on non-public-listing routes like the dashboard',
         ->get('/dashboard')
         ->assertDontSee('hreflang=', false);
 });
+
+// Regression: a literal "@endphp" inside a Blade comment made storePhpBlocks()
+// swallow everything from the first @php to that comment as one unprocessed
+// raw block, so the <head> leaked raw Blade source as visible page text.
+// hreflang assertions above didn't catch this — they only check the tags
+// exist somewhere in the body, and those tags sit after the corrupted span.
+test('the compiled blade template does not leak raw directives as visible text', function () {
+    $response = $this->get('/properties');
+
+    $response->assertSuccessful();
+    $response->assertDontSee('{{ $branding', false);
+    $response->assertDontSee('@if (', false);
+    $response->assertDontSee('@endif', false);
+    $response->assertDontSee('<?php', false);
+    $response->assertDontSee('@php', false);
+});
+
+// Regression: no lang/xx/pagination.php is published, so Laravel's paginator
+// falls back to the raw translation key itself, not literal "Previous"/"Next"
+// text (see LengthAwarePaginator::previous/nextPageUrl). The frontend's
+// paginationLabel() helper depends on this exact key format to translate it.
+test('unpaginated pagination links use the raw translation key, not literal English', function () {
+    Property::factory()->count(13)->published()->create();
+
+    $response = $this->get('/properties');
+
+    $response->assertInertia(fn (Assert $page) => $page
+        ->where('properties.links.0.label', 'pagination.previous')
+        ->where('properties.links.3.label', 'pagination.next'));
+});

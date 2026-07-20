@@ -26,11 +26,14 @@ interface Spec {
     value: string;
 }
 
-const fieldMeta: Record<DetailField, { icon: typeof Ruler; label: string; format: (v: number) => string }> = {
+// Computed, not a plain const: switching locale is a client-side Inertia
+// visit that reuses this component instance, so t() calls baked into a
+// plain object at setup time would freeze at whatever locale first mounted it.
+const fieldMeta = computed<Record<DetailField, { icon: typeof Ruler; label: string; format: (v: number) => string }>>(() => ({
     land_surface_m2: {
         icon: Trees,
         label: t('Sipërfaqja e tokës'),
-        format: (v) => `${new Intl.NumberFormat(intlLocales[locale]).format(v)} m²`,
+        format: (v) => `${new Intl.NumberFormat(intlLocales[locale.value]).format(v)} m²`,
     },
     bedrooms: { icon: BedDouble, label: t('Dhoma gjumi'), format: (v) => String(v) },
     bathrooms: { icon: Bath, label: t('Banjo'), format: (v) => String(v) },
@@ -38,7 +41,7 @@ const fieldMeta: Record<DetailField, { icon: typeof Ruler; label: string; format
     total_floors: { icon: Building2, label: t('Katet gjithsej'), format: (v) => String(v) },
     year_built: { icon: Calendar, label: t('Viti i ndërtimit'), format: (v) => String(v) },
     parking_spaces: { icon: Car, label: t('Vende parkimi'), format: (v) => String(v) },
-};
+}));
 
 const valuesByField: Record<DetailField, number | null> = {
     land_surface_m2: null,
@@ -69,7 +72,7 @@ const specs = computed<Spec[]>(() => {
         result.push({
             icon: Ruler,
             label: t('Sipërfaqja'),
-            value: `${new Intl.NumberFormat(intlLocales[locale]).format(props.surfaceM2)} m²`,
+            value: `${new Intl.NumberFormat(intlLocales[locale.value]).format(props.surfaceM2)} m²`,
         });
     }
 
@@ -77,7 +80,7 @@ const specs = computed<Spec[]>(() => {
         const value = source[field];
 
         if (value != null) {
-            result.push({ icon: fieldMeta[field].icon, label: fieldMeta[field].label, value: fieldMeta[field].format(value) });
+            result.push({ icon: fieldMeta.value[field].icon, label: fieldMeta.value[field].label, value: fieldMeta.value[field].format(value) });
         }
     }
 

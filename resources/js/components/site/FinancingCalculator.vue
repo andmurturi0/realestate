@@ -8,7 +8,7 @@ const props = defineProps<{
     price: number; // cents
 }>();
 
-const { t } = useTranslations();
+const { t, locale } = useTranslations();
 
 const priceEuros = props.price / 100;
 
@@ -72,14 +72,17 @@ const riskClasses: Record<RiskLevel, string> = {
     high: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
 };
 
-const riskLabels: Record<RiskLevel, string> = {
+// Computed, not a plain const: switching locale is a client-side Inertia
+// visit that reuses this component instance, so a one-off t() call baked
+// into a plain object would freeze at whatever locale first mounted it.
+const riskLabels = computed<Record<RiskLevel, string>>(() => ({
     low: t('Rrezik i ulët'),
     moderate: t('Rrezik mesatar'),
     high: t('Rrezik i lartë — shumica e bankave mund të mos e miratojnë'),
-};
+}));
 
 function formatEuro(euros: number): string {
-    return formatPriceCents(Math.round(euros * 100));
+    return formatPriceCents(Math.round(euros * 100), locale.value);
 }
 
 function formatYears(value: number): string {
@@ -105,7 +108,15 @@ function formatPercent(value: number): string {
                 :label="t('Parapagimi')"
                 :format="formatEuro"
             />
-            <NumberStepper id="loan-years" v-model="loanYears" :min="1" :max="30" :step="1" :label="t('Kohëzgjatja e kredisë')" :format="formatYears" />
+            <NumberStepper
+                id="loan-years"
+                v-model="loanYears"
+                :min="1"
+                :max="30"
+                :step="1"
+                :label="t('Kohëzgjatja e kredisë')"
+                :format="formatYears"
+            />
             <NumberStepper
                 id="monthly-income"
                 v-model="monthlyIncome"

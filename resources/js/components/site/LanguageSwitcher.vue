@@ -8,10 +8,12 @@ const page = usePage<SharedData>();
 const open = ref(false);
 const root = ref<HTMLElement | null>(null);
 
-const localeMeta: Record<'sq' | 'en' | 'de', { flag: string; name: string }> = {
-    sq: { flag: '🇦🇱', name: 'Shqip' },
-    en: { flag: '🇬🇧', name: 'English' },
-    de: { flag: '🇩🇪', name: 'Deutsch' },
+// Language code, not a country flag — English isn't tied to Great Britain,
+// and a GB flag next to "English" reads wrong for an audience outside the UK.
+const localeMeta: Record<'sq' | 'en' | 'de', { code: string; name: string }> = {
+    sq: { code: 'SQ', name: 'Shqip' },
+    en: { code: 'EN', name: 'English' },
+    de: { code: 'DE', name: 'Deutsch' },
 };
 
 function switchLocale(locale: 'sq' | 'en' | 'de'): void {
@@ -20,6 +22,13 @@ function switchLocale(locale: 'sq' | 'en' | 'de'): void {
     if (locale === page.props.locale) {
         return;
     }
+
+    // The unprefixed sq route has no URL segment to signal "explicitly sq"
+    // versus "no preference, defer to the cookie" — so switching to sq would
+    // otherwise keep resolving to whatever en/de the cookie still holds from
+    // a previous switch. Writing it here first (SetLocale's cookie isn't
+    // httpOnly) makes the target locale win regardless of prefix ambiguity.
+    document.cookie = `locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
 
     const currentPath = window.location.pathname.replace(/^\/(en|de)(?=\/|$)/, '') || '/';
     const targetPath = locale === 'sq' ? currentPath : `/${locale}${currentPath === '/' ? '' : currentPath}`;
@@ -45,7 +54,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
             :aria-expanded="open"
             @click="open = !open"
         >
-            <span>{{ localeMeta[page.props.locale].flag }}</span>
+            <span class="font-semibold tracking-wide">{{ localeMeta[page.props.locale].code }}</span>
             <span class="hidden sm:inline">{{ localeMeta[page.props.locale].name }}</span>
             <ChevronDown class="size-3.5" />
         </button>
@@ -58,7 +67,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
                 :class="locale === page.props.locale ? 'font-medium text-foreground' : 'text-muted-foreground'"
                 @click="switchLocale(locale)"
             >
-                <span>{{ localeMeta[locale].flag }}</span>
+                <span class="w-6 font-semibold tracking-wide">{{ localeMeta[locale].code }}</span>
                 <span>{{ localeMeta[locale].name }}</span>
             </button>
         </div>

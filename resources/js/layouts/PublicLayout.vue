@@ -7,7 +7,7 @@ import { useTranslations } from '@/lib/trans';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Heart } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 
 const page = usePage<SharedData>();
 const settings = computed(() => page.props.settings);
@@ -15,6 +15,17 @@ const { t } = useTranslations();
 
 useBrandColor();
 const favourites = useFavourites();
+
+// <html lang> is set server-side on the initial load only — switching locale
+// afterwards is a client-side Inertia visit that never re-renders app.blade.php,
+// so without this it stays stuck on whatever locale first loaded the page.
+watch(
+    () => page.props.locale,
+    (locale) => {
+        document.documentElement.lang = locale;
+    },
+    { immediate: true },
+);
 
 // Strip the locale prefix before matching against page.url, so the "active"
 // nav state works the same under /en and /de as it does unprefixed.

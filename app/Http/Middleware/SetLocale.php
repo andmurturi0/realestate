@@ -36,7 +36,12 @@ class SetLocale
 
         App::setLocale($locale);
 
-        Cookie::queue('locale', $locale, 60 * 24 * 365);
+        // Not httpOnly: LanguageSwitcher.vue writes this cookie directly
+        // before navigating, so switching to sq (the unprefixed route, which
+        // otherwise has no way to signal "explicitly sq" versus "no
+        // preference yet, defer to any existing cookie") actually takes
+        // effect instead of the previous en/de cookie value winning again.
+        Cookie::queue('locale', $locale, 60 * 24 * 365, null, null, null, false);
 
         return $next($request);
     }
