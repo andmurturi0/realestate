@@ -8,6 +8,9 @@ use App\Http\Controllers\Dashboard\PendingImageController;
 use App\Http\Controllers\Dashboard\PropertyController;
 use App\Http\Controllers\Dashboard\PropertyImageController;
 use App\Http\Controllers\Dashboard\SettingsController;
+use App\Http\Controllers\Dashboard\TeamMemberController;
+use App\Http\Controllers\Dashboard\TestimonialController;
+use App\Http\Controllers\Site\AboutController;
 use App\Http\Controllers\Site\ContactMessageController;
 use App\Http\Controllers\Site\FavoriteController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
@@ -32,6 +35,7 @@ $publicPages = function () {
     Route::get('/offer-property', [PropertyOfferController::class, 'create'])->name('offer-property.create');
     Route::get('/create-request', [PropertyRequestController::class, 'create'])->name('create-request.create');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::get('/about', [AboutController::class, 'show'])->name('about');
 };
 
 Route::middleware(SetLocale::class)->group(function () use ($publicPages) {
@@ -136,6 +140,36 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
             ->name('dashboard.settings.social');
         Route::put('/settings/content', [SettingsController::class, 'updateContent'])
             ->name('dashboard.settings.content');
+
+        Route::get('/testimonials', [TestimonialController::class, 'index'])
+            ->name('dashboard.testimonials.index');
+        Route::get('/testimonials/create', [TestimonialController::class, 'create'])
+            ->name('dashboard.testimonials.create');
+        Route::post('/testimonials', [TestimonialController::class, 'store'])
+            ->name('dashboard.testimonials.store');
+        Route::put('/testimonials/order', [TestimonialController::class, 'reorder'])
+            ->name('dashboard.testimonials.reorder');
+        Route::get('/testimonials/{testimonial}/edit', [TestimonialController::class, 'edit'])
+            ->name('dashboard.testimonials.edit');
+        Route::put('/testimonials/{testimonial}', [TestimonialController::class, 'update'])
+            ->name('dashboard.testimonials.update');
+        Route::delete('/testimonials/{testimonial}', [TestimonialController::class, 'destroy'])
+            ->name('dashboard.testimonials.destroy');
+
+        Route::get('/team-members', [TeamMemberController::class, 'index'])
+            ->name('dashboard.team-members.index');
+        Route::get('/team-members/create', [TeamMemberController::class, 'create'])
+            ->name('dashboard.team-members.create');
+        Route::post('/team-members', [TeamMemberController::class, 'store'])
+            ->name('dashboard.team-members.store');
+        Route::put('/team-members/order', [TeamMemberController::class, 'reorder'])
+            ->name('dashboard.team-members.reorder');
+        Route::get('/team-members/{teamMember}/edit', [TeamMemberController::class, 'edit'])
+            ->name('dashboard.team-members.edit');
+        Route::put('/team-members/{teamMember}', [TeamMemberController::class, 'update'])
+            ->name('dashboard.team-members.update');
+        Route::delete('/team-members/{teamMember}', [TeamMemberController::class, 'destroy'])
+            ->name('dashboard.team-members.destroy');
     });
 });
 

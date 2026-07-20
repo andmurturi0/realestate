@@ -27,6 +27,8 @@ class ImageService
 
     private const THUMBNAIL_WIDTH = 400;
 
+    private const SINGLE_PHOTO_WIDTH = 800;
+
     private const WEBP_QUALITY = 85;
 
     private const PENDING_DIRECTORY = 'tmp/pending-uploads';
@@ -151,6 +153,35 @@ class ImageService
     public function makePrimary(PropertyImage $image): void
     {
         $image->update(['is_primary' => true]);
+    }
+
+    /**
+     * Process and store a single unwatermarked photo (testimonials, team
+     * members) — no gallery row, no thumbnail variant. Returns the stored
+     * path.
+     */
+    public function storeSingle(UploadedFile $file, string $directory): string
+    {
+        $manager = ImageManager::gd();
+        $uuid = (string) Str::uuid();
+
+        $image = $manager->read($file->getRealPath())->scaleDown(width: self::SINGLE_PHOTO_WIDTH);
+
+        $path = "{$directory}/{$uuid}.webp";
+
+        $this->disk()->put($path, (string) $image->toWebp(self::WEBP_QUALITY), self::STORAGE_OPTIONS);
+
+        return $path;
+    }
+
+    /**
+     * Delete a single photo stored via storeSingle(), if present.
+     */
+    public function deleteSingle(?string $path): void
+    {
+        if ($path !== null && $path !== '' && $this->disk()->exists($path)) {
+            $this->disk()->delete($path);
+        }
     }
 
     /**

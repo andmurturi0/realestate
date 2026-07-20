@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Building2, Inbox, LayoutGrid, MailQuestion, MessageSquare, Settings, Tags, Users } from 'lucide-vue-next';
+import { Building2, Inbox, LayoutGrid, MailQuestion, MessageSquare, Quote, Settings, Tags, Users, UsersRound } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
@@ -103,6 +103,24 @@ const isActive = (href: string) => page.url === href || page.url.startsWith(`${h
                             <Link href="/dashboard/agents">
                                 <Users />
                                 <span>Agjentët</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem v-if="can.manageSettings">
+                        <SidebarMenuButton as-child :is-active="isActive('/dashboard/testimonials')">
+                            <Link href="/dashboard/testimonials">
+                                <Quote />
+                                <span>Dëshmitë</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem v-if="can.manageSettings">
+                        <SidebarMenuButton as-child :is-active="isActive('/dashboard/team-members')">
+                            <Link href="/dashboard/team-members">
+                                <UsersRound />
+                                <span>Ekipi</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
