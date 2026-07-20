@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\Inbox\MessageController as InboxMessageController;
+use App\Http\Controllers\Dashboard\Inbox\OfferController as InboxOfferController;
+use App\Http\Controllers\Dashboard\Inbox\RequestController as InboxRequestController;
 use App\Http\Controllers\Dashboard\PendingImageController;
 use App\Http\Controllers\Dashboard\PropertyController;
 use App\Http\Controllers\Dashboard\PropertyImageController;
@@ -8,6 +11,8 @@ use App\Http\Controllers\Dashboard\SettingsController;
 use App\Http\Controllers\Site\ContactMessageController;
 use App\Http\Controllers\Site\FavoriteController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
+use App\Http\Controllers\Site\PropertyOfferController;
+use App\Http\Controllers\Site\PropertyRequestController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,6 +25,16 @@ Route::get('/properties/{property:slug}', [SitePropertyController::class, 'show'
 Route::post('/properties/{property:slug}/contact', [ContactMessageController::class, 'store'])
     ->middleware('throttle:contact')
     ->name('properties.contact');
+
+Route::get('/offer-property', [PropertyOfferController::class, 'create'])->name('offer-property.create');
+Route::post('/offer-property', [PropertyOfferController::class, 'store'])
+    ->middleware('throttle:offer')
+    ->name('offer-property.store');
+
+Route::get('/create-request', [PropertyRequestController::class, 'create'])->name('create-request.create');
+Route::post('/create-request', [PropertyRequestController::class, 'store'])
+    ->middleware('throttle:request')
+    ->name('create-request.store');
 
 Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 Route::get('/favorites/properties', [FavoriteController::class, 'properties'])->name('favorites.properties');
@@ -57,13 +72,36 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::delete('/pending-images/{id}', [PendingImageController::class, 'destroy'])
         ->name('dashboard.pending-images.destroy');
 
-    // Placeholder shells — the real pages arrive in later phases (FAZAT.md).
-    Route::inertia('/inbox/messages', 'dashboard/Placeholder', ['title' => 'Mesazhet'])
+    Route::get('/inbox/messages', [InboxMessageController::class, 'index'])
         ->name('dashboard.inbox.messages');
-    Route::inertia('/inbox/offers', 'dashboard/Placeholder', ['title' => 'Ofertat'])
+    Route::patch('/inbox/messages/{message}/status', [InboxMessageController::class, 'updateStatus'])
+        ->name('dashboard.inbox.messages.status');
+    Route::patch('/inbox/messages/{message}/assign', [InboxMessageController::class, 'assign'])
+        ->name('dashboard.inbox.messages.assign');
+    Route::post('/inbox/messages/{message}/notes', [InboxMessageController::class, 'storeNote'])
+        ->name('dashboard.inbox.messages.notes.store');
+
+    Route::get('/inbox/offers', [InboxOfferController::class, 'index'])
         ->name('dashboard.inbox.offers');
-    Route::inertia('/inbox/requests', 'dashboard/Placeholder', ['title' => 'Kërkesat'])
+    Route::patch('/inbox/offers/{offer}/status', [InboxOfferController::class, 'updateStatus'])
+        ->name('dashboard.inbox.offers.status');
+    Route::patch('/inbox/offers/{offer}/assign', [InboxOfferController::class, 'assign'])
+        ->name('dashboard.inbox.offers.assign');
+    Route::post('/inbox/offers/{offer}/notes', [InboxOfferController::class, 'storeNote'])
+        ->name('dashboard.inbox.offers.notes.store');
+    Route::get('/inbox/offers/{offer}/convert', [InboxOfferController::class, 'createFromOffer'])
+        ->name('dashboard.inbox.offers.convert.create');
+    Route::post('/inbox/offers/{offer}/convert', [InboxOfferController::class, 'convert'])
+        ->name('dashboard.inbox.offers.convert.store');
+
+    Route::get('/inbox/requests', [InboxRequestController::class, 'index'])
         ->name('dashboard.inbox.requests');
+    Route::patch('/inbox/requests/{propertyRequest}/status', [InboxRequestController::class, 'updateStatus'])
+        ->name('dashboard.inbox.requests.status');
+    Route::patch('/inbox/requests/{propertyRequest}/assign', [InboxRequestController::class, 'assign'])
+        ->name('dashboard.inbox.requests.assign');
+    Route::post('/inbox/requests/{propertyRequest}/notes', [InboxRequestController::class, 'storeNote'])
+        ->name('dashboard.inbox.requests.notes.store');
 
     Route::middleware('admin')->group(function () {
         Route::inertia('/agents', 'dashboard/Placeholder', ['title' => 'Agjentët'])

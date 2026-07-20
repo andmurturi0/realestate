@@ -15,6 +15,8 @@ const favourites = useFavourites();
 const navLinks = computed(() => [
     { label: 'Ballina', href: route('home'), active: page.url === '/' },
     { label: 'Pronat', href: route('properties.index'), active: page.url.startsWith('/properties') },
+    { label: 'Ofro Pronën', href: route('offer-property.create'), active: page.url.startsWith('/offer-property') },
+    { label: 'Bëj Kërkesë', href: route('create-request.create'), active: page.url.startsWith('/create-request') },
 ]);
 
 const socialLinks = computed(() =>
