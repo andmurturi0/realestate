@@ -87,7 +87,7 @@
             <link rel="alternate" hreflang="x-default" href="{{ route($bareRouteName, $hreflangParams) }}">
         @endif
 
-        @routes(auth()->check() ? null : 'guest')
+        @routes(auth()->check() ? null : 'guest', \Illuminate\Support\Facades\Vite::cspNonce())
         @vite(['resources/js/app.ts'])
         @inertiaHead
     </head>

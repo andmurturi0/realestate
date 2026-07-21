@@ -86,9 +86,12 @@ class SecurityHeaders
 
     /**
      * Vite's dev server (HMR websocket + asset ping) only exists outside
-     * production — the port is whatever's free, so these are wildcarded
-     * rather than pinned to 5173, and cover every host Node's dev server
-     * might bind to (localhost, 127.0.0.1, the IPv6 loopback).
+     * production. Scheme-only sources, not enumerated hosts: the port is
+     * whatever's free, and the host varies by OS/Node (localhost, 127.0.0.1,
+     * or the IPv6 loopback — bracketed IPv6 host-literals like [::1] aren't
+     * reliably valid under CSP's host-source grammar and got silently
+     * dropped by the browser, which is exactly what this box binds to per
+     * public/hot). Dev-only, so being broad here is low-risk.
      *
      * @return list<string>
      */
@@ -97,11 +100,7 @@ class SecurityHeaders
         $sources = ["'self'"];
 
         if (! app()->isProduction()) {
-            array_push(
-                $sources,
-                'http://localhost:*', 'http://127.0.0.1:*', 'http://[::1]:*',
-                'ws://localhost:*', 'ws://127.0.0.1:*', 'ws://[::1]:*',
-            );
+            array_push($sources, 'ws:', 'wss:', 'http:');
         }
 
         return $sources;

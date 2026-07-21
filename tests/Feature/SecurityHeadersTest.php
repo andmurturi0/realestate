@@ -67,11 +67,40 @@ test('the JSON-LD block on a property page carries the CSP nonce', function () {
     $response->assertSee('<script type="application/ld+json" nonce="'.$nonce.'">', false);
 });
 
-test('the Vite dev-server origins are allowed in connect-src outside production', function () {
+test('the Vite dev-server websocket scheme is allowed in connect-src outside production', function () {
     $csp = $this->get('/properties')->headers->get('Content-Security-Policy');
 
-    // The test environment is "testing", not "production" — matches how a
-    // staging/local box (not yet cut over to APP_ENV=production) behaves.
-    expect($csp)->toContain('ws://localhost:*')
-        ->and($csp)->toContain('ws://127.0.0.1:*');
+    // Scheme-only (ws:), not enumerated hosts: bracketed IPv6 host-literals
+    // like [::1] — exactly what Vite's dev server binds to on some boxes —
+    // aren't reliably valid under CSP's host-source grammar and get
+    // silently dropped, breaking HMR. The test environment is "testing",
+    // not "production" — matches a local/staging box.
+    expect($csp)->toContain('connect-src')
+        ->and($csp)->toContain('ws:');
+});
+
+// Regression: Ziggy's own script tag (the @routes Blade directive) was
+// missed in the first pass — only the two hand-written app.blade.php
+// scripts were nonced. A missing nonce on ANY script tag means that tag
+// doesn't execute under an enforced CSP; for Ziggy specifically that meant
+// route() was undefined and the whole app crashed. This scans every
+// <script> tag in the response, not just known ones, so a future addition
+// that forgets the nonce fails here too, not just in someone's browser.
+test('every script tag in the page carries the CSP nonce', function () {
+    $property = Property::factory()->published()->create();
+
+    $response = $this->withUnencryptedCookie('appearance', 'system')->get(route('properties.show', $property));
+
+    $csp = $response->headers->get('Content-Security-Policy');
+    preg_match("/'nonce-([A-Za-z0-9]+)'/", $csp, $matches);
+    $nonce = $matches[1] ?? null;
+    expect($nonce)->not->toBeNull();
+
+    preg_match_all('/<script\b[^>]*>/', $response->content(), $scriptTags);
+
+    expect($scriptTags[0])->not->toBeEmpty();
+
+    foreach ($scriptTags[0] as $tag) {
+        expect($tag)->toContain('nonce="'.$nonce.'"');
+    }
 });
