@@ -18,7 +18,6 @@ use App\Http\Controllers\Site\PropertyOfferController;
 use App\Http\Controllers\Site\PropertyRequestController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 // The public "pages" — every one of these is mirrored below under /en and
 // /de. sq stays unprefixed (FAZAT.md Faza 8), so this closure is registered
@@ -26,9 +25,7 @@ use Inertia\Inertia;
 // prefix for en/de. Keep this closure to GET page routes only — form/action
 // routes (contact, offer, request) don't need a locale-prefixed URL.
 $publicPages = function () {
-    Route::get('/', function () {
-        return Inertia::render('Welcome');
-    })->name('home');
+    Route::get('/', [SitePropertyController::class, 'index'])->name('home');
 
     Route::get('/properties', [SitePropertyController::class, 'index'])->name('properties.index');
     Route::get('/properties/{property:slug}', [SitePropertyController::class, 'show'])->name('properties.show');

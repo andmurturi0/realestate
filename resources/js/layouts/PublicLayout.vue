@@ -33,8 +33,7 @@ watch(
 const currentPath = computed(() => page.url.replace(/^\/(en|de)(?=\/|$)/, '') || '/');
 
 const navLinks = computed(() => [
-    { label: t('Ballina'), href: publicRoute('home'), active: currentPath.value === '/' },
-    { label: t('Pronat'), href: publicRoute('properties.index'), active: currentPath.value.startsWith('/properties') },
+    { label: t('Pronat'), href: publicRoute('properties.index'), active: currentPath.value === '/' || currentPath.value.startsWith('/properties') },
     { label: t('Rreth Nesh'), href: publicRoute('about'), active: currentPath.value.startsWith('/about') },
     { label: t('Ofro Pronën'), href: publicRoute('offer-property.create'), active: currentPath.value.startsWith('/offer-property') },
     { label: t('Bëj Kërkesë'), href: publicRoute('create-request.create'), active: currentPath.value.startsWith('/create-request') },
@@ -56,7 +55,7 @@ const socialLinks = computed(() =>
         <header class="border-b">
             <div class="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
                 <div class="flex items-center gap-8">
-                    <Link href="/" class="flex items-center gap-2">
+                    <Link :href="publicRoute('home')" class="flex items-center gap-2">
                         <img v-if="settings.logo_url" :src="settings.logo_url" :alt="settings.agency_name ?? ''" class="h-9 w-auto object-contain" />
                         <span class="text-lg font-medium">{{ settings.agency_name }}</span>
                     </Link>

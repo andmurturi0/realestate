@@ -55,7 +55,7 @@ const confirmDelete = () => {
     <Head title="Ekipi" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-1 flex-col gap-4 p-4">
+        <div class="flex min-w-0 flex-1 flex-col gap-4 overflow-x-hidden p-4 [contain:inline-size]">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="text-xl font-medium">Ekipi</h1>
@@ -80,24 +80,33 @@ const confirmDelete = () => {
                 Nuk ka ende asnjë anëtar.
             </div>
 
-            <draggable v-else v-model="ordered" item-key="id" class="flex flex-col gap-2" ghost-class="opacity-40" @end="persistOrder">
+            <draggable v-else v-model="ordered" item-key="id" class="flex min-w-0 flex-col gap-2" ghost-class="opacity-40" @end="persistOrder">
                 <template #item="{ element }">
-                    <div class="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+                    <div class="flex min-w-0 items-center gap-3 overflow-hidden rounded-lg border bg-card px-3 py-2.5">
                         <GripVertical class="size-4 shrink-0 cursor-grab text-muted-foreground" />
 
-                        <img v-if="element.photo_url" :src="element.photo_url" :alt="element.name" class="size-10 shrink-0 rounded-full object-cover" />
+                        <img
+                            v-if="element.photo_url"
+                            :src="element.photo_url"
+                            :alt="element.name"
+                            class="size-10 shrink-0 rounded-full object-cover"
+                        />
                         <div v-else class="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted">
                             <UserRound class="size-4 text-muted-foreground" />
                         </div>
 
-                        <div class="min-w-0 flex-1">
+                        <div class="w-0 min-w-0 flex-1">
                             <p class="truncate text-sm font-medium">{{ element.name }}</p>
                             <p class="truncate text-sm text-muted-foreground">{{ element.position }}</p>
                         </div>
 
                         <span
                             class="shrink-0 rounded-full px-2 py-0.5 text-xs"
-                            :class="element.is_active ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300' : 'bg-muted text-muted-foreground'"
+                            :class="
+                                element.is_active
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300'
+                                    : 'bg-muted text-muted-foreground'
+                            "
                         >
                             {{ element.is_active ? 'Aktiv' : 'Joaktiv' }}
                         </span>
