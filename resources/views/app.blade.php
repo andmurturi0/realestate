@@ -11,7 +11,7 @@
         preference) — done synchronously, before any stylesheet, so it still
         paints once. --}}
         @if ($appearance === 'system')
-            <script>
+            <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
                 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     document.documentElement.classList.add('dark');
                 }
@@ -54,7 +54,7 @@
             @if ($ogImage)
                 <meta name="twitter:image" content="{{ $ogImage }}">
             @endif
-            <script type="application/ld+json">
+            <script type="application/ld+json" nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
                 {!! json_encode([
                     '@@context' => 'https://schema.org',
                     '@@type' => 'RealEstateListing',
