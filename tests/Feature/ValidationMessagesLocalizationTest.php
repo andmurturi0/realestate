@@ -9,6 +9,10 @@ use App\Models\Property;
 // `locale` cookie (SetLocale), not a URL prefix — they aren't mirrored under
 // /en, /de like the GET pages are. postJson() drops cookies unless
 // withCredentials() is chained (it simulates a cross-origin XHR by default).
+// withUnencryptedCookie(), not withCookie(): `locale` is excluded from
+// EncryptCookies (Faza 10 §11, it's written as plain JS text by the
+// browser) — withCookie() would encrypt it and EncryptCookies would then
+// leave that ciphertext alone since the cookie is on the except list.
 
 test('a contact message validation error is in Albanian by default', function () {
     $property = Property::factory()->published()->create();
@@ -22,9 +26,9 @@ test('a contact message validation error is in Albanian by default', function ()
 test('an offer submission validation error is in sq, en and de depending on the locale cookie', function () {
     $invalidPayload = ['phone' => '044123'];
 
-    $sq = $this->withCredentials()->withCookie('locale', 'sq')->postJson(route('offer-property.store'), $invalidPayload);
-    $en = $this->withCredentials()->withCookie('locale', 'en')->postJson(route('offer-property.store'), $invalidPayload);
-    $de = $this->withCredentials()->withCookie('locale', 'de')->postJson(route('offer-property.store'), $invalidPayload);
+    $sq = $this->withCredentials()->withUnencryptedCookie('locale', 'sq')->postJson(route('offer-property.store'), $invalidPayload);
+    $en = $this->withCredentials()->withUnencryptedCookie('locale', 'en')->postJson(route('offer-property.store'), $invalidPayload);
+    $de = $this->withCredentials()->withUnencryptedCookie('locale', 'de')->postJson(route('offer-property.store'), $invalidPayload);
 
     expect($sq->json('errors.first_name.0'))->toBe('Fusha emri është e detyrueshme.')
         ->and($en->json('errors.first_name.0'))->toBe('The first name field is required.')
@@ -38,7 +42,7 @@ test('an offer submission validation error is in sq, en and de depending on the 
 test('a create-request validation error uses the translated attribute name', function () {
     $location = Location::factory()->create();
 
-    $response = $this->withCredentials()->withCookie('locale', 'de')->postJson(route('create-request.store'), [
+    $response = $this->withCredentials()->withUnencryptedCookie('locale', 'de')->postJson(route('create-request.store'), [
         'first_name' => 'Blerta',
         'last_name' => 'Gashi',
         'phone' => '+38344123456',

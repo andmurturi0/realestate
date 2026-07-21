@@ -34,20 +34,34 @@ test('an unsupported locale prefix 404s', function () {
 });
 
 test('a locale cookie is honoured on an unprefixed request', function () {
-    $this->withCookie('locale', 'en')
+    $this->withUnencryptedCookie('locale', 'en')
         ->get('/properties')
         ->assertInertia(fn (Assert $page) => $page->where('locale', 'en'));
 });
 
+// Regression (Faza 10 §11): LanguageSwitcher.vue writes the cookie as plain
+// JS text (document.cookie = 'locale=en'), never encrypted. withCookie()
+// auto-encrypts on the way out (masking this bug), so this test uses
+// withUnencryptedCookie() to send the raw value exactly as a real browser
+// would. Before `locale` was added to encryptCookies' except list,
+// EncryptCookies failed to decrypt it and silently nulled it out.
+test('a plain-text, unencrypted locale cookie (as the browser actually writes it) is honoured', function () {
+    $this->withUnencryptedCookie('locale', 'de')
+        ->get('/properties')
+        ->assertInertia(fn (Assert $page) => $page->where('locale', 'de'));
+});
+
 test('an invalid locale cookie falls back to sq', function () {
-    $this->withCookie('locale', 'fr')
+    $this->withUnencryptedCookie('locale', 'fr')
         ->get('/properties')
         ->assertInertia(fn (Assert $page) => $page->where('locale', 'sq'));
 });
 
 test('visiting a locale-prefixed page persists the choice via cookie for the next visit', function () {
+    // $encrypted = false: the locale cookie is deliberately excluded from
+    // EncryptCookies (Faza 10 §11), so the Set-Cookie value is plain text.
     $this->get('/en/properties')
-        ->assertCookie('locale', 'en');
+        ->assertCookie('locale', 'en', false);
 });
 
 test('a property title without an en translation falls back to sq under /en', function () {

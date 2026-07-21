@@ -800,6 +800,12 @@ Target: Lighthouse Performance ≥ 90 on the listing page.
   (`SharedData`/`PageProps`, `RouteParams`, `User.avatar`, etj.) — asnjë prej tyre s'thyen
   runtime-in (CI s'e ekzekuton `vue-tsc` fare), por meritojnë një kalim të dedikuar pas
   deploy-it, jo brenda Faza 10.
+- **Imazhe me shumë breakpoint.** `ImageService` prodhon vetëm 2 variante (thumbnail 400px +
+  full deri 1920px), jo një grup i vërtetë breakpoint-esh (p.sh. 640/1024/1920). `srcset` i
+  shtuar në Faza 10 §9 i përdor këto 2 variantet ekzistuese — korrekt, por jo optimal. Një
+  pipeline i vërtetë responsive (më shumë madhësi, ndoshta kolonë `width` në `property_images`
+  për deskriptorë `srcset` të saktë) është një ndryshim më i madh backend-i, jashtë
+  fushëveprimit të Faza 10.
 
 ---
 

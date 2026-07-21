@@ -16,8 +16,16 @@ use App\Http\Controllers\Site\FavoriteController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
 use App\Http\Controllers\Site\PropertyOfferController;
 use App\Http\Controllers\Site\PropertyRequestController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+Route::get('/robots.txt', function () {
+    return response("User-agent: *\nDisallow:\nSitemap: ".url('/sitemap.xml')."\n")
+        ->header('Content-Type', 'text/plain');
+})->name('robots');
 
 // The public "pages" — every one of these is mirrored below under /en and
 // /de. sq stays unprefixed (FAZAT.md Faza 8), so this closure is registered

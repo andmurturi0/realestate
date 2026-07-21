@@ -196,5 +196,16 @@
     "Çfarë Thonë Klientët": "What Our Clients Say",
     "Njihuni me Ekipin": "Meet the Team",
     "Lexo më shumë": "Read more",
-    "Mbylle": "Show less"
+    "Mbylle": "Show less",
+
+    "Faqja nuk u gjet": "Page not found",
+    "Faqja që kërkoni nuk ekziston ose është zhvendosur.": "The page you're looking for doesn't exist or has moved.",
+    "Nuk keni qasje": "Access denied",
+    "Nuk keni leje për ta parë këtë faqe.": "You don't have permission to view this page.",
+    "Diçka shkoi keq": "Something went wrong",
+    "Ndodhi një gabim i papritur. Ju lutemi provoni përsëri më vonë.": "An unexpected error occurred. Please try again later.",
+    "Ndodhi një gabim i papritur.": "An unexpected error occurred.",
+    "Në mirëmbajtje": "Under maintenance",
+    "Faqja është përkohësisht e paarritshme. Ju lutemi provoni përsëri së shpejti.": "The site is temporarily unavailable. Please check back soon.",
+    "Kthehu në ballina": "Back to home"
 }
