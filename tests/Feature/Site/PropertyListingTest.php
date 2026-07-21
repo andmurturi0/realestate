@@ -316,13 +316,18 @@ test('the query count stays constant whether 1 or 50 properties are listed', fun
     };
 
     $makeProperty();
-    $this->get('/properties')->assertSuccessful(); // warm the settings cache
+    $this->get('/properties')->assertSuccessful(); // warm the settings/facet caches
 
     $queriesForOne = $countQueries();
 
     for ($i = 0; $i < 49; $i++) {
+        // Each new property factory creates its own neighborhood Location,
+        // which flushes the facet cache (Faza 10 §5) — unlike production,
+        // where locations are seeded once and never touched again. Re-warm
+        // it so this measures the listing query itself, not a cold cache.
         $makeProperty();
     }
+    $this->get('/properties')->assertSuccessful();
 
     $queriesForFifty = $countQueries();
 

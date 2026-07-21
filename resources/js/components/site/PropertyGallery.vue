@@ -25,6 +25,19 @@ watch(activeIndex, (i) => {
         preload.src = nextImage.url;
     }
 });
+
+// Both variants are proportional scale-downs of the same original (never
+// upscaled — ImageService::scaleDown), so pairing them in one srcset is safe.
+// The declared widths are nominal caps, not measured pixels: most uploads
+// are larger than 1920px so this holds in practice, but a small enough
+// original would make the descriptor optimistic — a soft mismatch the
+// browser tolerates, not a broken image.
+function galleryMainSrcset(image: PropertyImageData | undefined): string | undefined {
+    if (!image?.url) return undefined;
+    if (!image.thumbnail_url) return undefined;
+
+    return `${image.thumbnail_url} 400w, ${image.url} 1920w`;
+}
 </script>
 
 <template>
@@ -33,7 +46,11 @@ watch(activeIndex, (i) => {
             <img
                 v-if="images[activeIndex]?.url"
                 :src="images[activeIndex].url!"
+                :srcset="galleryMainSrcset(images[activeIndex])"
+                sizes="(min-width: 1024px) 66vw, 100vw"
                 :alt="images[activeIndex].alt ?? ''"
+                fetchpriority="high"
+                decoding="async"
                 class="h-full w-full object-cover"
             />
         </button>
@@ -47,7 +64,13 @@ watch(activeIndex, (i) => {
                 :class="i === activeIndex ? 'ring-primary' : 'ring-transparent hover:ring-muted-foreground/30'"
                 @click="openAt(i)"
             >
-                <img :src="image.thumbnail_url ?? image.url ?? ''" :alt="image.alt ?? ''" class="h-full w-full object-cover" />
+                <img
+                    :src="image.thumbnail_url ?? image.url ?? ''"
+                    :alt="image.alt ?? ''"
+                    loading="lazy"
+                    decoding="async"
+                    class="h-full w-full object-cover"
+                />
             </button>
         </div>
 

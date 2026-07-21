@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\FeatureGroup;
+use App\Services\FacetOptionsService;
+use Database\Factories\FeatureFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,7 +12,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Feature extends Model
 {
-    /** @use HasFactory<\Database\Factories\FeatureFactory> */
+    /** @use HasFactory<FeatureFactory> */
     use HasFactory, HasTranslations;
 
     public $timestamps = false;
@@ -25,6 +27,12 @@ class Feature extends Model
         'group',
         'sort_order',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => FacetOptionsService::flush());
+        static::deleted(fn () => FacetOptionsService::flush());
+    }
 
     /**
      * @return array<string, string>

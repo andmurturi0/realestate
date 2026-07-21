@@ -22,7 +22,16 @@ const whatsappHref = computed(() =>
 <template>
     <div class="rounded-xl border bg-card p-4">
         <div class="flex items-center gap-3">
-            <img v-if="agent.avatar_url" :src="agent.avatar_url" :alt="agent.name" class="size-12 shrink-0 rounded-full object-cover" />
+            <img
+                v-if="agent.avatar_url"
+                :src="agent.avatar_url"
+                :alt="agent.name"
+                width="48"
+                height="48"
+                loading="lazy"
+                decoding="async"
+                class="size-12 shrink-0 rounded-full object-cover"
+            />
             <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted">
                 <User class="size-6 text-muted-foreground" />
             </div>

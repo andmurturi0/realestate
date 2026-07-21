@@ -44,6 +44,7 @@ const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale'
                 :src="imageSrc"
                 :alt="property.title"
                 loading="lazy"
+                decoding="async"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div v-else class="flex h-full w-full items-center justify-center text-muted-foreground">

@@ -791,6 +791,16 @@ Target: Lighthouse Performance ≥ 90 on the listing page.
 
 **Commit:** `chore: security hardening, performance, deploy config`
 
+### Post-deploy follow-up (jashtë fushëveprimit të Faza 10)
+- **vue-tsc type-error backlog.** Deri tani `tsconfig.json` kishte dy `types` entries
+  (`./resources/js/types`, `vue/tsx`) që s'ekzistonin — `vue-tsc` dështonte menjëherë me
+  TS2688 përpara se të kontrollonte qoftë edhe një skedar burimor, kështu që çdo gabim tjetër
+  tipizimi ishte fshehur. Faza 10 e rregulloi vetë config-un (skedar i vetëm, i thjeshtë), por
+  tani që `vue-tsc` ekzekutohet vërtet, del ~40 gabime tipizimi paraekzistuese nëpër Vue
+  (`SharedData`/`PageProps`, `RouteParams`, `User.avatar`, etj.) — asnjë prej tyre s'thyen
+  runtime-in (CI s'e ekzekuton `vue-tsc` fare), por meritojnë një kalim të dedikuar pas
+  deploy-it, jo brenda Faza 10.
+
 ---
 
 ## Si të punosh me Claude Code

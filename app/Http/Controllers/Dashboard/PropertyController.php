@@ -6,11 +6,10 @@ use App\Enums\LocationType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\StorePropertyRequest;
 use App\Http\Requests\Dashboard\UpdatePropertyRequest;
-use App\Models\Feature;
-use App\Models\Location;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\User;
+use App\Services\FacetOptionsService;
 use App\Services\ImageService;
 use App\Services\PropertyService;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +20,10 @@ use Inertia\Response;
 
 class PropertyController extends Controller
 {
-    public function __construct(private readonly PropertyService $propertyService) {}
+    public function __construct(
+        private readonly PropertyService $propertyService,
+        private readonly FacetOptionsService $facetOptionsService,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -167,36 +169,9 @@ class PropertyController extends Controller
      */
     private function formOptions(User $user): array
     {
-        $municipalities = Location::query()
-            ->where('type', LocationType::Municipality)
-            ->with(['children' => fn ($query) => $query->orderBy('slug')])
-            ->orderBy('slug')
-            ->get()
-            ->map(fn (Location $municipality): array => [
-                'id' => $municipality->id,
-                'name' => $municipality->getTranslation('name', 'sq'),
-                'lat' => $municipality->lat,
-                'lng' => $municipality->lng,
-                'neighborhoods' => $municipality->children->map(fn (Location $neighborhood): array => [
-                    'id' => $neighborhood->id,
-                    'name' => $neighborhood->getTranslation('name', 'sq'),
-                    'lat' => $neighborhood->lat,
-                    'lng' => $neighborhood->lng,
-                ]),
-            ]);
-
-        $features = Feature::query()
-            ->orderBy('sort_order')
-            ->get()
-            ->groupBy(fn (Feature $feature): string => $feature->group->value)
-            ->map(fn ($group) => $group->map(fn (Feature $feature): array => [
-                'id' => $feature->id,
-                'name' => $feature->getTranslation('name', 'sq'),
-            ])->values());
-
         return [
-            'municipalities' => $municipalities,
-            'features' => $features,
+            'municipalities' => $this->facetOptionsService->municipalitiesWithCoordinates(),
+            'features' => $this->facetOptionsService->featuresGroupedForDashboard(),
             'agents' => $this->agentOptions($user),
         ];
     }

@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Site;
 
-use App\Enums\FeatureGroup;
-use App\Enums\LocationType;
 use App\Enums\PropertyStatus;
 use App\Filters\PropertyFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PropertyCardResource;
 use App\Http\Resources\PropertyDetailResource;
-use App\Models\Feature;
-use App\Models\Location;
 use App\Models\Property;
+use App\Services\FacetOptionsService;
 use App\Services\PropertyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,7 +17,10 @@ use Inertia\Response;
 
 class PropertyController extends Controller
 {
-    public function __construct(private readonly PropertyService $propertyService) {}
+    public function __construct(
+        private readonly PropertyService $propertyService,
+        private readonly FacetOptionsService $facetOptionsService,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -53,8 +53,8 @@ class PropertyController extends Controller
             // results so history entries (back button) stay consistent.
             'filters' => $filter->active(),
             // Facet options are closures: partial reloads skip them entirely.
-            'locations' => fn (): array => $this->locationOptions(),
-            'furnishingOptions' => fn (): array => $this->furnishingOptions(),
+            'locations' => fn (): array => $this->facetOptionsService->municipalities(app()->getLocale()),
+            'furnishingOptions' => fn (): array => $this->facetOptionsService->furnishingFeatures(app()->getLocale()),
         ]);
     }
 
@@ -90,44 +90,5 @@ class PropertyController extends Controller
             'property' => (new PropertyDetailResource($property))->resolve(),
             'similarProperties' => $similarProperties,
         ]);
-    }
-
-    /**
-     * Municipalities with their neighborhoods, for the location dropdown.
-     *
-     * @return list<array<string, mixed>>
-     */
-    private function locationOptions(): array
-    {
-        return Location::query()
-            ->where('type', LocationType::Municipality)
-            ->with(['children' => fn ($query) => $query->orderBy('slug')])
-            ->orderBy('slug')
-            ->get()
-            ->map(fn (Location $municipality): array => [
-                'id' => $municipality->id,
-                'name' => $municipality->getTranslation('name', app()->getLocale()),
-                'neighborhoods' => $municipality->children->map(fn (Location $neighborhood): array => [
-                    'id' => $neighborhood->id,
-                    'name' => $neighborhood->getTranslation('name', app()->getLocale()),
-                ])->all(),
-            ])
-            ->all();
-    }
-
-    /**
-     * @return list<array{key: string, name: string}>
-     */
-    private function furnishingOptions(): array
-    {
-        return Feature::query()
-            ->where('group', FeatureGroup::Furnishing)
-            ->orderBy('sort_order')
-            ->get()
-            ->map(fn (Feature $feature): array => [
-                'key' => $feature->key,
-                'name' => $feature->getTranslation('name', app()->getLocale()),
-            ])
-            ->all();
     }
 }

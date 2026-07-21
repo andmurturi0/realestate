@@ -8,10 +8,9 @@ use App\Http\Requests\Dashboard\Inbox\AssignLeadRequest;
 use App\Http\Requests\Dashboard\Inbox\StoreLeadNoteRequest;
 use App\Http\Requests\Dashboard\Inbox\UpdateLeadStatusRequest;
 use App\Http\Requests\Dashboard\StorePropertyRequest;
-use App\Models\Feature;
-use App\Models\Location;
 use App\Models\Property;
 use App\Models\PropertyOffer;
+use App\Services\FacetOptionsService;
 use App\Services\LeadInboxService;
 use App\Services\PropertyOfferConversionService;
 use Illuminate\Http\RedirectResponse;
@@ -36,6 +35,7 @@ class OfferController extends Controller
     public function __construct(
         private readonly LeadInboxService $inboxService,
         private readonly PropertyOfferConversionService $conversionService,
+        private readonly FacetOptionsService $facetOptionsService,
     ) {}
 
     public function index(Request $request): Response
@@ -231,36 +231,9 @@ class OfferController extends Controller
      */
     private function formOptions(): array
     {
-        $municipalities = Location::query()
-            ->where('type', LocationType::Municipality)
-            ->with(['children' => fn ($query) => $query->orderBy('slug')])
-            ->orderBy('slug')
-            ->get()
-            ->map(fn (Location $municipality): array => [
-                'id' => $municipality->id,
-                'name' => $municipality->getTranslation('name', 'sq'),
-                'lat' => $municipality->lat,
-                'lng' => $municipality->lng,
-                'neighborhoods' => $municipality->children->map(fn (Location $neighborhood): array => [
-                    'id' => $neighborhood->id,
-                    'name' => $neighborhood->getTranslation('name', 'sq'),
-                    'lat' => $neighborhood->lat,
-                    'lng' => $neighborhood->lng,
-                ]),
-            ]);
-
-        $features = Feature::query()
-            ->orderBy('sort_order')
-            ->get()
-            ->groupBy(fn (Feature $feature): string => $feature->group->value)
-            ->map(fn ($group) => $group->map(fn (Feature $feature): array => [
-                'id' => $feature->id,
-                'name' => $feature->getTranslation('name', 'sq'),
-            ])->values());
-
         return [
-            'municipalities' => $municipalities,
-            'features' => $features,
+            'municipalities' => $this->facetOptionsService->municipalitiesWithCoordinates(),
+            'features' => $this->facetOptionsService->featuresGroupedForDashboard(),
             // The converting agent is fixed server-side (PropertyOfferConversionService),
             // never chosen from the form — no agent picker on this page.
             'agents' => null,

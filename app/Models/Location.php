@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\LocationType;
+use App\Services\FacetOptionsService;
+use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +13,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Location extends Model
 {
-    /** @use HasFactory<\Database\Factories\LocationFactory> */
+    /** @use HasFactory<LocationFactory> */
     use HasFactory, HasTranslations;
 
     /** @var list<string> */
@@ -25,6 +27,12 @@ class Location extends Model
         'lng',
         'type',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => FacetOptionsService::flush());
+        static::deleted(fn () => FacetOptionsService::flush());
+    }
 
     /**
      * @return array<string, string>

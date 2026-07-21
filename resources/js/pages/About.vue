@@ -78,6 +78,10 @@ const toggleTestimonial = (id: number) => {
                                     v-if="testimonial.photo_url"
                                     :src="testimonial.photo_url"
                                     :alt="testimonial.company ?? testimonial.author_name"
+                                    width="32"
+                                    height="32"
+                                    loading="lazy"
+                                    decoding="async"
                                     class="size-8 shrink-0 rounded object-contain"
                                 />
                                 <span v-if="testimonial.company" class="truncate text-xs font-medium text-muted-foreground">
@@ -117,7 +121,16 @@ const toggleTestimonial = (id: number) => {
                 <h2 class="text-display-sm font-medium">{{ t('Njihuni me Ekipin') }}</h2>
                 <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                     <div v-for="member in teamMembers" :key="member.id" class="flex flex-col items-center text-center">
-                        <img v-if="member.photo_url" :src="member.photo_url" :alt="member.name" class="size-24 rounded-full object-cover" />
+                        <img
+                            v-if="member.photo_url"
+                            :src="member.photo_url"
+                            :alt="member.name"
+                            width="96"
+                            height="96"
+                            loading="lazy"
+                            decoding="async"
+                            class="size-24 rounded-full object-cover"
+                        />
                         <div v-else class="flex size-24 items-center justify-center rounded-full bg-muted">
                             <User class="size-10 text-muted-foreground" />
                         </div>
