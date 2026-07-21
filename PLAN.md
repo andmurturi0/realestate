@@ -141,6 +141,17 @@ assigned_to (nullable FK users), ip_address, timestamps
 id, notable_type, notable_id, user_id, body, created_at
 ```
 
+### `testimonials` — Faza 9.5, faqja "Rreth Nesh"
+```
+id, author_name, company (nullable), quote (json sq/en/de), photo_path (nullable),
+sort_order, is_active, timestamps
+```
+
+### `team_members` — Faza 9.5, faqja "Rreth Nesh"
+```
+id, name, position (json sq/en/de), photo_path (nullable), sort_order, is_active, timestamps
+```
+
 ---
 
 ## 3. Matrica e lejeve
@@ -156,6 +167,7 @@ id, notable_type, notable_id, user_id, body, created_at
 | Inbox — status/shënim | ✅ | të mijat |
 | Agjentët | ✅ CRUD | ❌ |
 | Cilësimet | ✅ | ❌ |
+| Dëshmi & Ekipi (Faza 9.5) | ✅ CRUD | ❌ |
 
 Zbatohet me tri policy: `PropertyPolicy`, `LeadPolicy` (e përbashkët për të tria), `UserPolicy`.
 
@@ -369,4 +381,5 @@ Feature tests for the conversion flow and the auto-assignment.
 | `property_price_histories.changed_by` është nullable | Ndryshimet nga seeder/console nuk kanë përdorues të autentikuar. |
 | `features` nuk ka timestamps | Lista e kolonave në §2 nuk i përmban; tabela është statike (seed-only). |
 | Lagjet e Prishtinës u zgjeruan me Velania, Taslixhe, Kodra e Trimave | Pas heqjes së Fushë Kosovës dhe Çagllavicës nga lista, duhen ≥12 lagje reale për checklist-in e Fazës 1. |
+| U shtua Faza 9.5 (jashtë listës origjinale të fazave): `testimonials` + `team_members` | Faqja "Rreth Nesh" kërkonte dëshmi dhe ekip — të dyja tabela të reja, të izoluara, që nuk prekin skemën ekzistuese. |
 

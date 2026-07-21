@@ -709,6 +709,40 @@ until I approve.
 
 ---
 
+## FAZA 9.5 — Rreth Nesh, dëshmi, ekipi
+
+Fazë e shtuar pas Fazës 9 (jo në listën origjinale), e ndërtuar mbi sistemin e dizajnit
+"modern & clean" të Fazës 9. Shton faqen publike `/about` (4 pika karakteristikash statike,
+`settings.about_content` ekzistues, dëshmi klientësh, ekipi), plus dy tabela të reja plotësisht
+të izoluara nga skema ekzistuese: `testimonials` dhe `team_members` (PLAN.md §2).
+
+### Prompti
+```
+Shto faqen "Rreth Nesh" (/about, publike, sq/en/de) mbi dizajnin ekzistues: 4 pika
+karakteristikash (statike, të përkthyera), teksti ekzistues i settings.about_content
+(pa ndryshuar), një seksion dëshmish (emër, kompani, citim) dhe një grup "njihuni me
+ekipin" (foto, emër, pozicion). Dy tabela të reja (testimonials, team_members),
+CRUD admin-only në dashboard, ripërdor ImageService dhe can.manageSettings. Mos prek
+asgjë ekzistuese (properties, leads, settings).
+```
+
+### E kryer kur
+- [x] Migrimet `testimonials` dhe `team_members` ekzekutohen pa prekur asnjë tabelë tjetër
+- [x] `TestimonialPolicy` dhe `TeamMemberPolicy` lejojnë vetëm admin (agent → 403)
+- [x] CRUD i plotë në `/dashboard/testimonials` dhe `/dashboard/team-members`, me ngarkim
+      foto (webp, via `ImageService::storeSingle`/`deleteSingle`) dhe rirenditje (`sort_order`)
+- [x] Sidebar-i shfaq të dyja faqet vetëm kur `can.manageSettings` (admin), kurrë për agent
+- [x] `/about` publike, e lokalizuar (sq pa prefiks, `/en/about`, `/de/about`), shfaq 4 pikat
+      statike, `about_content` ekzistues të paprekur, dëshmitë dhe ekipin aktiv, të renditur
+- [x] Vetëm rreshtat `is_active = true` shfaqen publikisht, të renditura sipas `sort_order`
+- [x] Asnjë ndryshim në `properties`, `leads`/inbox, apo tabelën/policy-t/controller-in e `settings`
+- [x] Teste feature: policy allow/deny (admin vs agent) dhe CRUD për të dyja modelet, faqja `/about`
+- [x] `vendor/bin/pint --dirty --format agent` dhe `php artisan test --compact` kalojnë
+
+**Commit:** `feat: about page with testimonials and team CRUD`
+
+---
+
 ## FAZA 10 — Hardening + deploy
 
 ### Prompti

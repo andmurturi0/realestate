@@ -35,6 +35,7 @@ const currentPath = computed(() => page.url.replace(/^\/(en|de)(?=\/|$)/, '') ||
 const navLinks = computed(() => [
     { label: t('Ballina'), href: publicRoute('home'), active: currentPath.value === '/' },
     { label: t('Pronat'), href: publicRoute('properties.index'), active: currentPath.value.startsWith('/properties') },
+    { label: t('Rreth Nesh'), href: publicRoute('about'), active: currentPath.value.startsWith('/about') },
     { label: t('Ofro Pronën'), href: publicRoute('offer-property.create'), active: currentPath.value.startsWith('/offer-property') },
     { label: t('Bëj Kërkesë'), href: publicRoute('create-request.create'), active: currentPath.value.startsWith('/create-request') },
 ]);
