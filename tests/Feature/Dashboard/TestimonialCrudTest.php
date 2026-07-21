@@ -72,6 +72,20 @@ test('an admin can create a testimonial with a photo', function () {
     Storage::disk('supabase')->assertExists($testimonial->photo_path);
 });
 
+test('an svg photo upload is rejected', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->post('/dashboard/testimonials', [
+            'author_name' => 'Klient Test',
+            'quote' => ['sq' => 'Shërbim shumë i mirë.'],
+            'photo' => UploadedFile::fake()->create('foto.svg', 10, 'image/svg+xml'),
+        ])
+        ->assertSessionHasErrors('photo');
+
+    expect(Testimonial::count())->toBe(0);
+});
+
 test('creating a testimonial requires the sq quote', function () {
     $admin = User::factory()->admin()->create();
 

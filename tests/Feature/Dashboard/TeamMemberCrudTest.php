@@ -70,6 +70,20 @@ test('an admin can create a team member with a photo', function () {
     Storage::disk('supabase')->assertExists($teamMember->photo_path);
 });
 
+test('an svg photo upload is rejected', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->post('/dashboard/team-members', [
+            'name' => 'Anëtar Test',
+            'position' => ['sq' => 'Agjent'],
+            'photo' => UploadedFile::fake()->create('foto.svg', 10, 'image/svg+xml'),
+        ])
+        ->assertSessionHasErrors('photo');
+
+    expect(TeamMember::count())->toBe(0);
+});
+
 test('creating a team member requires the sq position', function () {
     $admin = User::factory()->admin()->create();
 

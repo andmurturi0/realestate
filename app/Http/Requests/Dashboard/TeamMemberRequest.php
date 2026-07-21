@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Dashboard;
 
+use App\Http\Requests\Concerns\RejectsSvgUploads;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class TeamMemberRequest extends FormRequest
 {
+    use RejectsSvgUploads;
+
     /**
      * @return array<string, mixed>
      */
@@ -19,7 +22,7 @@ abstract class TeamMemberRequest extends FormRequest
             'position.en' => ['nullable', 'string', 'max:255'],
             'position.de' => ['nullable', 'string', 'max:255'],
 
-            'photo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'photo' => ['nullable', 'file', $this->rejectSvg(...), 'mimetypes:image/jpeg,image/png,image/webp', 'max:4096'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];
@@ -32,6 +35,7 @@ abstract class TeamMemberRequest extends FormRequest
     {
         return [
             'position.sq.required' => 'Pozicioni në shqip është i detyrueshëm.',
+            'photo.mimetypes' => 'Lejohen vetëm fotot JPEG, PNG ose WebP.',
         ];
     }
 

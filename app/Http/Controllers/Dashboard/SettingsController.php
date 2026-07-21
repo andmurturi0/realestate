@@ -10,6 +10,7 @@ use App\Http\Requests\Dashboard\UpdateSocialSettingsRequest;
 use App\Models\Setting;
 use App\Services\SettingsService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,6 +20,8 @@ class SettingsController extends Controller
 
     public function edit(): Response
     {
+        Gate::authorize('manage', Setting::class);
+
         return Inertia::render('dashboard/Settings', [
             'settings' => Setting::allAsArray(),
         ]);

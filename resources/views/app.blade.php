@@ -87,7 +87,7 @@
             <link rel="alternate" hreflang="x-default" href="{{ route($bareRouteName, $hreflangParams) }}">
         @endif
 
-        @routes
+        @routes(auth()->check() ? null : 'guest')
         @vite(['resources/js/app.ts'])
         @inertiaHead
     </head>

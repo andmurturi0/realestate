@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests\Dashboard;
 
+use App\Http\Requests\Concerns\RejectsSvgUploads;
 use App\Services\ImageService;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Validator;
 
 abstract class PropertyImageUploadRequest extends FormRequest
 {
+    use RejectsSvgUploads;
+
     /**
      * How many images the target already has — uploads beyond
      * ImageService::MAX_PER_PROPERTY are rejected.
@@ -63,13 +65,5 @@ abstract class PropertyImageUploadRequest extends FormRequest
                 }
             },
         ];
-    }
-
-    protected function rejectSvg(string $attribute, mixed $value, Closure $fail): void
-    {
-        if ($value instanceof UploadedFile
-            && in_array($value->getMimeType(), ['image/svg+xml', 'image/svg'], true)) {
-            $fail('Fotot SVG nuk lejohen.');
-        }
     }
 }

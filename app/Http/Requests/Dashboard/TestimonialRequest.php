@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Dashboard;
 
+use App\Http\Requests\Concerns\RejectsSvgUploads;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class TestimonialRequest extends FormRequest
 {
+    use RejectsSvgUploads;
+
     /**
      * @return array<string, mixed>
      */
@@ -20,7 +23,7 @@ abstract class TestimonialRequest extends FormRequest
             'quote.en' => ['nullable', 'string', 'max:2000'],
             'quote.de' => ['nullable', 'string', 'max:2000'],
 
-            'photo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'photo' => ['nullable', 'file', $this->rejectSvg(...), 'mimetypes:image/jpeg,image/png,image/webp', 'max:4096'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];
@@ -33,6 +36,7 @@ abstract class TestimonialRequest extends FormRequest
     {
         return [
             'quote.sq.required' => 'Citimi në shqip është i detyrueshëm.',
+            'photo.mimetypes' => 'Lejohen vetëm fotot JPEG, PNG ose WebP.',
         ];
     }
 

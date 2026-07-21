@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Dashboard;
 
+use App\Models\Setting;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateContentSettingsRequest extends FormRequest
@@ -13,7 +14,7 @@ class UpdateContentSettingsRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        return $this->user()?->can('manage', Setting::class) ?? false;
     }
 
     /**

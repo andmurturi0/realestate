@@ -6,11 +6,13 @@ use App\Models\ContactMessage;
 use App\Models\Property;
 use App\Models\PropertyOffer;
 use App\Models\PropertyRequest;
+use App\Models\Setting;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Policies\LeadPolicy;
 use App\Policies\PropertyPolicy;
+use App\Policies\SettingsPolicy;
 use App\Policies\TeamMemberPolicy;
 use App\Policies\TestimonialPolicy;
 use App\Policies\UserPolicy;
@@ -31,5 +33,6 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Testimonial::class => TestimonialPolicy::class,
         TeamMember::class => TeamMemberPolicy::class,
+        Setting::class => SettingsPolicy::class,
     ];
 }
