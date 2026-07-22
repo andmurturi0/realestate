@@ -79,6 +79,29 @@ test('the Vite dev-server websocket scheme is allowed in connect-src outside pro
         ->and($csp)->toContain('ws:');
 });
 
+test('the Vite dev-server image scheme is allowed in img-src outside production', function () {
+    // intl-tel-input's flag sprite loads from Vite's dev server in dev
+    // (e.g. http://[::1]:5173/...), which img-src previously didn't cover —
+    // only connect-src had the dev-only widening. Scheme-only (http:), same
+    // reasoning as the connect-src ws:/wss: case above.
+    $csp = $this->get('/properties')->headers->get('Content-Security-Policy');
+
+    expect($csp)->toContain('img-src')
+        ->and($csp)->toContain('http:');
+});
+
+test('img-src stays strict in production, excluding the Vite dev origin', function () {
+    app()->instance('env', 'production');
+
+    $csp = $this->get('/properties')->headers->get('Content-Security-Policy');
+
+    $imgSrc = collect(explode(';', $csp))
+        ->map(fn (string $directive) => trim($directive))
+        ->first(fn (string $directive) => str_starts_with($directive, 'img-src'));
+
+    expect($imgSrc)->not->toContain('http:');
+});
+
 // Regression: Ziggy's own script tag (the @routes Blade directive) was
 // missed in the first pass — only the two hand-written app.blade.php
 // scripts were nonced. A missing nonce on ANY script tag means that tag

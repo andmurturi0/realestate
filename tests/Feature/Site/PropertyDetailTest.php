@@ -26,6 +26,22 @@ test('a guest gets a 404 for a draft property', function () {
     $this->get(route('properties.show', $property))->assertNotFound();
 });
 
+test('a guest sees a published property under a locale prefix', function (string $locale) {
+    $property = Property::factory()->published()->create();
+
+    $this->get("/{$locale}/properties/{$property->slug}")
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('properties/Show')
+            ->where('property.id', $property->id));
+})->with(['en', 'de']);
+
+test('a guest gets a 404 for a draft property under a locale prefix', function (string $locale) {
+    $property = Property::factory()->draft()->create();
+
+    $this->get("/{$locale}/properties/{$property->slug}")->assertNotFound();
+})->with(['en', 'de']);
+
 test('the owning agent sees their own draft property', function () {
     $agent = User::factory()->agent()->create();
     $property = Property::factory()->draft()->for($agent, 'agent')->create();

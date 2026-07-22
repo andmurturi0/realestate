@@ -69,6 +69,11 @@ class SecurityHeaders
      * infra config too, not just branding) so this keeps working unchanged
      * across installations pointed at a different Supabase project.
      *
+     * Outside production, Vite's dev server also serves intl-tel-input's
+     * flag sprite as an image — same scheme-only http: reasoning as
+     * connectSources() (arbitrary port, host varies by OS/Node, bracketed
+     * IPv6 host-literals get silently dropped by the browser).
+     *
      * @return list<string>
      */
     private function imgSources(): array
@@ -79,6 +84,10 @@ class SecurityHeaders
 
         if (is_string($storageHost) && $storageHost !== '') {
             $sources[] = "https://{$storageHost}";
+        }
+
+        if (! app()->isProduction()) {
+            $sources[] = 'http:';
         }
 
         return $sources;

@@ -36,6 +36,19 @@ class SetLocale
 
         App::setLocale($locale);
 
+        // Controller method resolution (ResolvesRouteDependencies) splices
+        // type-hinted dependencies into the route parameters *positionally*,
+        // then passes array_values() of the result to the action. A `locale`
+        // entry left in that array — present only on the /en and /de mirror
+        // routes, with no matching controller parameter — shifts every
+        // parameter after it by one slot. That silently fed the raw "en"/"de"
+        // string into `Property $property` on properties.show instead of the
+        // resolved model, since PHP allows (and drops) extra positional args
+        // for parameters the method never declared. Forgetting it here, once
+        // it's been read, keeps the parameter bag identical to the unprefixed
+        // routes for every controller downstream, not just this one.
+        $request->route()?->forgetParameter('locale');
+
         // Not httpOnly: LanguageSwitcher.vue writes this cookie directly
         // before navigating, so switching to sq (the unprefixed route, which
         // otherwise has no way to signal "explicitly sq" versus "no
