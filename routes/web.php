@@ -10,6 +10,7 @@ use App\Http\Controllers\Dashboard\PropertyImageController;
 use App\Http\Controllers\Dashboard\SettingsController;
 use App\Http\Controllers\Dashboard\TeamMemberController;
 use App\Http\Controllers\Dashboard\TestimonialController;
+use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Site\AboutController;
 use App\Http\Controllers\Site\ContactMessageController;
 use App\Http\Controllers\Site\FavoriteController;
@@ -67,7 +68,7 @@ Route::prefix('{locale}')
     ->name('locale.')
     ->group($publicPages);
 
-Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
+Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/properties', [PropertyController::class, 'index'])
@@ -132,8 +133,20 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
         ->name('dashboard.inbox.requests.notes.store');
 
     Route::middleware('admin')->group(function () {
-        Route::inertia('/agents', 'dashboard/Placeholder', ['title' => 'Agjentët'])
+        Route::get('/agents', [UserController::class, 'index'])
             ->name('dashboard.agents.index');
+        Route::get('/agents/create', [UserController::class, 'create'])
+            ->name('dashboard.agents.create');
+        Route::post('/agents', [UserController::class, 'store'])
+            ->name('dashboard.agents.store');
+        Route::get('/agents/{user}/edit', [UserController::class, 'edit'])
+            ->name('dashboard.agents.edit');
+        Route::put('/agents/{user}', [UserController::class, 'update'])
+            ->name('dashboard.agents.update');
+        Route::patch('/agents/{user}/toggle-active', [UserController::class, 'toggleActive'])
+            ->name('dashboard.agents.toggle-active');
+        Route::delete('/agents/{user}', [UserController::class, 'destroy'])
+            ->name('dashboard.agents.destroy');
 
         Route::get('/settings', [SettingsController::class, 'edit'])
             ->name('dashboard.settings.edit');

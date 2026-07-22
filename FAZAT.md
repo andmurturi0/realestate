@@ -791,6 +791,21 @@ Target: Lighthouse Performance ≥ 90 on the listing page.
 
 **Commit:** `chore: security hardening, performance, deploy config`
 
+### Production seeding
+
+`DatabaseSeeder` (LocationSeeder, FeatureSeeder, SettingSeeder, UserSeeder,
+PropertySeeder — 200 test properties, seeded agents, demo settings) is for **local dev
+only**. Production deploys must run `ProductionSeeder` instead:
+
+```
+php artisan db:seed --class=Database\\Seeders\\ProductionSeeder
+```
+
+It seeds only reference data (`LocationSeeder`, `FeatureSeeder`), empty `settings` rows,
+and one admin user built from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars — it throws if
+either is missing. No test properties, agents, testimonials, or team members; the agency
+fills all of that in through the dashboard after first login.
+
 ### Post-deploy follow-up (jashtë fushëveprimit të Faza 10)
 - **vue-tsc type-error backlog.** Deri tani `tsconfig.json` kishte dy `types` entries
   (`./resources/js/types`, `vue/tsx`) që s'ekzistonin — `vue-tsc` dështonte menjëherë me

@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    /*
+    | Consumed only by ProductionSeeder to create the single admin account
+    | on a fresh production deploy.
+    */
+    'admin' => [
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
+
 ];
