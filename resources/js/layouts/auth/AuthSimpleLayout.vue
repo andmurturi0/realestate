@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import { Link } from '@inertiajs/vue3';
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
+import { useBrandColor } from '@/composables/useBrandColor';
+import { type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+useBrandColor();
+
+const page = usePage<SharedData>();
+const settings = computed(() => page.props.settings);
 
 defineProps<{
     title?: string;
@@ -9,22 +17,30 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-        <div class="w-full max-w-sm">
-            <div class="flex flex-col gap-8">
-                <div class="flex flex-col items-center gap-4">
-                    <Link :href="route('home')" class="flex flex-col items-center gap-2 font-medium">
-                        <div class="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                            <AppLogoIcon class="size-9 fill-current text-[var(--foreground)] dark:text-white" />
-                        </div>
-                        <span class="sr-only">{{ title }}</span>
-                    </Link>
-                    <div class="space-y-2 text-center">
+    <div class="relative flex min-h-svh flex-col bg-background px-6 py-10 md:p-10">
+        <div class="absolute right-6 top-6 md:right-10 md:top-10">
+            <AppearanceToggle :labels="{ light: 'E çelët', dark: 'E errët', system: 'Sistemi', toggle: 'Ndrysho pamjen' }" />
+        </div>
+
+        <div class="flex flex-1 flex-col items-center justify-center">
+            <div class="w-full max-w-sm">
+                <Link :href="route('home')" class="mb-8 flex flex-col items-center gap-3 text-center">
+                    <img
+                        v-if="settings.logo_url"
+                        :src="settings.logo_url"
+                        :alt="settings.agency_name ?? ''"
+                        class="h-12 w-auto object-contain"
+                    />
+                    <span class="text-lg font-medium">{{ settings.agency_name }}</span>
+                </Link>
+
+                <div class="rounded-xl border bg-card p-8 shadow-card">
+                    <div v-if="title || description" class="mb-6 space-y-1 text-center">
                         <h1 class="text-xl font-medium">{{ title }}</h1>
-                        <p class="text-center text-sm text-muted-foreground">{{ description }}</p>
+                        <p v-if="description" class="text-sm text-muted-foreground">{{ description }}</p>
                     </div>
+                    <slot />
                 </div>
-                <slot />
             </div>
         </div>
     </div>
