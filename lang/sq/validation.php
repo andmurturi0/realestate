@@ -117,6 +117,7 @@ return [
         'symbols' => 'Fusha :attribute duhet të përmbajë të paktën një simbol.',
         'uncompromised' => 'Vlera e dhënë për :attribute është shfaqur në një rrjedhje të dhënash. Ju lutemi zgjidhni një :attribute tjetër.',
     ],
+    'phone' => 'Fusha :attribute duhet të jetë një numër telefoni i vlefshëm.',
     'present' => 'Fusha :attribute duhet të jetë e pranishme.',
     'present_if' => 'Fusha :attribute duhet të jetë e pranishme kur :other është :value.',
     'present_unless' => 'Fusha :attribute duhet të jetë e pranishme përveç kur :other është :value.',
@@ -155,12 +156,6 @@ return [
     'url' => 'Fusha :attribute duhet të jetë një URL e vlefshme.',
     'ulid' => 'Fusha :attribute duhet të jetë një ULID i vlefshëm.',
     'uuid' => 'Fusha :attribute duhet të jetë një UUID i vlefshëm.',
-
-    'custom' => [
-        'phone' => [
-            'regex' => 'Numri i telefonit duhet të jetë në formatin +383XXXXXXXX ose 0XXXXXXXX.',
-        ],
-    ],
 
     'attributes' => [
         'full_name' => 'emri i plotë',

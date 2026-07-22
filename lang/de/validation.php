@@ -117,6 +117,7 @@ return [
         'symbols' => 'Das Feld :attribute muss mindestens ein Symbol enthalten.',
         'uncompromised' => 'Der angegebene Wert für :attribute wurde in einem Datenleck gefunden. Bitte wählen Sie ein anderes :attribute.',
     ],
+    'phone' => 'Das Feld :attribute muss eine gültige Telefonnummer sein.',
     'present' => 'Das Feld :attribute muss vorhanden sein.',
     'present_if' => 'Das Feld :attribute muss vorhanden sein, wenn :other :value ist.',
     'present_unless' => 'Das Feld :attribute muss vorhanden sein, außer :other ist :value.',
@@ -155,12 +156,6 @@ return [
     'url' => 'Das Feld :attribute muss eine gültige URL sein.',
     'ulid' => 'Das Feld :attribute muss eine gültige ULID sein.',
     'uuid' => 'Das Feld :attribute muss eine gültige UUID sein.',
-
-    'custom' => [
-        'phone' => [
-            'regex' => 'Die Telefonnummer muss im Format +383XXXXXXXX oder 0XXXXXXXX sein.',
-        ],
-    ],
 
     'attributes' => [
         'full_name' => 'vollständiger Name',

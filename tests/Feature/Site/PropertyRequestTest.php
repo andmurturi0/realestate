@@ -71,6 +71,21 @@ test('an invalid phone number is rejected', function () {
     expect(PropertyRequest::query()->count())->toBe(0);
 });
 
+test('valid international phone numbers are accepted and stored in E.164', function (string $phone) {
+    $location = Location::factory()->create();
+
+    $this->post(route('create-request.store'), [
+        ...validRequestPayload($location),
+        'phone' => $phone,
+    ])->assertSuccessful();
+
+    expect(PropertyRequest::query()->firstOrFail()->phone)->toBe($phone);
+})->with([
+    'Kosovo' => '+38344123456',
+    'Germany' => '+491701234567',
+    'Albania' => '+355692045678',
+]);
+
 test('a fourth request within an hour is rate limited', function () {
     $location = Location::factory()->create();
     $payload = validRequestPayload($location);

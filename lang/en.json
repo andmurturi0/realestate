@@ -67,6 +67,7 @@
     "Dërgo mesazh": "Send message",
     "Emri i plotë": "Full name",
     "Telefoni": "Phone",
+    "Numri i telefonit nuk është i vlefshëm.": "The phone number is not valid.",
     "Mesazhi": "Message",
     "Keni arritur numrin maksimal të mesazheve. Ju lutemi provoni sërish më vonë.": "You've reached the maximum number of messages. Please try again later.",
     "Duke dërguar…": "Sending…",

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LocationSelect from '@/components/site/LocationSelect.vue';
+import PhoneInput from '@/components/site/PhoneInput.vue';
 import { type LocationOption } from '@/lib/listing';
 import { categoryLabels, type PropertyCategory } from '@/lib/property';
 import { useTranslations } from '@/lib/trans';
@@ -44,6 +45,7 @@ const errors = ref<Record<string, string[]>>({});
 const submitting = ref(false);
 const success = ref(false);
 const rateLimited = ref(false);
+const phoneValid = ref(true);
 
 function readCookie(name: string): string | null {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
@@ -61,6 +63,13 @@ const chipClass = (active: boolean) =>
 async function submit() {
     errors.value = {};
     rateLimited.value = false;
+
+    if (form.phone && !phoneValid.value) {
+        errors.value = { phone: [t('Numri i telefonit nuk është i vlefshëm.')] };
+
+        return;
+    }
+
     submitting.value = true;
 
     try {
@@ -141,17 +150,7 @@ async function submit() {
 
             <div>
                 <label for="phone" class="mb-1 block text-sm font-medium">{{ t('Telefoni') }}</label>
-                <div class="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:ring-2 focus-within:ring-ring">
-                    <span class="flex items-center gap-1 text-sm text-muted-foreground">🇽🇰 +383</span>
-                    <input
-                        id="phone"
-                        v-model="form.phone"
-                        type="tel"
-                        required
-                        placeholder="044 123 456"
-                        class="h-10 w-full border-0 bg-transparent px-0 text-sm focus-visible:outline-none"
-                    />
-                </div>
+                <PhoneInput v-model="form.phone" @update:valid="phoneValid = $event" />
                 <p v-if="errors.phone" class="mt-1 text-xs text-destructive">{{ errors.phone[0] }}</p>
             </div>
 

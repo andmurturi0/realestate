@@ -117,6 +117,7 @@ return [
         'symbols' => 'The :attribute field must contain at least one symbol.',
         'uncompromised' => 'The given :attribute has appeared in a data leak. Please choose a different :attribute.',
     ],
+    'phone' => 'The :attribute field must be a valid phone number.',
     'present' => 'The :attribute field must be present.',
     'present_if' => 'The :attribute field must be present when :other is :value.',
     'present_unless' => 'The :attribute field must be present unless :other is :value.',
@@ -155,12 +156,6 @@ return [
     'url' => 'The :attribute field must be a valid URL.',
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
-
-    'custom' => [
-        'phone' => [
-            'regex' => 'The phone number must be in the format +383XXXXXXXX or 0XXXXXXXX.',
-        ],
-    ],
 
     'attributes' => [
         'full_name' => 'full name',

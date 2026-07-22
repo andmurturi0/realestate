@@ -49,6 +49,21 @@ test('an invalid phone number is rejected', function () {
     expect(PropertyOffer::query()->count())->toBe(0);
 });
 
+test('valid international phone numbers are accepted and stored in E.164', function (string $phone) {
+    $location = Location::factory()->create();
+
+    $this->post(route('offer-property.store'), [
+        ...validOfferPayload($location),
+        'phone' => $phone,
+    ])->assertSuccessful();
+
+    expect(PropertyOffer::query()->firstOrFail()->phone)->toBe($phone);
+})->with([
+    'Kosovo' => '+38344123456',
+    'Germany' => '+491701234567',
+    'Albania' => '+355692045678',
+]);
+
 test('a fourth offer within an hour is rate limited', function () {
     $location = Location::factory()->create();
     $payload = validOfferPayload($location);

@@ -34,9 +34,9 @@ test('an offer submission validation error is in sq, en and de depending on the 
         ->and($en->json('errors.first_name.0'))->toBe('The first name field is required.')
         ->and($de->json('errors.first_name.0'))->toBe('Das Feld Vorname ist erforderlich.');
 
-    expect($sq->json('errors.phone.0'))->toBe('Numri i telefonit duhet të jetë në formatin +383XXXXXXXX ose 0XXXXXXXX.')
-        ->and($en->json('errors.phone.0'))->toBe('The phone number must be in the format +383XXXXXXXX or 0XXXXXXXX.')
-        ->and($de->json('errors.phone.0'))->toBe('Die Telefonnummer muss im Format +383XXXXXXXX oder 0XXXXXXXX sein.');
+    expect($sq->json('errors.phone.0'))->toBe('Fusha telefoni duhet të jetë një numër telefoni i vlefshëm.')
+        ->and($en->json('errors.phone.0'))->toBe('The phone field must be a valid phone number.')
+        ->and($de->json('errors.phone.0'))->toBe('Das Feld Telefon muss eine gültige Telefonnummer sein.');
 });
 
 test('a create-request validation error uses the translated attribute name', function () {

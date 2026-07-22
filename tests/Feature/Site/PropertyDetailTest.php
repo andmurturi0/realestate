@@ -112,6 +112,22 @@ test('an invalid phone number is rejected', function () {
     ])->assertJsonValidationErrors('phone');
 });
 
+test('valid international phone numbers are accepted and stored in E.164', function (string $phone) {
+    $property = Property::factory()->published()->create();
+
+    $this->post(route('properties.contact', $property), [
+        'full_name' => 'Agim Krasniqi',
+        'phone' => $phone,
+        'message' => 'Më intereson kjo pronë.',
+    ])->assertSuccessful();
+
+    expect(ContactMessage::query()->where('property_id', $property->id)->firstOrFail()->phone)->toBe($phone);
+})->with([
+    'Kosovo' => '+38344123456',
+    'Germany' => '+491701234567',
+    'Albania' => '+355692045678',
+]);
+
 // Prona të ngjashme
 
 test('similar properties match same category, municipality and price band', function () {

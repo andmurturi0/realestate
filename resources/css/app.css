@@ -101,3 +101,30 @@ html {
         @apply bg-background text-foreground;
     }
 }
+
+/*
+ * intl-tel-input ships a light-only theme (hardcoded white dropdown bg, #ccc
+ * borders). Kept as plain, non-@layer rules: `@layer base` always loses to
+ * the library's own unlayered stylesheet under the CSS cascade-layer rules,
+ * regardless of selector specificity, so these must stay unlayered to win.
+ */
+html.dark {
+    --iti-country-selector-bg: hsl(var(--popover));
+    --iti-border-color: hsl(var(--border));
+    --iti-hover-color: hsl(var(--accent));
+    --iti-icon-color: hsl(var(--muted-foreground));
+}
+
+.dark .iti__country-selector {
+    border: var(--iti-border-width) solid hsl(var(--border));
+    color: hsl(var(--popover-foreground));
+}
+
+.dark .iti__search-input {
+    background-color: hsl(var(--popover));
+    color: hsl(var(--popover-foreground));
+}
+
+.dark .iti__country.iti__highlight {
+    color: hsl(var(--accent-foreground));
+}

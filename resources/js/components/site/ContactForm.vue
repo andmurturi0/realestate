@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PhoneInput from '@/components/site/PhoneInput.vue';
 import { useTranslations } from '@/lib/trans';
 import { CheckCircle2 } from 'lucide-vue-next';
 import { reactive, ref } from 'vue';
@@ -21,6 +22,7 @@ const errors = ref<Record<string, string[]>>({});
 const submitting = ref(false);
 const success = ref(false);
 const rateLimited = ref(false);
+const phoneValid = ref(true);
 
 function readCookie(name: string): string | null {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
@@ -31,6 +33,13 @@ function readCookie(name: string): string | null {
 async function submit() {
     errors.value = {};
     rateLimited.value = false;
+
+    if (form.phone && !phoneValid.value) {
+        errors.value = { phone: [t('Numri i telefonit nuk është i vlefshëm.')] };
+
+        return;
+    }
+
     submitting.value = true;
 
     try {
@@ -97,14 +106,7 @@ async function submit() {
 
             <div>
                 <label for="phone" class="mb-1 block text-sm font-medium">{{ t('Telefoni') }}</label>
-                <input
-                    id="phone"
-                    v-model="form.phone"
-                    type="tel"
-                    required
-                    placeholder="+383 44 123 456"
-                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
+                <PhoneInput v-model="form.phone" @update:valid="phoneValid = $event" />
                 <p v-if="errors.phone" class="mt-1 text-xs text-destructive">{{ errors.phone[0] }}</p>
             </div>
 

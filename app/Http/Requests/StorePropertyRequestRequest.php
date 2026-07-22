@@ -23,7 +23,7 @@ class StorePropertyRequestRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'regex:/^(\+383|0)4[3-9][0-9]{6}$/'],
+            'phone' => ['required', 'phone:INTERNATIONAL'],
             'request_type' => ['required', Rule::enum(RequestType::class)],
             'category' => ['required', Rule::enum(PropertyCategory::class)],
             'location_id' => ['required', Rule::exists('locations', 'id')],
