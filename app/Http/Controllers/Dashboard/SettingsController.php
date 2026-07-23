@@ -23,7 +23,7 @@ class SettingsController extends Controller
         Gate::authorize('manage', Setting::class);
 
         return Inertia::render('dashboard/Settings', [
-            'settings' => Setting::allAsArray(),
+            'settings' => $this->settingsService->withImageUrls(Setting::allAsArray()),
         ]);
     }
 

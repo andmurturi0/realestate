@@ -5,10 +5,10 @@ namespace App\Http\Middleware;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\DashboardService;
+use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -30,7 +30,10 @@ class HandleInertiaRequests extends Middleware
      */
     protected $rootView = 'app';
 
-    public function __construct(private readonly DashboardService $dashboardService) {}
+    public function __construct(
+        private readonly DashboardService $dashboardService,
+        private readonly SettingsService $settingsService,
+    ) {}
 
     /**
      * Determines the current asset version.
@@ -86,18 +89,6 @@ class HandleInertiaRequests extends Middleware
     {
         $settings = Arr::except(Setting::allAsArray(), self::CONTENT_KEYS);
 
-        $imageKeys = [
-            'logo_path' => 'logo_url',
-            'logo_dark_path' => 'logo_dark_url',
-            'favicon_path' => 'favicon_url',
-        ];
-
-        foreach ($imageKeys as $pathKey => $urlKey) {
-            $settings[$urlKey] = empty($settings[$pathKey])
-                ? null
-                : Storage::disk('supabase')->url($settings[$pathKey]);
-        }
-
-        return $settings;
+        return $this->settingsService->withImageUrls($settings);
     }
 }

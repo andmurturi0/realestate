@@ -22,6 +22,30 @@ class SettingsService
     }
 
     /**
+     * Resolve the *_path settings (stored relative to the supabase disk) into
+     * public *_url keys the frontend can render directly.
+     *
+     * @param  array<string, mixed>  $settings
+     * @return array<string, mixed>
+     */
+    public function withImageUrls(array $settings): array
+    {
+        $imageKeys = [
+            'logo_path' => 'logo_url',
+            'logo_dark_path' => 'logo_dark_url',
+            'favicon_path' => 'favicon_url',
+        ];
+
+        foreach ($imageKeys as $pathKey => $urlKey) {
+            $settings[$urlKey] = empty($settings[$pathKey])
+                ? null
+                : Storage::disk('supabase')->url($settings[$pathKey]);
+        }
+
+        return $settings;
+    }
+
+    /**
      * Store an uploaded branding image on the supabase disk under branding/,
      * save its path under the given settings key, and delete the file it replaces.
      */

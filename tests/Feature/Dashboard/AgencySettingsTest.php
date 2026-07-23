@@ -25,6 +25,21 @@ test('an admin can view the settings page', function () {
             ->where('settings.agency_name', 'Agjencia Demo'));
 });
 
+test('the settings page includes resolved image urls for the branding previews', function () {
+    $admin = User::factory()->admin()->create();
+
+    Storage::disk('supabase')->put('branding/logo.png', 'logo');
+    Setting::create(['key' => 'logo_path', 'value' => 'branding/logo.png']);
+
+    $this->actingAs($admin)
+        ->get('/dashboard/settings')
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('dashboard/Settings')
+            ->where('settings.logo_url', Storage::disk('supabase')->url('branding/logo.png'))
+            ->where('settings.logo_dark_url', null));
+});
+
 test('an agent cannot view the settings page', function () {
     $agent = User::factory()->agent()->create();
 
