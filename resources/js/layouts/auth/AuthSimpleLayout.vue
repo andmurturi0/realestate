@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppearanceToggle from '@/components/AppearanceToggle.vue';
+import { isDarkTheme } from '@/composables/useAppearance';
 import { useBrandColor } from '@/composables/useBrandColor';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -9,6 +10,7 @@ useBrandColor();
 
 const page = usePage<SharedData>();
 const settings = computed(() => page.props.settings);
+const logoUrl = computed(() => (isDarkTheme.value ? settings.value.logo_dark_url || settings.value.logo_url : settings.value.logo_url));
 
 defineProps<{
     title?: string;
@@ -25,12 +27,7 @@ defineProps<{
         <div class="flex flex-1 flex-col items-center justify-center">
             <div class="w-full max-w-sm">
                 <Link :href="route('home')" class="mb-8 flex flex-col items-center gap-3 text-center">
-                    <img
-                        v-if="settings.logo_url"
-                        :src="settings.logo_url"
-                        :alt="settings.agency_name ?? ''"
-                        class="h-12 w-auto object-contain"
-                    />
+                    <img v-if="logoUrl" :src="logoUrl" :alt="settings.agency_name ?? ''" class="h-12 w-auto object-contain" />
                     <span class="text-lg font-medium">{{ settings.agency_name }}</span>
                 </Link>
 

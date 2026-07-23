@@ -5,6 +5,12 @@ type Appearance = 'light' | 'dark' | 'system';
 const COOKIE_NAME = 'appearance';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
+// Module-level singleton (not per-component) so every consumer — public header,
+// dashboard sidebar, etc. — reacts to the same value. Kept in sync by
+// updateTheme(), which is the single funnel for every theme change: explicit
+// toggle, initial load, and the OS-level system-preference listener.
+export const isDarkTheme = ref(false);
+
 // Plain (unencrypted) cookie, same convention as LanguageSwitcher.vue's `locale`
 // cookie — app.blade.php reads it server-side to set the `dark` class before
 // Vue mounts, so it must be excluded from EncryptCookies (see bootstrap/app.php).
@@ -22,12 +28,9 @@ function readStoredAppearance(): Appearance | null {
 }
 
 export function updateTheme(value: Appearance) {
-    if (value === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.documentElement.classList.toggle('dark', systemTheme === 'dark');
-    } else {
-        document.documentElement.classList.toggle('dark', value === 'dark');
-    }
+    const dark = value === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches : value === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    isDarkTheme.value = dark;
 }
 
 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -69,5 +72,6 @@ export function useAppearance() {
     return {
         appearance,
         updateAppearance,
+        isDarkTheme,
     };
 }

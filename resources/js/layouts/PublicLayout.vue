@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import AppearanceToggle from '@/components/AppearanceToggle.vue';
+import BrandPattern from '@/components/site/BrandPattern.vue';
 import LanguageSwitcher from '@/components/site/LanguageSwitcher.vue';
+import { isDarkTheme } from '@/composables/useAppearance';
 import { useBrandColor } from '@/composables/useBrandColor';
 import { useFavourites } from '@/composables/useFavourites';
 import { publicRoute } from '@/lib/route';
@@ -9,6 +11,8 @@ import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Heart } from 'lucide-vue-next';
 import { computed, watch } from 'vue';
+
+withDefaults(defineProps<{ showBrandPattern?: boolean }>(), { showBrandPattern: false });
 
 const page = usePage<SharedData>();
 const settings = computed(() => page.props.settings);
@@ -39,6 +43,8 @@ const navLinks = computed(() => [
     { label: t('Bëj Kërkesë'), href: publicRoute('create-request.create'), active: currentPath.value.startsWith('/create-request') },
 ]);
 
+const logoUrl = computed(() => (isDarkTheme.value ? settings.value.logo_dark_url || settings.value.logo_url : settings.value.logo_url));
+
 const socialLinks = computed(() =>
     [
         { label: 'Facebook', href: settings.value.facebook },
@@ -56,8 +62,8 @@ const socialLinks = computed(() =>
             <div class="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
                 <div class="flex items-center gap-8">
                     <Link :href="publicRoute('home')" class="flex items-center gap-2">
-                        <img v-if="settings.logo_url" :src="settings.logo_url" :alt="settings.agency_name ?? ''" class="h-9 w-auto object-contain" />
-                        <span class="text-lg font-medium">{{ settings.agency_name }}</span>
+                        <img v-if="logoUrl" :src="logoUrl" :alt="settings.agency_name ?? ''" class="h-12 w-auto object-contain" />
+                        <span v-else class="text-lg font-medium">{{ settings.agency_name }}</span>
                     </Link>
                     <nav class="hidden items-center gap-6 text-sm sm:flex">
                         <Link
@@ -98,7 +104,8 @@ const socialLinks = computed(() =>
             </div>
         </header>
 
-        <main class="flex flex-1 flex-col">
+        <main class="relative flex flex-1 flex-col">
+            <BrandPattern v-if="showBrandPattern" />
             <slot />
         </main>
 

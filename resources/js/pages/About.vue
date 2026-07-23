@@ -51,8 +51,8 @@ const toggleTestimonial = (id: number) => {
 <template>
     <Head :title="t('Rreth Nesh')" />
 
-    <PublicLayout>
-        <div class="mx-auto w-full max-w-screen-2xl flex-1 px-4 py-8 md:py-12">
+    <PublicLayout show-brand-pattern>
+        <div class="relative z-10 mx-auto w-full max-w-screen-2xl flex-1 px-4 py-8 pt-10 md:py-12 md:pt-14">
             <h1 class="text-display-lg font-medium">{{ t('Rreth Nesh') }}</h1>
 
             <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

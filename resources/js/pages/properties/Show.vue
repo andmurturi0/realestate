@@ -55,8 +55,8 @@ const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale'
     correctly via the `inertia` attribute on the blade template's own tag. -->
     <Head :title="property.title" />
 
-    <PublicLayout>
-        <div class="mx-auto w-full max-w-screen-2xl flex-1 px-4 py-6">
+    <PublicLayout show-brand-pattern>
+        <div class="relative z-10 mx-auto w-full max-w-screen-2xl flex-1 px-4 py-6 pt-10 md:pt-14">
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div class="space-y-8 lg:col-span-2">
                     <PropertyGallery :images="property.images" />

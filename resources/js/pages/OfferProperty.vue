@@ -35,8 +35,8 @@ const steps = computed(() => [
 <template>
     <Head :title="t('Ofertoni Pronën Tuaj')" />
 
-    <PublicLayout>
-        <div class="mx-auto w-full max-w-2xl px-4 py-10">
+    <PublicLayout show-brand-pattern>
+        <div class="relative z-10 mx-auto w-full max-w-2xl px-4 py-10 pt-10 md:pt-14">
             <div class="mb-6 text-center">
                 <h1 class="text-2xl font-medium">{{ t('Ofertoni Pronën Tuaj') }}</h1>
                 <p class="mt-2 text-muted-foreground">{{ t("Plotësoni formularin më poshtë dhe një agjent do t'ju kontaktojë së shpejti.") }}</p>

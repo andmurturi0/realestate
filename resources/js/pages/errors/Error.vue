@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isDarkTheme } from '@/composables/useAppearance';
 import { publicRoute } from '@/lib/route';
 import { useTranslations } from '@/lib/trans';
 import { type SharedData } from '@/types';
@@ -11,6 +12,9 @@ const props = defineProps<{
 
 const { t } = useTranslations();
 const page = usePage<SharedData>();
+const logoUrl = computed(() =>
+    isDarkTheme.value ? page.props.settings.logo_dark_url || page.props.settings.logo_url : page.props.settings.logo_url,
+);
 
 const copy: Record<number, { title: string; message: string }> = {
     404: { title: t('Faqja nuk u gjet'), message: t('Faqja që kërkoni nuk ekziston ose është zhvendosur.') },
@@ -29,12 +33,7 @@ const message = computed(() => (copy[props.status] ?? fallback).message);
     <Head :title="`${status} — ${title}`" />
 
     <div class="flex min-h-screen flex-col items-center justify-center gap-5 bg-background px-4 text-center">
-        <img
-            v-if="page.props.settings.logo_url"
-            :src="page.props.settings.logo_url"
-            :alt="page.props.settings.agency_name ?? ''"
-            class="h-10 w-auto object-contain"
-        />
+        <img v-if="logoUrl" :src="logoUrl" :alt="page.props.settings.agency_name ?? ''" class="h-10 w-auto object-contain" />
         <span v-else class="text-lg font-medium">{{ page.props.settings.agency_name }}</span>
 
         <p class="text-sm font-medium text-muted-foreground">{{ status }}</p>
