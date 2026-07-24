@@ -96,10 +96,6 @@ const socialLinks = computed(() =>
                             {{ favourites.count.value }}
                         </span>
                     </Link>
-                    <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">
-                        {{ t('Paneli') }}
-                    </Link>
-                    <Link v-else :href="route('login')" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">{{ t('Kyçu') }}</Link>
                 </div>
             </div>
         </header>
@@ -113,7 +109,9 @@ const socialLinks = computed(() =>
             <div
                 class="mx-auto flex max-w-screen-2xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row"
             >
-                <span>© {{ new Date().getFullYear() }} {{ settings.agency_name }}</span>
+                <Link :href="$page.props.auth.user ? route('dashboard') : route('login')" class="transition-colors hover:text-foreground">
+                    © {{ new Date().getFullYear() }} {{ settings.agency_name }}
+                </Link>
                 <div v-if="socialLinks.length" class="flex gap-4">
                     <a
                         v-for="link in socialLinks"
