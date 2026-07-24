@@ -9,8 +9,8 @@ import { publicRoute } from '@/lib/route';
 import { useTranslations } from '@/lib/trans';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Heart } from 'lucide-vue-next';
-import { computed, watch } from 'vue';
+import { Heart, Menu, X } from 'lucide-vue-next';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 withDefaults(defineProps<{ showBrandPattern?: boolean }>(), { showBrandPattern: false });
 
@@ -45,6 +45,30 @@ const navLinks = computed(() => [
 
 const logoUrl = computed(() => (isDarkTheme.value ? settings.value.logo_dark_url || settings.value.logo_url : settings.value.logo_url));
 
+// ---- Mobile nav menu -------------------------------------------------------
+
+const mobileMenuOpen = ref(false);
+
+function closeMobileMenu() {
+    mobileMenuOpen.value = false;
+}
+
+function onMobileMenuKeydown(event: KeyboardEvent) {
+    if (mobileMenuOpen.value && event.key === 'Escape') {
+        closeMobileMenu();
+    }
+}
+
+onMounted(() => window.addEventListener('keydown', onMobileMenuKeydown));
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', onMobileMenuKeydown);
+    document.body.style.overflow = '';
+});
+
+watch(mobileMenuOpen, (open) => {
+    document.body.style.overflow = open ? 'hidden' : '';
+});
+
 const socialLinks = computed(() =>
     [
         { label: 'Facebook', href: settings.value.facebook },
@@ -65,7 +89,7 @@ const socialLinks = computed(() =>
                         <img v-if="logoUrl" :src="logoUrl" :alt="settings.agency_name ?? ''" class="h-12 w-auto object-contain" />
                         <span v-else class="text-lg font-medium">{{ settings.agency_name }}</span>
                     </Link>
-                    <nav class="hidden items-center gap-6 text-sm sm:flex">
+                    <nav class="hidden items-center gap-6 text-sm lg:flex">
                         <Link
                             v-for="link in navLinks"
                             :key="link.label"
@@ -81,24 +105,115 @@ const socialLinks = computed(() =>
                     <a v-if="settings.phone" :href="`tel:${settings.phone}`" class="hidden hover:text-foreground sm:inline">
                         {{ settings.phone }}
                     </a>
-                    <LanguageSwitcher />
-                    <AppearanceToggle :labels="{ light: t('E çelët'), dark: t('E errët'), system: t('Sistemi'), toggle: t('Ndrysho pamjen') }" />
-                    <Link
-                        :href="publicRoute('favorites.index')"
-                        class="relative flex items-center hover:text-foreground"
-                        :aria-label="t('Të preferuarat')"
-                    >
-                        <Heart class="size-5" />
-                        <span
-                            v-if="favourites.count.value > 0"
-                            class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground"
+                    <div class="hidden items-center gap-4 lg:flex">
+                        <LanguageSwitcher />
+                        <AppearanceToggle :labels="{ light: t('E çelët'), dark: t('E errët'), system: t('Sistemi'), toggle: t('Ndrysho pamjen') }" />
+                        <Link
+                            :href="publicRoute('favorites.index')"
+                            class="relative flex items-center hover:text-foreground"
+                            :aria-label="t('Të preferuarat')"
                         >
-                            {{ favourites.count.value }}
-                        </span>
-                    </Link>
+                            <Heart class="size-5" />
+                            <span
+                                v-if="favourites.count.value > 0"
+                                class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground"
+                            >
+                                {{ favourites.count.value }}
+                            </span>
+                        </Link>
+                    </div>
+                    <button
+                        type="button"
+                        class="inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground hover:bg-accent lg:hidden"
+                        :aria-label="t('Hap menynë')"
+                        :aria-expanded="mobileMenuOpen"
+                        @click="mobileMenuOpen = true"
+                    >
+                        <Menu class="size-5" />
+                    </button>
                 </div>
             </div>
         </header>
+
+        <!-- Mobile nav menu: same links/controls as the desktop header, presented as a slide-in drawer below lg. -->
+        <Teleport to="body">
+            <Transition
+                enter-active-class="transition-opacity duration-300"
+                enter-from-class="opacity-0"
+                leave-active-class="transition-opacity duration-200"
+                leave-to-class="opacity-0"
+            >
+                <div v-if="mobileMenuOpen" class="fixed inset-0 z-40 bg-black/50 lg:hidden" @click="closeMobileMenu" />
+            </Transition>
+            <Transition
+                enter-active-class="transition-transform duration-300 ease-out"
+                enter-from-class="translate-x-full"
+                leave-active-class="transition-transform duration-200 ease-in"
+                leave-to-class="translate-x-full"
+            >
+                <div
+                    v-if="mobileMenuOpen"
+                    class="fixed inset-y-0 right-0 z-50 flex w-full max-w-xs flex-col overflow-y-auto border-l bg-card shadow-2xl lg:hidden"
+                    role="dialog"
+                    aria-modal="true"
+                    :aria-label="t('Hap menynë')"
+                >
+                    <div class="flex items-center justify-between border-b p-4">
+                        <Link :href="publicRoute('home')" class="flex items-center gap-2" @click="closeMobileMenu">
+                            <img v-if="logoUrl" :src="logoUrl" :alt="settings.agency_name ?? ''" class="h-9 w-auto object-contain" />
+                            <span v-else class="text-base font-medium">{{ settings.agency_name }}</span>
+                        </Link>
+                        <button
+                            type="button"
+                            class="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                            :aria-label="t('Mbyll')"
+                            @click="closeMobileMenu"
+                        >
+                            <X class="size-5" />
+                        </button>
+                    </div>
+
+                    <nav class="flex flex-col gap-1 p-4 text-sm">
+                        <Link
+                            v-for="link in navLinks"
+                            :key="link.label"
+                            :href="link.href"
+                            class="rounded-md px-3 py-2.5 transition-colors"
+                            :class="
+                                link.active ? 'bg-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                            "
+                            @click="closeMobileMenu"
+                        >
+                            {{ link.label }}
+                        </Link>
+                    </nav>
+
+                    <div class="mt-auto flex flex-col gap-4 border-t p-4 text-sm text-muted-foreground">
+                        <LanguageSwitcher inline />
+
+                        <div class="flex items-center justify-between gap-4">
+                            <AppearanceToggle
+                                :labels="{ light: t('E çelët'), dark: t('E errët'), system: t('Sistemi'), toggle: t('Ndrysho pamjen') }"
+                            />
+                            <Link
+                                :href="publicRoute('favorites.index')"
+                                class="relative flex items-center hover:text-foreground"
+                                :aria-label="t('Të preferuarat')"
+                                @click="closeMobileMenu"
+                            >
+                                <Heart class="size-5" />
+                                <span
+                                    v-if="favourites.count.value > 0"
+                                    class="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground"
+                                >
+                                    {{ favourites.count.value }}
+                                </span>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
 
         <main class="relative flex flex-1 flex-col">
             <BrandPattern v-if="showBrandPattern" />

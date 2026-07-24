@@ -291,8 +291,10 @@ const rangeInputClass =
         <div class="relative">
             <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
+                id="listing-search"
                 v-model="filters.q"
                 type="search"
+                name="q"
                 :placeholder="t('Kërko sipas titullit, referencës, lokacionit…')"
                 class="h-10 w-full rounded-md border border-input bg-background pl-9 pr-9 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 @input="emit('apply-debounced')"
@@ -376,8 +378,10 @@ const rangeInputClass =
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]">
                 <div class="flex items-center gap-1.5">
                     <input
+                        id="price-min"
                         v-model="filters.price_min"
                         type="number"
+                        name="price_min"
                         min="0"
                         inputmode="numeric"
                         :placeholder="t('Çmimi min €')"
@@ -386,8 +390,10 @@ const rangeInputClass =
                     />
                     <span class="text-muted-foreground">–</span>
                     <input
+                        id="price-max"
                         v-model="filters.price_max"
                         type="number"
+                        name="price_max"
                         min="0"
                         inputmode="numeric"
                         :placeholder="t('Çmimi max €')"
@@ -398,8 +404,10 @@ const rangeInputClass =
 
                 <div class="flex items-center gap-1.5">
                     <input
+                        id="surface-min"
                         v-model="filters.surface_min"
                         type="number"
+                        name="surface_min"
                         min="0"
                         inputmode="numeric"
                         :placeholder="t('Sipërfaqja min m²')"
@@ -408,8 +416,10 @@ const rangeInputClass =
                     />
                     <span class="text-muted-foreground">–</span>
                     <input
+                        id="surface-max"
                         v-model="filters.surface_max"
                         type="number"
+                        name="surface_max"
                         min="0"
                         inputmode="numeric"
                         :placeholder="t('Sipërfaqja max m²')"
@@ -418,7 +428,12 @@ const rangeInputClass =
                     />
                 </div>
 
-                <LocationSelect :model-value="filters.location" :locations="locations" @update:model-value="setLocation" />
+                <LocationSelect
+                    id="location-search"
+                    :model-value="filters.location"
+                    :locations="locations"
+                    @update:model-value="setLocation"
+                />
 
                 <button
                     type="button"
@@ -599,8 +614,10 @@ const rangeInputClass =
                         <div class="flex flex-col gap-2">
                             <div class="flex items-center gap-1.5">
                                 <input
+                                    id="price-min-mobile"
                                     v-model="filters.price_min"
                                     type="number"
+                                    name="price_min_mobile"
                                     min="0"
                                     inputmode="numeric"
                                     :placeholder="t('Çmimi min €')"
@@ -609,8 +626,10 @@ const rangeInputClass =
                                 />
                                 <span class="text-muted-foreground">–</span>
                                 <input
+                                    id="price-max-mobile"
                                     v-model="filters.price_max"
                                     type="number"
+                                    name="price_max_mobile"
                                     min="0"
                                     inputmode="numeric"
                                     :placeholder="t('Çmimi max €')"
@@ -621,8 +640,10 @@ const rangeInputClass =
 
                             <div class="flex items-center gap-1.5">
                                 <input
+                                    id="surface-min-mobile"
                                     v-model="filters.surface_min"
                                     type="number"
+                                    name="surface_min_mobile"
                                     min="0"
                                     inputmode="numeric"
                                     :placeholder="t('Sipërfaqja min m²')"
@@ -631,8 +652,10 @@ const rangeInputClass =
                                 />
                                 <span class="text-muted-foreground">–</span>
                                 <input
+                                    id="surface-max-mobile"
                                     v-model="filters.surface_max"
                                     type="number"
+                                    name="surface_max_mobile"
                                     min="0"
                                     inputmode="numeric"
                                     :placeholder="t('Sipërfaqja max m²')"
@@ -641,7 +664,12 @@ const rangeInputClass =
                                 />
                             </div>
 
-                            <LocationSelect :model-value="filters.location" :locations="locations" @update:model-value="setLocation" />
+                            <LocationSelect
+                                id="location-search-mobile"
+                                :model-value="filters.location"
+                                :locations="locations"
+                                @update:model-value="setLocation"
+                            />
                         </div>
 
                         <!-- Më shumë panel: always expanded inside the sheet, no separate toggle needed here. -->

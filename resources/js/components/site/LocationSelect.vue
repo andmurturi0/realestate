@@ -8,6 +8,7 @@ import { computed, ref, useTemplateRef } from 'vue';
 const props = defineProps<{
     modelValue: number | null;
     locations: LocationOption[];
+    id?: string;
 }>();
 
 const { t } = useTranslations();
@@ -91,6 +92,8 @@ function select(id: number | null) {
                 <input
                     v-model="search"
                     type="text"
+                    :id="id"
+                    :name="id"
                     :placeholder="t('Kërko komunë ose lagje…')"
                     class="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />

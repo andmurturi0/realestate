@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { useTranslations } from '@/lib/trans';
 import { type SharedData } from '@/types';
 import { router, usePage } from '@inertiajs/vue3';
 import { ChevronDown } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
+// `inline` renders every locale as its own always-visible button instead of
+// a dropdown — used in the mobile nav drawer, where the dropdown's `absolute`
+// panel has nowhere to open within the drawer's width and spills off-screen.
+withDefaults(defineProps<{ inline?: boolean }>(), { inline: false });
+
+const { t } = useTranslations();
 const page = usePage<SharedData>();
 const open = ref(false);
 const root = ref<HTMLElement | null>(null);
@@ -47,7 +54,23 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
 </script>
 
 <template>
-    <div ref="root" class="relative">
+    <div v-if="inline" class="flex flex-col gap-2">
+        <span class="text-xs font-medium uppercase text-muted-foreground">{{ t('Gjuha') }}</span>
+        <div class="grid grid-cols-3 gap-2">
+            <button
+                v-for="locale in page.props.locales"
+                :key="locale"
+                type="button"
+                class="rounded-full border px-3 py-2 text-sm font-medium transition-colors"
+                :class="locale === page.props.locale ? 'border-primary text-primary' : 'border-input text-muted-foreground hover:text-foreground'"
+                @click="switchLocale(locale)"
+            >
+                {{ localeMeta[locale].code }}
+            </button>
+        </div>
+    </div>
+
+    <div v-else ref="root" class="relative">
         <button
             type="button"
             class="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
