@@ -182,6 +182,89 @@ test('the furnishing filter cannot match infrastructure features', function () {
         ->assertInertia(fn (Assert $page) => $page->has('properties.data', 0));
 });
 
+// Kërkimi tekstual
+
+test('search matches the title in any locale', function () {
+    $match = Property::factory()->published()->create(['title' => [
+        'sq' => 'Banesë dy dhomëshe', 'en' => 'Two bedroom apartment', 'de' => 'Zwei-Zimmer-Wohnung',
+    ]]);
+    Property::factory()->published()->create(['title' => [
+        'sq' => 'Shtëpi private', 'en' => 'Private house', 'de' => 'Privathaus',
+    ]]);
+
+    expect(listedPropertyIds($this->get('/properties?q=banesë')))->toBe([$match->id])
+        ->and(listedPropertyIds($this->get('/properties?q=apartment')))->toBe([$match->id])
+        ->and(listedPropertyIds($this->get('/properties?q=Wohnung')))->toBe([$match->id]);
+});
+
+test('search matches the reference code', function () {
+    $match = Property::factory()->published()->create();
+    Property::factory()->published()->create();
+
+    expect(listedPropertyIds($this->get("/properties?q={$match->reference_code}")))->toBe([$match->id]);
+});
+
+test('search matches the address line', function () {
+    $match = Property::factory()->published()->create(['address_line' => 'Rruga Agim Ramadani']);
+    Property::factory()->published()->create(['address_line' => 'Rruga Nënë Tereza']);
+
+    expect(listedPropertyIds($this->get('/properties?q=ramadani')))->toBe([$match->id]);
+});
+
+test('search matches the location name and its parent municipality', function () {
+    $municipality = Location::factory()->create(['name' => ['sq' => 'Prishtina', 'en' => 'Prishtina', 'de' => 'Prishtina']]);
+    $neighborhood = Location::factory()->neighborhood($municipality)
+        ->create(['name' => ['sq' => 'Dardania', 'en' => 'Dardania', 'de' => 'Dardania']]);
+
+    $inNeighborhood = Property::factory()->published()->for($neighborhood, 'location')->create();
+    Property::factory()->published()->create();
+
+    expect(listedPropertyIds($this->get('/properties?q=dardania')))->toBe([$inNeighborhood->id])
+        ->and(listedPropertyIds($this->get('/properties?q=prishtina')))->toBe([$inNeighborhood->id]);
+});
+
+test('search requires every word to match, but different words may match different fields', function () {
+    $municipality = Location::factory()->create(['name' => ['sq' => 'Prishtina', 'en' => 'Prishtina', 'de' => 'Prishtina']]);
+    $neighborhood = Location::factory()->neighborhood($municipality)
+        ->create(['name' => ['sq' => 'Dardania', 'en' => 'Dardania', 'de' => 'Dardania']]);
+
+    // "banesë" only matches the title, "dardania" only matches the location — must match both.
+    $match = Property::factory()->published()->for($neighborhood, 'location')->create(['title' => [
+        'sq' => 'Banesë moderne', 'en' => 'Modern apartment', 'de' => 'Moderne Wohnung',
+    ]]);
+    // Right location, but the title doesn't contain "banesë".
+    Property::factory()->published()->for($neighborhood, 'location')->create(['title' => [
+        'sq' => 'Zyrë qendrore', 'en' => 'Central office', 'de' => 'Zentrales Büro',
+    ]]);
+    // Right title word, but a different location.
+    Property::factory()->published()->create(['title' => [
+        'sq' => 'Banesë e re', 'en' => 'New apartment', 'de' => 'Neue Wohnung',
+    ]]);
+
+    $url = '/properties?'.http_build_query(['q' => 'banesë dardania']);
+
+    expect(listedPropertyIds($this->get($url)))->toBe([$match->id]);
+});
+
+test('search words beyond the fifth are ignored instead of erroring', function () {
+    $match = Property::factory()->published()->create(['title' => ['sq' => 'Banesë e madhe', 'en' => 'Large apartment', 'de' => 'Große Wohnung']]);
+
+    // The first 5 words all genuinely match; the 6th doesn't exist anywhere.
+    // If it weren't dropped by the cap, AND semantics would exclude $match.
+    $url = '/properties?'.http_build_query(['q' => 'banesë madhe large apartment wohnung nonexistentword']);
+
+    $this->get($url)->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page->has('properties.data', 1)->where('properties.data.0.id', $match->id));
+});
+
+test('search composes with other filters instead of replacing them', function () {
+    $match = Property::factory()->published()->forRent()->create(['title' => ['sq' => 'Banesë e bukur', 'en' => 'Nice apartment', 'de' => 'Schöne Wohnung']]);
+    // Same title word, wrong listing type.
+    Property::factory()->published()->forSale()->create(['title' => ['sq' => 'Banesë e bukur', 'en' => 'Nice apartment', 'de' => 'Schöne Wohnung']]);
+
+    expect(listedPropertyIds($this->get('/properties?type=rent&q=banesë')))->toBe([$match->id]);
+});
+
 // Sortimi
 
 test('sorts by price, surface and recency', function () {
@@ -328,6 +411,44 @@ test('the query count stays constant whether 1 or 50 properties are listed', fun
         $makeProperty();
     }
     $this->get('/properties')->assertSuccessful();
+
+    $queriesForFifty = $countQueries();
+
+    expect($queriesForFifty)->toBe($queriesForOne);
+});
+
+test('the query count stays constant with a multi-word search whether 1 or 50 properties are listed', function () {
+    $makeProperty = function (): void {
+        $neighborhood = Location::factory()->neighborhood()->create();
+        $property = Property::factory()
+            ->published()
+            ->for(User::factory()->agent(), 'agent')
+            ->for($neighborhood, 'location')
+            ->create();
+        PropertyImage::factory()->primary()->for($property)->create();
+    };
+
+    $searchUrl = '/properties?'.http_build_query(['q' => 'banesë dardania prishtina test kërkim']);
+
+    $countQueries = function () use ($searchUrl): int {
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        $this->get($searchUrl)->assertSuccessful();
+        $count = count(DB::getQueryLog());
+        DB::disableQueryLog();
+
+        return $count;
+    };
+
+    $makeProperty();
+    $this->get($searchUrl)->assertSuccessful(); // warm the settings/facet caches
+
+    $queriesForOne = $countQueries();
+
+    for ($i = 0; $i < 49; $i++) {
+        $makeProperty();
+    }
+    $this->get($searchUrl)->assertSuccessful();
 
     $queriesForFifty = $countQueries();
 

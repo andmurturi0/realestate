@@ -10,6 +10,7 @@ import {
     ChevronDown,
     Home,
     LandPlot,
+    Search,
     SlidersHorizontal,
     Store,
     Warehouse,
@@ -154,6 +155,11 @@ function setLocation(value: number | null) {
     emit('apply');
 }
 
+function clearSearch() {
+    filters.value.q = '';
+    emit('apply');
+}
+
 // ---- Active filter chips -----------------------------------------------
 
 interface ActiveChip {
@@ -180,6 +186,10 @@ const activeChips = computed<ActiveChip[]>(() => {
 
     if (state.exclusive) {
         chips.push({ id: 'exclusive', label: t('Ekskluzive'), remove: clearFields(() => (state.exclusive = false)) });
+    }
+
+    if (state.q) {
+        chips.push({ id: 'q', label: t('Kërkim: {query}', { query: state.q }), remove: clearFields(() => (state.q = '')) });
     }
 
     for (const category of state.category) {
@@ -277,6 +287,27 @@ const rangeInputClass =
 
 <template>
     <div class="flex flex-col gap-3 rounded-xl border bg-card p-4">
+        <!-- Search: always visible, above everything else on desktop and inside the mobile bar's visible row. -->
+        <div class="relative">
+            <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+                v-model="filters.q"
+                type="search"
+                :placeholder="t('Kërko sipas titullit, referencës, lokacionit…')"
+                class="h-10 w-full rounded-md border border-input bg-background pl-9 pr-9 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                @input="emit('apply-debounced')"
+            />
+            <button
+                v-if="filters.q"
+                type="button"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                :aria-label="t('Pastro kërkimin')"
+                @click="clearSearch"
+            >
+                <X class="size-4" />
+            </button>
+        </div>
+
         <!-- Row 1: listing type + exclusive -->
         <div class="flex flex-wrap items-center gap-2">
             <div class="inline-flex rounded-lg border bg-muted/40 p-1">

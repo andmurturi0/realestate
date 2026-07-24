@@ -6,6 +6,7 @@ use App\Enums\DocumentType;
 use App\Enums\FeatureGroup;
 use App\Enums\ListingType;
 use App\Enums\PropertyCategory;
+use App\Http\Middleware\SetLocale;
 use App\Models\Location;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,11 +24,14 @@ class PropertyFilter
     public const KEYS = [
         'type', 'exclusive', 'category', 'price_min', 'price_max',
         'surface_min', 'surface_max', 'location', 'bedrooms',
-        'possession', 'documents', 'furnishing', 'sort',
+        'possession', 'documents', 'furnishing', 'sort', 'q',
     ];
 
     /** @var list<string> */
     public const SORTS = ['newest', 'price_asc', 'price_desc', 'surface_desc'];
+
+    /** A pathological query ("a b c d e f g h...") can't nest an unbounded nest of subqueries. */
+    private const MAX_SEARCH_WORDS = 5;
 
     /**
      * @param  array<string, mixed>  $params
@@ -63,6 +67,7 @@ class PropertyFilter
                 'features',
                 fn ($features) => $features->where('group', FeatureGroup::Furnishing)->whereIn('key', $keys)
             ))
+            ->when($this->searchWords(), fn (Builder $q, array $words) => $this->applySearch($q, $words))
             ->tap(fn (Builder $q) => $this->applySort($q));
     }
 
@@ -88,6 +93,7 @@ class PropertyFilter
             'documents' => $this->documentType()?->value,
             'furnishing' => $this->furnishingKeys(),
             'sort' => $this->sort() === 'newest' ? null : $this->sort(),
+            'q' => $this->search(),
         ], fn (mixed $value): bool => $value !== null && $value !== []);
     }
 
@@ -225,6 +231,89 @@ class PropertyFilter
         return collect(is_array($raw) ? $raw : [$raw])
             ->filter(fn (mixed $value): bool => is_string($value) && $value !== '')
             ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Each word must match at least one field (AND across words, OR across
+     * fields per word) — "banesë dardani" needs both terms present
+     * somewhere, but not necessarily in the same field.
+     *
+     * @param  Builder<Property>  $query
+     * @param  list<string>  $words
+     * @return Builder<Property>
+     */
+    private function applySearch(Builder $query, array $words): Builder
+    {
+        foreach ($words as $word) {
+            $like = '%'.$word.'%';
+
+            $query->where(function (Builder $q) use ($like) {
+                foreach (SetLocale::LOCALES as $locale) {
+                    $q->orWhereLike("title->{$locale}", $like);
+                }
+
+                $q->orWhereLike('reference_code', $like)
+                    ->orWhereLike('address_line', $like)
+                    ->orWhereHas('location', fn (Builder $location) => $this
+                        ->matchLocationName($location, $like)
+                        ->orWhereHas('parent', fn (Builder $parent) => $this->matchLocationName($parent, $like)));
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Callbacks passed to `whereHas()` are run against a query that's already
+     * pre-seeded with the relation's correlation clause, via Eloquent's
+     * `callScope()`: it groups every *new* where the callback adds into one
+     * nested clause, using the FIRST new where's boolean for that whole
+     * group. Since every locale here is `orWhereLike`, that first boolean is
+     * "or" — without this method's own wrapping `where(...)`, the group
+     * would attach to the correlation with "or" instead of "and", making the
+     * EXISTS match any location in the table, not just the correlated one.
+     *
+     * @param  Builder<Location>  $query
+     * @return Builder<Location>
+     */
+    private function matchLocationName(Builder $query, string $like): Builder
+    {
+        return $query->where(function (Builder $q) use ($like) {
+            foreach (SetLocale::LOCALES as $locale) {
+                $q->orWhereLike("name->{$locale}", $like);
+            }
+        });
+    }
+
+    private function search(): ?string
+    {
+        $value = $this->params['q'] ?? null;
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function searchWords(): array
+    {
+        $value = $this->search();
+
+        if ($value === null) {
+            return [];
+        }
+
+        return collect(preg_split('/\s+/', $value))
+            ->filter(fn (string $word): bool => $word !== '')
+            ->take(self::MAX_SEARCH_WORDS)
             ->values()
             ->all();
     }

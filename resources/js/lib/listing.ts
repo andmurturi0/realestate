@@ -72,6 +72,7 @@ export interface ListingFilters {
     documents: '' | 'notary' | 'lawyer';
     furnishing: string[];
     sort: SortOption;
+    q: string;
 }
 
 export function emptyFilters(): ListingFilters {
@@ -89,6 +90,7 @@ export function emptyFilters(): ListingFilters {
         documents: '',
         furnishing: [],
         sort: 'newest',
+        q: '',
     };
 }
 
@@ -113,6 +115,7 @@ export function filtersFromProps(raw: Record<string, unknown> | unknown[] | unde
     if (source.documents === 'notary' || source.documents === 'lawyer') filters.documents = source.documents;
     if (Array.isArray(source.furnishing)) filters.furnishing = source.furnishing.map(String);
     if (sortOptions.includes(source.sort as SortOption)) filters.sort = source.sort as SortOption;
+    if (typeof source.q === 'string') filters.q = source.q;
 
     return filters;
 }
@@ -134,6 +137,7 @@ export function filtersToQuery(filters: ListingFilters): Record<string, unknown>
     if (filters.documents) params.documents = filters.documents;
     if (filters.furnishing.length) params.furnishing = filters.furnishing;
     if (filters.sort !== 'newest') params.sort = filters.sort;
+    if (filters.q !== '') params.q = filters.q;
 
     return params;
 }

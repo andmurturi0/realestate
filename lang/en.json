@@ -111,6 +111,9 @@
     "Pastro": "Clear",
     "Shfaq 1 pronë": "Show 1 property",
     "Shfaq {count} prona": "Show {count} properties",
+    "Kërko sipas titullit, referencës, lokacionit…": "Search by title, reference, location…",
+    "Pastro kërkimin": "Clear search",
+    "Kërkim: {query}": "Search: {query}",
 
     "Në shitje": "For sale",
     "Hiq nga të preferuarat": "Remove from favourites",
