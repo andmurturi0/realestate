@@ -13,6 +13,14 @@ test('email verification screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
+test('the verify-email screen is not indexable', function () {
+    $user = User::factory()->unverified()->create();
+
+    $response = $this->actingAs($user)->get('/verify-email');
+
+    $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+});
+
 test('email can be verified', function () {
     $user = User::factory()->unverified()->create();
 

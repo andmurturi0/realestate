@@ -14,3 +14,11 @@ test('authenticated users can visit the dashboard', function () {
     $response = $this->get('/dashboard');
     $response->assertStatus(200);
 });
+
+test('the dashboard is not indexable', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $response = $this->get('/dashboard');
+    $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+});

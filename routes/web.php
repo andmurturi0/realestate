@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/robots.txt', function () {
-    return response("User-agent: *\nDisallow:\nSitemap: ".url('/sitemap.xml')."\n")
+    return response("User-agent: *\nDisallow: /dashboard\nDisallow: /login\nSitemap: ".url('/sitemap.xml')."\n")
         ->header('Content-Type', 'text/plain');
 })->name('robots');
 

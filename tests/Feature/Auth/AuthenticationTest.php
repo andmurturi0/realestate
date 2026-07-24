@@ -8,6 +8,12 @@ test('login screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
+test('the login screen is not indexable', function () {
+    $response = $this->get('/login');
+
+    $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+});
+
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
 

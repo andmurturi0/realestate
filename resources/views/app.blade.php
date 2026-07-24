@@ -78,6 +78,16 @@
         unprocessed raw block. Stay with the inline single-statement @php(...) form. --}}
         @php($currentRoute = request()->route())
         @php($bareRouteName = $currentRoute?->getName() ? preg_replace('/^locale\./', '', $currentRoute->getName()) : null)
+
+        {{-- Same no-SSR constraint as the OG tags above: this has to be a server-side
+        meta tag, not an Inertia <Head> one, or bots that don't execute JS would never
+        see it. Dashboard routes are all named "dashboard" or "dashboard.*"; the auth
+        pages are named individually since they don't share a common prefix. --}}
+        @php($noindexAuthRoutes = ['login', 'password.request', 'password.reset', 'password.confirm', 'verification.notice'])
+        @if ($bareRouteName && (str_starts_with($bareRouteName, 'dashboard') || in_array($bareRouteName, $noindexAuthRoutes, true)))
+            <meta name="robots" content="noindex, nofollow">
+        @endif
+
         @php($hreflangRoutes = ['home', 'properties.index', 'properties.show', 'offer-property.create', 'create-request.create', 'favorites.index'])
         @if ($bareRouteName && in_array($bareRouteName, $hreflangRoutes, true))
             @php($hreflangParams = \Illuminate\Support\Arr::except($currentRoute->parameters(), 'locale'))

@@ -10,6 +10,14 @@ test('confirm password screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
+test('the confirm-password screen is not indexable', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get('/confirm-password');
+
+    $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+});
+
 test('password can be confirmed', function () {
     $user = User::factory()->create();
 

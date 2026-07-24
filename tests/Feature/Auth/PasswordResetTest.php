@@ -10,6 +10,12 @@ test('reset password link screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
+test('the forgot-password screen is not indexable', function () {
+    $response = $this->get('/forgot-password');
+
+    $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+});
+
 test('reset password link can be requested', function () {
     Notification::fake();
 
@@ -31,6 +37,7 @@ test('reset password screen can be rendered', function () {
         $response = $this->get('/reset-password/'.$notification->token);
 
         $response->assertStatus(200);
+        $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
 
         return true;
     });

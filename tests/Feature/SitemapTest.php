@@ -57,3 +57,16 @@ test('robots.txt points to the sitemap', function () {
     $response->assertHeader('Content-Type', 'text/plain; charset=UTF-8');
     $response->assertSee('Sitemap: '.url('/sitemap.xml'), false);
 });
+
+test('robots.txt disallows the dashboard and login', function () {
+    $response = $this->get('/robots.txt');
+
+    $response->assertSee('Disallow: /dashboard', false);
+    $response->assertSee('Disallow: /login', false);
+});
+
+test('public pages stay indexable', function () {
+    foreach (['/', '/properties', '/about'] as $path) {
+        $this->get($path)->assertDontSee('<meta name="robots"', false);
+    }
+});
