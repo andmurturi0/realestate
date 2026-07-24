@@ -98,6 +98,7 @@ const skeletonCount = computed(() => Math.min(Math.max(props.properties.data.len
                 v-model:filters="filters"
                 :locations="locations"
                 :furnishing-options="furnishingOptions"
+                :result-count="properties.total"
                 @apply="applyFilters"
                 @apply-debounced="applyFiltersDebounced"
                 @clear="clearFilters"
