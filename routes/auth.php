@@ -6,8 +6,10 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticatedSessionController;
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
@@ -26,6 +28,18 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // The GET page is ours (Inertia); the POST is Fortify's own controller,
+    // reused as-is — it already validates the TOTP code / recovery code
+    // (Laravel\Fortify\Http\Requests\TwoFactorLoginRequest), replaces a spent
+    // recovery code, and logs the user in. See config/fortify.php's 'home'
+    // for where it redirects on success.
+    Route::get('two-factor-challenge', [TwoFactorChallengeController::class, 'create'])
+        ->name('two-factor.login');
+
+    Route::post('two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:two-factor')
+        ->name('two-factor.login.store');
 });
 
 Route::middleware('auth')->group(function () {

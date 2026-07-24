@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Property;
+use App\Models\User;
+use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 
 // Faza 10 §2: SecurityHeaders sets the baseline hardening headers and a CSP
 // that allows exactly what the app uses — nothing broader. script-src must
@@ -100,6 +102,35 @@ test('img-src stays strict in production, excluding the Vite dev origin', functi
         ->first(fn (string $directive) => str_starts_with($directive, 'img-src'));
 
     expect($imgSrc)->not->toContain('http:');
+});
+
+// The two-factor QR code is inline SVG (BaconQrCode's SvgImageBackEnd),
+// injected via v-html rather than an <img>/<object> — object-src 'none'
+// doesn't apply to inline SVG markup, and it carries no <script> or style=
+// attributes, so it renders under the CSP unchanged. This proves it: no new
+// source is needed and every script tag on the page still carries the nonce.
+test('the two-factor settings page with a pending QR code satisfies the CSP unchanged', function () {
+    $user = User::factory()->create();
+    app(EnableTwoFactorAuthentication::class)($user);
+
+    $response = $this->actingAs($user)->get('/settings/two-factor');
+    $response->assertSuccessful();
+    // No SSR (see app.blade.php), so the QR <svg> only exists client-side
+    // after hydration — the server response carries it pre-escaped inside
+    // the Inertia data-page JSON payload, not as literal markup.
+    $response->assertSee('viewBox', false);
+
+    $csp = $response->headers->get('Content-Security-Policy');
+    preg_match("/'nonce-([A-Za-z0-9]+)'/", $csp, $matches);
+    $nonce = $matches[1] ?? null;
+    expect($nonce)->not->toBeNull();
+
+    preg_match_all('/<script\b[^>]*>/', $response->content(), $scriptTags);
+    expect($scriptTags[0])->not->toBeEmpty();
+
+    foreach ($scriptTags[0] as $tag) {
+        expect($tag)->toContain('nonce="'.$nonce.'"');
+    }
 });
 
 // Regression: Ziggy's own script tag (the @routes Blade directive) was

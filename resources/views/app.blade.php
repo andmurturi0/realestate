@@ -83,7 +83,7 @@
         meta tag, not an Inertia <Head> one, or bots that don't execute JS would never
         see it. Dashboard routes are all named "dashboard" or "dashboard.*"; the auth
         pages are named individually since they don't share a common prefix. --}}
-        @php($noindexAuthRoutes = ['login', 'password.request', 'password.reset', 'password.confirm', 'verification.notice'])
+        @php($noindexAuthRoutes = ['login', 'password.request', 'password.reset', 'password.confirm', 'verification.notice', 'two-factor.login'])
         @if ($bareRouteName && (str_starts_with($bareRouteName, 'dashboard') || in_array($bareRouteName, $noindexAuthRoutes, true)))
             <meta name="robots" content="noindex, nofollow">
         @endif
