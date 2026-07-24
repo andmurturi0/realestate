@@ -84,5 +84,9 @@ const submit = () => {
                 </Button>
             </div>
         </form>
+
+        <template #footer>
+            <p class="text-center text-xs text-muted-foreground">Vetëm për staf</p>
+        </template>
     </AuthBase>
 </template>

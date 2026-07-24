@@ -38,6 +38,8 @@ defineProps<{
                     </div>
                     <slot />
                 </div>
+
+                <slot name="footer" />
             </div>
         </div>
     </div>
