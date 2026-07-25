@@ -7,12 +7,14 @@ use App\Models\User;
 test('reference_code generates as PRO-{id} padded to four digits after create', function () {
     $property = Property::factory()->create();
 
-    expect($property->reference_code)->toBe('PRO-0001')
-        ->and($property->refresh()->reference_code)->toBe('PRO-0001');
+    $expected = 'PRO-'.str_pad((string) $property->id, 4, '0', STR_PAD_LEFT);
+
+    expect($property->reference_code)->toBe($expected)
+        ->and($property->refresh()->reference_code)->toBe($expected);
 
     $second = Property::factory()->create();
 
-    expect($second->reference_code)->toBe('PRO-0002');
+    expect($second->reference_code)->toBe('PRO-'.str_pad((string) $second->id, 4, '0', STR_PAD_LEFT));
 });
 
 test('the slug generates from the sq title on create', function () {
