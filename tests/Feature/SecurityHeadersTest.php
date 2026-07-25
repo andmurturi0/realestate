@@ -104,6 +104,26 @@ test('img-src stays strict in production, excluding the Vite dev origin', functi
     expect($imgSrc)->not->toContain('http:');
 });
 
+// Regression: ImageUploadField previews a just-picked file via
+// URL.createObjectURL() (a blob: URL) before it's ever uploaded. img-src
+// didn't allow blob:, so the browser silently blocked the preview <img> —
+// which read as "upload doesn't work" even though the save itself succeeded.
+// blob: URLs are generated client-side from local File objects and can never
+// reference an external origin, so allowing the scheme opens no new source
+// and it must stay allowed in production too (it's not a dev-only concession
+// like the Vite origin above).
+test('img-src allows blob: for client-side file-picker previews, including in production', function () {
+    app()->instance('env', 'production');
+
+    $csp = $this->get('/properties')->headers->get('Content-Security-Policy');
+
+    $imgSrc = collect(explode(';', $csp))
+        ->map(fn (string $directive) => trim($directive))
+        ->first(fn (string $directive) => str_starts_with($directive, 'img-src'));
+
+    expect($imgSrc)->toContain('blob:');
+});
+
 // The two-factor QR code is inline SVG (BaconQrCode's SvgImageBackEnd),
 // injected via v-html rather than an <img>/<object> — object-src 'none'
 // doesn't apply to inline SVG markup, and it carries no <script> or style=

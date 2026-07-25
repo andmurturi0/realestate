@@ -64,10 +64,14 @@ class SecurityHeaders
 
     /**
      * data: covers Leaflet's bundled CSS, which references its default
-     * marker artwork as data URIs. The Supabase storage host is read from
-     * config (never hardcoded — CLAUDE.md's single-tenant rule applies to
-     * infra config too, not just branding) so this keeps working unchanged
-     * across installations pointed at a different Supabase project.
+     * marker artwork as data URIs. blob: covers client-side file-picker
+     * previews (e.g. branding logo/favicon upload) via
+     * URL.createObjectURL() — those never leave the browser, so allowing
+     * the scheme carries no cross-origin risk. The Supabase storage host is
+     * read from config (never hardcoded — CLAUDE.md's single-tenant rule
+     * applies to infra config too, not just branding) so this keeps working
+     * unchanged across installations pointed at a different Supabase
+     * project.
      *
      * Outside production, Vite's dev server also serves intl-tel-input's
      * flag sprite as an image — same scheme-only http: reasoning as
@@ -78,7 +82,7 @@ class SecurityHeaders
      */
     private function imgSources(): array
     {
-        $sources = ["'self'", 'data:', 'https://tile.openstreetmap.org'];
+        $sources = ["'self'", 'data:', 'blob:', 'https://tile.openstreetmap.org'];
 
         $storageHost = parse_url((string) config('filesystems.disks.supabase.url'), PHP_URL_HOST);
 
