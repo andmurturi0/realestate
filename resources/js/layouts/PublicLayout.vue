@@ -82,7 +82,7 @@ const socialLinks = computed(() =>
 
 <template>
     <div class="flex min-h-screen flex-col bg-background text-foreground">
-        <header class="border-b">
+        <header class="sticky top-0 z-30 bg-background shadow-hover">
             <div class="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
                 <div class="flex items-center gap-8">
                     <Link :href="publicRoute('home')" class="flex items-center gap-2">
