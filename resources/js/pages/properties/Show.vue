@@ -5,15 +5,18 @@ import FinancingCalculator from '@/components/site/FinancingCalculator.vue';
 import PropertyFeaturesList from '@/components/site/PropertyFeaturesList.vue';
 import PropertyGallery from '@/components/site/PropertyGallery.vue';
 import PropertyLocationMap from '@/components/site/PropertyLocationMap.vue';
+import PropertyShareModal from '@/components/site/PropertyShareModal.vue';
 import PropertySpecsGrid from '@/components/site/PropertySpecsGrid.vue';
 import SimilarProperties from '@/components/site/SimilarProperties.vue';
+import { useFavourites } from '@/composables/useFavourites';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { type PropertyDetailData } from '@/lib/detail';
 import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
+import { publicRoute } from '@/lib/route';
 import { useTranslations } from '@/lib/trans';
 import { Head } from '@inertiajs/vue3';
-import { Eye, MapPin, MessageCircle } from 'lucide-vue-next';
+import { Eye, Heart, MapPin, MessageCircle, Share2 } from 'lucide-vue-next';
 import { computed, defineAsyncComponent, ref } from 'vue';
 
 // ApexCharts is ~500kb — only fetched when a property actually has a
@@ -52,6 +55,13 @@ const contactFormEl = ref<HTMLElement | null>(null);
 function scrollToContactForm() {
     contactFormEl.value?.scrollIntoView({ behavior: 'smooth' });
 }
+
+const favourites = useFavourites();
+const isFavourite = computed(() => favourites.has(props.property.id));
+
+const shareModalOpen = ref(false);
+const shareUrl = computed(() => publicRoute('properties.show', props.property.slug));
+const shareImage = computed(() => props.property.images.find((image) => image.is_primary)?.url ?? props.property.images[0]?.url ?? null);
 </script>
 
 <template>
@@ -104,13 +114,43 @@ function scrollToContactForm() {
                             </div>
                         </div>
 
-                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                            <span>{{ property.reference_code }}</span>
-                            <span v-if="publishedLabel">{{ t('Publikuar më {date}', { date: publishedLabel }) }}</span>
-                            <span class="flex items-center gap-1">
-                                <Eye class="size-3.5" />
-                                {{ t('{count} shikime', { count: property.views_count }) }}
-                            </span>
+                        <div class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                <span>{{ property.reference_code }}</span>
+                                <span v-if="publishedLabel">{{ t('Publikuar më {date}', { date: publishedLabel }) }}</span>
+                                <span class="flex items-center gap-1">
+                                    <Eye class="size-3.5" />
+                                    {{ t('{count} shikime', { count: property.views_count }) }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    :aria-label="isFavourite ? t('Hiq nga të preferuarat') : t('Shto te të preferuarat')"
+                                    :aria-pressed="isFavourite"
+                                    class="flex items-center justify-center gap-1.5 rounded-full border p-2 text-sm transition-colors sm:px-3.5"
+                                    :class="
+                                        isFavourite
+                                            ? 'border-red-200 bg-red-50 text-red-500 dark:border-red-900/40 dark:bg-red-950/30'
+                                            : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                                    "
+                                    @click="favourites.toggle(property.id)"
+                                >
+                                    <Heart class="size-4" :class="{ 'fill-current': isFavourite }" />
+                                    <span class="hidden sm:inline">{{ t('Ruaj') }}</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    :aria-label="t('Ndaje')"
+                                    class="flex items-center justify-center gap-1.5 rounded-full border p-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:px-3.5"
+                                    @click="shareModalOpen = true"
+                                >
+                                    <Share2 class="size-4" />
+                                    <span class="hidden sm:inline">{{ t('Ndaje') }}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -168,5 +208,7 @@ function scrollToContactForm() {
         >
             <MessageCircle class="size-6" />
         </button>
+
+        <PropertyShareModal v-model="shareModalOpen" :title="property.title" :image-url="shareImage" :url="shareUrl" />
     </PublicLayout>
 </template>
