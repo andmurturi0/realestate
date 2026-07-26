@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PropertyLightbox from '@/components/site/PropertyLightbox.vue';
 import { type PropertyImageData } from '@/lib/detail';
+import { useSwipe } from '@vueuse/core';
 import { ImageOff } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -15,6 +16,20 @@ function openAt(index: number) {
     activeIndex.value = index;
     lightboxOpen.value = true;
 }
+
+const mainImageRef = ref<HTMLElement>();
+
+useSwipe(mainImageRef, {
+    onSwipeEnd(_event, direction) {
+        if (!props.images.length) return;
+
+        if (direction === 'left') {
+            activeIndex.value = (activeIndex.value + 1) % props.images.length;
+        } else if (direction === 'right') {
+            activeIndex.value = (activeIndex.value - 1 + props.images.length) % props.images.length;
+        }
+    },
+});
 
 // Preload the next thumbnail's full-size image so the strip feels instant.
 watch(activeIndex, (i) => {
@@ -42,7 +57,7 @@ function galleryMainSrcset(image: PropertyImageData | undefined): string | undef
 
 <template>
     <div v-if="images.length">
-        <button type="button" class="block aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted" @click="openAt(activeIndex)">
+        <button ref="mainImageRef" type="button" class="block aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted" @click="openAt(activeIndex)">
             <img
                 v-if="images[activeIndex]?.url"
                 :src="images[activeIndex].url!"
