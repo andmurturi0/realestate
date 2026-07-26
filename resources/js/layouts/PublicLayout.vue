@@ -221,23 +221,58 @@ const socialLinks = computed(() =>
         </main>
 
         <footer class="border-t">
-            <div
-                class="mx-auto flex max-w-screen-2xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row"
-            >
-                <Link :href="$page.props.auth.user ? route('dashboard') : route('login')" class="transition-colors hover:text-foreground">
-                    © {{ new Date().getFullYear() }} {{ settings.agency_name }}
-                </Link>
-                <div v-if="socialLinks.length" class="flex gap-4">
-                    <a
-                        v-for="link in socialLinks"
-                        :key="link.label"
-                        :href="link.href as string"
-                        target="_blank"
-                        rel="noopener"
-                        class="hover:text-foreground"
-                    >
-                        {{ link.label }}
-                    </a>
+            <div class="mx-auto max-w-screen-2xl px-4 py-10">
+                <div class="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3">
+                    <nav class="flex flex-col gap-2">
+                        <Link
+                            v-for="link in navLinks"
+                            :key="link.label"
+                            :href="link.href"
+                            class="text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                            {{ link.label }}
+                        </Link>
+                    </nav>
+                    <nav class="flex flex-col gap-2">
+                        <Link :href="publicRoute('terms')" class="text-muted-foreground transition-colors hover:text-foreground">
+                            {{ t('Termat dhe Kushtet') }}
+                        </Link>
+                        <Link :href="publicRoute('privacy')" class="text-muted-foreground transition-colors hover:text-foreground">
+                            {{ t('Politika e Privatësisë') }}
+                        </Link>
+                    </nav>
+                    <div class="col-span-2 flex flex-col gap-2 sm:col-span-1">
+                        <a v-if="settings.phone" :href="`tel:${settings.phone}`" class="text-muted-foreground transition-colors hover:text-foreground">
+                            {{ settings.phone }}
+                        </a>
+                        <a
+                            v-if="settings.email"
+                            :href="`mailto:${settings.email}`"
+                            class="text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                            {{ settings.email }}
+                        </a>
+                    </div>
+                </div>
+
+                <div
+                    class="mt-8 flex flex-col items-center justify-between gap-2 border-t pt-6 text-sm text-muted-foreground sm:flex-row"
+                >
+                    <Link :href="$page.props.auth.user ? route('dashboard') : route('login')" class="transition-colors hover:text-foreground">
+                        © {{ new Date().getFullYear() }} {{ settings.agency_name }}
+                    </Link>
+                    <div v-if="socialLinks.length" class="flex gap-4">
+                        <a
+                            v-for="link in socialLinks"
+                            :key="link.label"
+                            :href="link.href as string"
+                            target="_blank"
+                            rel="noopener"
+                            class="hover:text-foreground"
+                        >
+                            {{ link.label }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer>

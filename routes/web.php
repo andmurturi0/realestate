@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Site\AboutController;
 use App\Http\Controllers\Site\ContactMessageController;
 use App\Http\Controllers\Site\FavoriteController;
+use App\Http\Controllers\Site\LegalController;
 use App\Http\Controllers\Site\PropertyController as SitePropertyController;
 use App\Http\Controllers\Site\PropertyOfferController;
 use App\Http\Controllers\Site\PropertyRequestController;
@@ -42,6 +43,8 @@ $publicPages = function () {
     Route::get('/create-request', [PropertyRequestController::class, 'create'])->name('create-request.create');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::get('/about', [AboutController::class, 'show'])->name('about');
+    Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
+    Route::get('/privacy', [LegalController::class, 'privacy'])->name('privacy');
 };
 
 Route::middleware(SetLocale::class)->group(function () use ($publicPages) {

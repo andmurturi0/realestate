@@ -19,12 +19,12 @@ test('the sitemap includes every static public page in all three locales', funct
     $response = $this->get('/sitemap.xml');
     $xml = $response->content();
 
-    foreach (['/', '/properties', '/about', '/offer-property', '/create-request'] as $path) {
+    foreach (['/', '/properties', '/about', '/terms', '/privacy', '/offer-property', '/create-request'] as $path) {
         expect($xml)->toContain('<loc>'.url($path).'</loc>');
     }
 
     foreach (['/en', '/de'] as $prefix) {
-        foreach (['/properties', '/about', '/offer-property', '/create-request'] as $path) {
+        foreach (['/properties', '/about', '/terms', '/privacy', '/offer-property', '/create-request'] as $path) {
             expect($xml)->toContain('href="'.url($prefix.$path).'"');
         }
     }
@@ -66,7 +66,7 @@ test('robots.txt disallows the dashboard and login', function () {
 });
 
 test('public pages stay indexable', function () {
-    foreach (['/', '/properties', '/about'] as $path) {
+    foreach (['/', '/properties', '/about', '/terms', '/privacy'] as $path) {
         $this->get($path)->assertDontSee('<meta name="robots"', false);
     }
 });

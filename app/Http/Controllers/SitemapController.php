@@ -25,6 +25,8 @@ class SitemapController extends Controller
         'home',
         'properties.index',
         'about',
+        'terms',
+        'privacy',
         'offer-property.create',
         'create-request.create',
     ];
