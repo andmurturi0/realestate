@@ -13,8 +13,8 @@ import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
 import { useTranslations } from '@/lib/trans';
 import { Head } from '@inertiajs/vue3';
-import { Eye, MapPin } from 'lucide-vue-next';
-import { computed, defineAsyncComponent } from 'vue';
+import { Eye, MapPin, MessageCircle } from 'lucide-vue-next';
+import { computed, defineAsyncComponent, ref } from 'vue';
 
 // ApexCharts is ~500kb — only fetched when a property actually has a
 // price-history chart to show, not bundled into every detail-page load.
@@ -46,6 +46,12 @@ const publishedLabel = computed(() =>
 );
 
 const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale' ? t('për shitje') : t('me qira')));
+
+const contactFormEl = ref<HTMLElement | null>(null);
+
+function scrollToContactForm() {
+    contactFormEl.value?.scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 
 <template>
@@ -142,7 +148,9 @@ const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale'
                 <div class="space-y-4 lg:sticky lg:top-6 lg:self-start">
                     <AgentCard v-if="property.agent" :agent="property.agent" :reference-code="property.reference_code" :title="property.title" />
                     <FinancingCalculator v-if="property.listing_type === 'sale'" :price="property.price" />
-                    <ContactForm :property-slug="property.slug" />
+                    <div ref="contactFormEl">
+                        <ContactForm :property-slug="property.slug" />
+                    </div>
                 </div>
             </div>
 
@@ -150,5 +158,15 @@ const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale'
                 <SimilarProperties :properties="similarProperties" />
             </div>
         </div>
+
+        <button
+            type="button"
+            :aria-label="t('Kontakto për këtë pronë')"
+            class="fixed z-30 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-hover transition hover:opacity-90 lg:hidden"
+            style="bottom: calc(1rem + env(safe-area-inset-bottom)); left: calc(1rem + env(safe-area-inset-left))"
+            @click="scrollToContactForm"
+        >
+            <MessageCircle class="size-6" />
+        </button>
     </PublicLayout>
 </template>
