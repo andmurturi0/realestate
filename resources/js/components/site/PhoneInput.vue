@@ -7,6 +7,8 @@ const props = withDefaults(
     defineProps<{
         modelValue: string;
         id?: string;
+        placeholder?: string;
+        inputClass?: string;
     }>(),
     { id: 'phone' },
 );
@@ -40,7 +42,10 @@ function handleChangeValidity(valid: boolean) {
             id: props.id,
             name: props.id,
             required: true,
-            class: 'h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            placeholder: props.placeholder,
+            class:
+                props.inputClass ??
+                'h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         }"
         @change-number="handleChangeNumber"
         @change-validity="handleChangeValidity"

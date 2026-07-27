@@ -76,15 +76,20 @@ async function submit() {
 </script>
 
 <template>
-    <div class="rounded-xl border bg-card p-4">
+    <div class="rounded-2xl border bg-card p-6">
         <div v-if="success" class="flex flex-col items-center gap-2 py-6 text-center">
             <CheckCircle2 class="size-10 text-green-600" />
             <p class="font-medium">{{ t('Mesazhi juaj u dërgua!') }}</p>
             <p class="text-sm text-muted-foreground">{{ t("Agjenti do t'ju kontaktojë së shpejti.") }}</p>
         </div>
 
-        <form v-else class="space-y-3" @submit.prevent="submit">
-            <h2 class="font-medium">{{ t('Dërgo mesazh') }}</h2>
+        <form v-else class="space-y-4" @submit.prevent="submit">
+            <div>
+                <h2 class="font-semibold text-lg">{{ t('Keni pyetje?') }}</h2>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    {{ t("Duke mbushur formën e mëposhtme agjenti ynë do t'ju informojë rreth pyetjeve tuaja!") }}
+                </p>
+            </div>
 
             <!-- Honeypot: off-screen, never display:none (some bots skip that check). -->
             <div class="absolute -left-[9999px]" aria-hidden="true">
@@ -93,31 +98,38 @@ async function submit() {
             </div>
 
             <div>
-                <label for="full_name" class="mb-1 block text-sm font-medium">{{ t('Emri i plotë') }}</label>
+                <label for="full_name" class="mb-1.5 block text-sm font-medium">{{ t('Emri dhe mbiemri') }}</label>
                 <input
                     id="full_name"
                     v-model="form.full_name"
                     type="text"
                     required
-                    class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    :placeholder="t('Shkruani emrin dhe mbiemrin tuaj')"
+                    class="h-12 w-full rounded-xl border border-input bg-muted/40 px-4 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
                 <p v-if="errors.full_name" class="mt-1 text-xs text-destructive">{{ errors.full_name[0] }}</p>
             </div>
 
             <div>
-                <label for="phone" class="mb-1 block text-sm font-medium">{{ t('Telefoni') }}</label>
-                <PhoneInput v-model="form.phone" @update:valid="phoneValid = $event" />
+                <label for="phone" class="mb-1.5 block text-sm font-medium">{{ t('Numri telefonit tuaj') }}</label>
+                <PhoneInput
+                    v-model="form.phone"
+                    :placeholder="t('Shkruani numrin e telefonit tuaj')"
+                    input-class="h-12 w-full rounded-xl border border-input bg-muted/40 px-4 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    @update:valid="phoneValid = $event"
+                />
                 <p v-if="errors.phone" class="mt-1 text-xs text-destructive">{{ errors.phone[0] }}</p>
             </div>
 
             <div>
-                <label for="message" class="mb-1 block text-sm font-medium">{{ t('Mesazhi') }}</label>
+                <label for="message" class="mb-1.5 block text-sm font-medium">{{ t('Mesazhi') }}</label>
                 <textarea
                     id="message"
                     v-model="form.message"
                     rows="4"
                     required
-                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    :placeholder="t('Shkruani mesazhin tuaj...')"
+                    class="w-full rounded-xl border border-input bg-muted/40 px-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
                 <p v-if="errors.message" class="mt-1 text-xs text-destructive">{{ errors.message[0] }}</p>
             </div>
@@ -129,9 +141,9 @@ async function submit() {
             <button
                 type="submit"
                 :disabled="submitting"
-                class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                class="w-full rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-                {{ submitting ? t('Duke dërguar…') : t('Dërgo mesazhin') }}
+                {{ submitting ? t('Duke dërguar…') : t('Dërgo') }}
             </button>
         </form>
     </div>

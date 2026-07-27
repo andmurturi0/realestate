@@ -185,7 +185,7 @@ class Property extends Model
     /**
      * @return BelongsToMany<Feature, $this>
      */
-    public function features(): BelongsToMany
+     public function features(): BelongsToMany
     {
         return $this->belongsToMany(Feature::class);
     }
