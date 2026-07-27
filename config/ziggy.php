@@ -20,6 +20,8 @@ return [
         'guest' => [
             'home',
             'about',
+            'terms',
+            'privacy',
             'properties.*',
             'offer-property.*',
             'create-request.*',
