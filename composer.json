@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.10.1",
         "league/flysystem-aws-s3-v3": "3.0",
         "propaganistas/laravel-phone": "^6.0",
+        "resend/resend-laravel": "^1.4",
         "spatie/laravel-translatable": "^6.11",
         "tightenco/ziggy": "^2.6"
     },
