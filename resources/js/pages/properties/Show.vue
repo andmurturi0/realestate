@@ -185,7 +185,7 @@ const shareImage = computed(() => props.property.images.find((image) => image.is
                     </div>
                 </div>
 
-                <div class="space-y-4 lg:sticky lg:top-6 lg:self-start">
+                <div class="z-20 space-y-4 lg:sticky lg:top-24 lg:self-start">
                     <AgentCard v-if="property.agent" :agent="property.agent" :reference-code="property.reference_code" :title="property.title" />
                     <FinancingCalculator v-if="property.listing_type === 'sale'" :price="property.price" />
                     <div ref="contactFormEl">
