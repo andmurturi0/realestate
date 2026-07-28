@@ -57,7 +57,7 @@ const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale'
                 alt=""
                 aria-hidden="true"
                 draggable="false"
-                class="pointer-events-none absolute bottom-6 left-1/2 w-1/4 max-w-24 -translate-x-1/2 select-none object-contain opacity-70"
+                class="pointer-events-none absolute bottom-6 left-1/2 w-1/4 max-w-24 -translate-x-1/2 select-none object-contain"
             />
 
             <div class="absolute left-3 top-3 flex items-center gap-1.5">
