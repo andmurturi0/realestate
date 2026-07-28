@@ -4,8 +4,7 @@ import { type PropertyCardData } from '@/lib/listing';
 import { formatPriceCents } from '@/lib/property';
 import { publicRoute } from '@/lib/route';
 import { useTranslations } from '@/lib/trans';
-import { type SharedData } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { Bath, BedDouble, Heart, ImageOff, MapPin, Ruler } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -21,9 +20,6 @@ const favourites = useFavourites();
 const isFavourite = computed(() => favourites.has(props.property.id));
 
 const imageSrc = computed(() => props.property.thumbnail_url ?? props.property.image_url);
-
-const settings = computed(() => usePage<SharedData>().props.settings);
-const watermarkUrl = computed(() => (settings.value.watermark_enabled ? settings.value.logo_url : null));
 
 const locationLabel = computed(() => {
     const parts = [props.property.location, props.property.municipality].filter(Boolean);
@@ -56,12 +52,12 @@ const listingTypeSuffix = computed(() => (props.property.listing_type === 'sale'
             </div>
 
             <img
-                v-if="imageSrc && watermarkUrl"
-                :src="watermarkUrl"
+                v-if="imageSrc"
+                src="/brand/watermark.png"
                 alt=""
                 aria-hidden="true"
                 draggable="false"
-                class="pointer-events-none absolute left-1/2 top-1/2 w-2/5 max-w-40 -translate-x-1/2 -translate-y-1/2 select-none object-contain opacity-70"
+                class="pointer-events-none absolute bottom-6 left-1/2 w-1/4 max-w-24 -translate-x-1/2 select-none object-contain opacity-70"
             />
 
             <div class="absolute left-3 top-3 flex items-center gap-1.5">
