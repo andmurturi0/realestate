@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { router } from '@inertiajs/vue3';
+import imageCompression from 'browser-image-compression';
 import { ImagePlus, Loader2, Star, Trash2, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import draggable from 'vuedraggable';
@@ -16,7 +17,7 @@ interface QueuedUpload {
     key: number;
     name: string;
     progress: number;
-    status: 'queued' | 'uploading' | 'error';
+    status: 'queued' | 'compressing' | 'uploading' | 'error';
     error?: string;
     file: File;
 }
@@ -54,7 +55,7 @@ const enqueue = (files: FileList | File[]) => {
     processQueue();
 };
 
-const processQueue = () => {
+const processQueue = async () => {
     if (uploading.value) {
         return;
     }
@@ -65,11 +66,25 @@ const processQueue = () => {
     }
 
     uploading.value = true;
+    item.status = 'compressing';
+
+    let uploadFile: File = item.file;
+    try {
+        uploadFile = await imageCompression(item.file, {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            fileType: 'image/jpeg',
+        });
+    } catch {
+        // Compression failed (e.g. unsupported format) — fall back to the original file.
+    }
+
     item.status = 'uploading';
 
     router.post(
         uploadUrl.value,
-        { image: item.file },
+        { image: uploadFile },
         {
             forceFormData: true,
             preserveScroll: true,
@@ -167,16 +182,24 @@ const destroy = (image: PropertyImageItem) => {
                 <li v-for="item in queue" :key="item.key" class="rounded-md border px-3 py-2 text-sm">
                     <div class="flex items-center justify-between gap-2">
                         <span class="flex min-w-0 items-center gap-2">
-                            <Loader2 v-if="item.status === 'uploading'" class="size-4 shrink-0 animate-spin text-muted-foreground" />
+                            <Loader2
+                                v-if="item.status === 'uploading' || item.status === 'compressing'"
+                                class="size-4 shrink-0 animate-spin text-muted-foreground"
+                            />
                             <span class="truncate">{{ item.name }}</span>
                         </span>
-                        <span v-if="item.status !== 'error'" class="tabular-nums text-muted-foreground">{{ item.progress }}%</span>
+                        <span v-if="item.status === 'compressing'" class="text-muted-foreground">Duke përpunuar…</span>
+                        <span v-else-if="item.status !== 'error'" class="tabular-nums text-muted-foreground">{{ item.progress }}%</span>
                         <button v-else type="button" class="text-muted-foreground hover:text-foreground" @click="dismissError(item.key)">
                             <X class="size-4" />
                         </button>
                     </div>
                     <div v-if="item.status !== 'error'" class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div class="h-full rounded-full bg-primary transition-all" :style="{ width: `${item.progress}%` }" />
+                        <div
+                            class="h-full rounded-full bg-primary transition-all"
+                            :style="{ width: `${item.status === 'compressing' ? 100 : item.progress}%` }"
+                            :class="{ 'animate-pulse': item.status === 'compressing' }"
+                        />
                     </div>
                     <p v-else class="mt-1 text-xs text-destructive">{{ item.error }}</p>
                 </li>
